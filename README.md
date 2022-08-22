@@ -7,7 +7,7 @@ Stack<T>:
 
 unsafe
 {
-    using (var memory = new StackMemory(16)//allocate 12 bytes
+    using (var memory = new StackMemory(16)//allocate 16 bytes
     {
         using var stack = new Stack<int>(3, &memory);//Reserve 8 bytes for the stack
 	//memory.Current adress is memory.Start + 12 bytes

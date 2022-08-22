@@ -11,7 +11,7 @@ namespace Benchmark
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
 
-        [Benchmark(Description = "Using StackMemoryCollections.Stack<T>: allocated unmanaged memory = Size * 4 bytes")]
+        [Benchmark(Description = $"Using StackMemoryCollections.Stack<T>: unmanaged memory = Size*4 bytes")]
         public void StackMemory()
         {
             unsafe
@@ -27,9 +27,16 @@ namespace Benchmark
                                 stack.Push(i);
                             }
 
-                            while (!stack.IsEmpty)
+                            if(j > 50)
                             {
-                                stack.Pop();
+                                stack.Clear();
+                            }
+                            else
+                            {
+                                while (!stack.IsEmpty)
+                                {
+                                    stack.Pop();
+                                }
                             }
                         }
 
@@ -62,9 +69,16 @@ namespace Benchmark
                             stack.Push(i);
                         }
 
-                        while (stack.Count != 0)
+                        if (j > 50)
                         {
-                            stack.Pop();
+                            stack.Clear();
+                        }
+                        else
+                        {
+                            while (stack.TryPop(out _))
+                            {
+                                stack.Pop();
+                            }
                         }
                     }
 
@@ -74,9 +88,16 @@ namespace Benchmark
                         stack2.Push(i);
                     }
 
-                    while (stack2.Count != 0)
+                    if (j > 50)
                     {
-                        stack2.Pop();
+                        stack2.Clear();
+                    }
+                    else
+                    {
+                        while (stack2.TryPop(out _))
+                        {
+                            stack2.Pop();
+                        }
                     }
                 }
             }

@@ -72,6 +72,30 @@ namespace Tests
         }
 
         [Test]
+        public void IndexTest()
+        {
+            unsafe
+            {
+                using (var memory = new StackMemory(sizeof(int) * 3))
+                {
+                    var stack = new Stack<int>(3, &memory);
+                    stack.Push(48);
+                    stack.Push(12);
+                    stack.Push(50);
+
+                    Assert.That(stack[0], Is.EqualTo(50));
+                    Assert.That(stack[1], Is.EqualTo(12));
+                    Assert.That(stack[2], Is.EqualTo(48));
+
+                    Assert.That(() => stack[3],
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo("Element outside the stack")
+                        );
+                }
+            }
+        }
+
+        [Test]
         public void FrontPopTest()
         {
             unsafe

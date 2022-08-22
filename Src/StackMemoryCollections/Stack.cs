@@ -229,13 +229,13 @@ namespace StackMemoryCollections
         {
             get
             {
-                if (Size < index)
+                if (Size <= 0 || Size <= index)
                 {
                     throw new Exception("Element outside the stack");
                 }
 
                 return
-                    Marshal.PtrToStructure<T>(new IntPtr((byte*)_start - ((Size + index) * (nuint)Marshal.SizeOf<T>())));
+                    Marshal.PtrToStructure<T>(new IntPtr((byte*)_start + ((Size - 1 - index) * (nuint)Marshal.SizeOf<T>())));
             }
         }
     }

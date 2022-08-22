@@ -1,6 +1,9 @@
 # Readme:
 Collections for memory reuse by stack type.
 
+Supported collections:
+- Stack
+
 ## Usage:
 Stack<T>:
 ```C#

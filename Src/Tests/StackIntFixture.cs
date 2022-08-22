@@ -5,7 +5,7 @@ using System;
 namespace Tests
 {
     [TestFixture]
-    public class StackTest
+    public class StackIntTest
     {
         [Test]
         public void DisposeStackTest()
@@ -83,11 +83,12 @@ namespace Tests
                     stack.Push(12);
 
                     var item = stack.Front();
-                    Assert.That(new IntPtr(item), Is.EqualTo(new IntPtr((int*)memory.Start + 1)));
+                    var itemPtr = stack.FrontPtr();
+                    Assert.That(new IntPtr(itemPtr), Is.EqualTo(new IntPtr((int*)memory.Start + 1)));
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)2));
-                    Assert.That(*item, Is.EqualTo(12));
+                    Assert.That(item, Is.EqualTo(12));
 
                     stack.Pop();
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
@@ -95,11 +96,12 @@ namespace Tests
                     Assert.That(stack.Size, Is.EqualTo((nuint)1));
 
                     item = stack.Front();
-                    Assert.That(new IntPtr(item), Is.EqualTo(new IntPtr((int*)memory.Start)));
+                    itemPtr = stack.FrontPtr();
+                    Assert.That(new IntPtr(itemPtr), Is.EqualTo(new IntPtr((int*)memory.Start)));
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)1));
-                    Assert.That(*item, Is.EqualTo(48));
+                    Assert.That(item, Is.EqualTo(48));
 
                     stack.Pop();
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));

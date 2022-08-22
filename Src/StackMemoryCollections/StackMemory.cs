@@ -23,9 +23,9 @@ namespace StackMemoryCollections
         public void* Current { get; private set; }
         public nuint ByteCount { get; init; }
 
-        public void* AllocateMemory<T>(nuint count) where T : unmanaged
+        public void* AllocateMemory<T>(nuint count) where T : struct
         {
-            var allocateBytes = count * (nuint)sizeof(T);
+            var allocateBytes = count * (nuint)Marshal.SizeOf<T>();
             if (ByteCount - _offsetBytes < allocateBytes)
             {
                 throw new ArgumentException("Can't allocate memory");
@@ -33,7 +33,7 @@ namespace StackMemoryCollections
 
             _offsetBytes += allocateBytes;
             var start = Current;
-            Current = (T*)start + count;
+            Current = (byte*)start + allocateBytes;
             return start;
         }
 

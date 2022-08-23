@@ -1,4 +1,6 @@
-﻿namespace Tests
+﻿using System.Runtime.InteropServices;
+
+namespace Tests
 {
     internal struct TestStruct
     {
@@ -17,12 +19,11 @@
             _boolVal = !boolVal;
         }
 
-        public int Int32Val;
         public long Int64Val;
-        public bool BoolVal;
-
-        private int _int32Val;
         private long _int64Val;
+        public int Int32Val;
+        private int _int32Val;
+        public bool BoolVal;
         private bool _boolVal;
     }
 }

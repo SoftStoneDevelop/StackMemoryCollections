@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using StackMemoryCollections;
+using System.Runtime.InteropServices;
 
 namespace Benchmark
 {
@@ -19,19 +20,19 @@ namespace Benchmark
                 Int64 = int64;
             }
 
-            public int Int32;
             public long Int64;
+            public int Int32;
         }
 
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
 
-        [Benchmark(Description = $"Using StackMemoryCollections.Stack<T>: unmanaged memory = Size*4 bytes")]
+        [Benchmark(Description = $"Using StackMemoryCollections.StackOfStruct<T>: unmanaged memory = Size * item size(~12) bytes")]
         public void StackMemory()
         {
             unsafe
             {
-                using (var memory = new StackMemory(sizeof(int) * (nuint)Size))
+                using (var memory = new StackMemory((nuint)Marshal.SizeOf<SimpleStruct>() * (nuint)Size))
                 {
                     for (int j = 0; j < 100; j++)
                     {

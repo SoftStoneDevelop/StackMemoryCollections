@@ -28,3 +28,5 @@ unsafe
 ## Benchmark results:
 
 ![Stack](/BenchmarkResults/stackBench.png)
+
+![Stack](/BenchmarkResults/stackOfStructBench.png)

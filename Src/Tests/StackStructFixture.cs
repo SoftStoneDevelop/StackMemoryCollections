@@ -13,10 +13,10 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory((nuint)Marshal.SizeOf<TestStruct>() * 3))
+                using (var memory = new StackMemory(StructHelper.GetSize<SimpleStruct>() * 3))
                 {
                     {
-                        using var stack = new StackOfStruct<TestStruct>(3, &memory);
+                        using var stack = new StackOfSimpleStruct(3, &memory);
                     }
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
@@ -29,13 +29,13 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory((nuint)Marshal.SizeOf<TestStruct>() * 3))
+                using (var memory = new StackMemory(StructHelper.GetSize<SimpleStruct>() * 3))
                 {
                     {
-                        var stack = new StackOfStruct<TestStruct>(3, &memory);
+                        var stack = new StackOfSimpleStruct(3, &memory);
                     }
 
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((TestStruct*)memory.Start + 3)));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (StructHelper.GetSize<SimpleStruct>() * 3))));
                 }
             }
         }
@@ -45,28 +45,28 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory((nuint)Marshal.SizeOf<TestStruct>() * 3))
+                using (var memory = new StackMemory(StructHelper.GetSize<SimpleStruct>() * 3))
                 {
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
-                    var stack = new StackOfStruct<TestStruct>(3, &memory);
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((TestStruct*)memory.Start + 3)));
+                    var stack = new StackOfSimpleStruct(3, &memory);
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start +(StructHelper.GetSize<SimpleStruct>() * 3))));
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 
-                    var s1 = new TestStruct(1255, 45465465654, true);
+                    var s1 = new SimpleStruct { Int32 = 1255, Int64 = 45465465654 };
                     stack.Push(s1);
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)1));
 
-                    s1 = new TestStruct(8845, 878778778787, true);
+                    s1 = new SimpleStruct { Int32 = 8845, Int64 = 878778778787 };
                     stack.Push(s1);
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)2));
 
-                    stack.Push(new TestStruct(798845, 99999955555, true));
+                    stack.Push(new SimpleStruct { Int32 = 798845, Int64 = 99999955555 });
 
-                    Assert.That(() => stack.Push(new TestStruct(45, 788787, false)),
+                    Assert.That(() => stack.Push(new SimpleStruct { Int32 = 45, Int64 = 788787 }),
                         Throws.Exception.TypeOf(typeof(Exception))
                         .And.Message.EqualTo("Not enough memory to allocate stack element")
                         );
@@ -79,19 +79,19 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory((nuint)Marshal.SizeOf<TestStruct>() * 3))
+                using (var memory = new StackMemory(StructHelper.GetSize<SimpleStruct>() * 3))
                 {
-                    var stack = new StackOfStruct<TestStruct>(3, &memory);
-                    var s1 = new TestStruct(1255, 45465465654, true);
+                    var stack = new StackOfSimpleStruct(3, &memory);
+                    var s1 = new SimpleStruct { Int32 = 1255, Int64 = 45465465654 };
                     stack.Push(s1);
-                    s1 = new TestStruct(8845, 878778778787, true);
+                    s1 = new SimpleStruct { Int32 = 8845, Int64 = 878778778787 };
                     stack.Push(s1);
-                    s1 = new TestStruct(444, 1332, false);
+                    s1 = new SimpleStruct { Int32 = 444, Int64 = 1332 };
                     stack.Push(s1);
 
-                    Assert.That(stack[0], Is.EqualTo(new TestStruct(444, 1332, false)));
-                    Assert.That(stack[1], Is.EqualTo(new TestStruct(8845, 878778778787, true)));
-                    Assert.That(stack[2], Is.EqualTo(new TestStruct(1255, 45465465654, true)));
+                    Assert.That(stack[0], Is.EqualTo(new SimpleStruct { Int32 = 444, Int64 = 1332 }));
+                    Assert.That(stack[1], Is.EqualTo(new SimpleStruct { Int32 = 8845, Int64 = 878778778787 }));
+                    Assert.That(stack[2], Is.EqualTo(new SimpleStruct { Int32 = 1255, Int64 = 45465465654 }));
 
                     Assert.That(() => stack[3],
                         Throws.Exception.TypeOf(typeof(Exception))
@@ -106,23 +106,23 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory((nuint)Marshal.SizeOf<TestStruct>() * 3))
+                using (var memory = new StackMemory(StructHelper.GetSize<SimpleStruct>() * 3))
                 {
-                    var stack = new StackOfStruct<TestStruct>(3, &memory);
+                    var stack = new StackOfSimpleStruct(3, &memory);
                     
-                    var s1 = new TestStruct(1111, 55555555, true);
+                    var s1 = new SimpleStruct { Int32 = 1111, Int64 = 55555555 };
                     stack.Push(s1);
 
-                    s1 = new TestStruct(2222, 333333333, true);
+                    s1 = new SimpleStruct { Int32 = 2222, Int64 = 333333333 };
                     stack.Push(s1);
 
                     var item = stack.Front();
                     var itemPtr = stack.FrontPtr();
-                    Assert.That(new IntPtr(itemPtr), Is.EqualTo(new IntPtr((TestStruct*)memory.Start + 1)));
+                    Assert.That(new IntPtr(itemPtr), Is.EqualTo(new IntPtr((byte*)memory.Start + StructHelper.GetSize<SimpleStruct>())));
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)2));
-                    Assert.That(item, Is.EqualTo(new TestStruct(2222, 333333333, true)));
+                    Assert.That(item, Is.EqualTo(new SimpleStruct { Int32 = 2222, Int64 = 333333333 }));
 
                     stack.Pop();
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
@@ -131,11 +131,11 @@ namespace Tests
 
                     item = stack.Front();
                     itemPtr = stack.FrontPtr();
-                    Assert.That(new IntPtr(itemPtr), Is.EqualTo(new IntPtr((TestStruct*)memory.Start)));
+                    Assert.That(new IntPtr(itemPtr), Is.EqualTo(new IntPtr((byte*)memory.Start)));
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)1));
-                    Assert.That(item, Is.EqualTo(new TestStruct(1111, 55555555, true)));
+                    Assert.That(item, Is.EqualTo(new SimpleStruct { Int32 = 1111, Int64 = 55555555 }));
 
                     stack.Pop();
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));

@@ -37,6 +37,19 @@ namespace StackMemoryCollections
             return start;
         }
 
+        public void* AllocateMemory(nuint allocateBytes)
+        {
+            if (ByteCount - _offsetBytes < allocateBytes)
+            {
+                throw new ArgumentException("Can't allocate memory");
+            }
+
+            _offsetBytes += allocateBytes;
+            var start = Current;
+            Current = (byte*)start + allocateBytes;
+            return start;
+        }
+
         public void FreeMemory(nuint reducingBytes)
         {
             var start = new IntPtr(Start);

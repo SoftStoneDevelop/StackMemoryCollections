@@ -16,7 +16,7 @@ namespace Tests
                 using (var memory = new StackMemory((nuint)Marshal.SizeOf<TestStruct>() * 3))
                 {
                     {
-                        using var stack = new Stack<TestStruct>(3, &memory);
+                        using var stack = new StackOfStruct<TestStruct>(3, &memory);
                     }
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
@@ -32,7 +32,7 @@ namespace Tests
                 using (var memory = new StackMemory((nuint)Marshal.SizeOf<TestStruct>() * 3))
                 {
                     {
-                        var stack = new Stack<TestStruct>(3, &memory);
+                        var stack = new StackOfStruct<TestStruct>(3, &memory);
                     }
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((TestStruct*)memory.Start + 3)));
@@ -48,7 +48,7 @@ namespace Tests
                 using (var memory = new StackMemory((nuint)Marshal.SizeOf<TestStruct>() * 3))
                 {
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
-                    var stack = new Stack<TestStruct>(3, &memory);
+                    var stack = new StackOfStruct<TestStruct>(3, &memory);
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((TestStruct*)memory.Start + 3)));
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 
@@ -81,7 +81,7 @@ namespace Tests
             {
                 using (var memory = new StackMemory((nuint)Marshal.SizeOf<TestStruct>() * 3))
                 {
-                    var stack = new Stack<TestStruct>(3, &memory);
+                    var stack = new StackOfStruct<TestStruct>(3, &memory);
                     var s1 = new TestStruct(1255, 45465465654, true);
                     stack.Push(s1);
                     s1 = new TestStruct(8845, 878778778787, true);
@@ -108,7 +108,7 @@ namespace Tests
             {
                 using (var memory = new StackMemory((nuint)Marshal.SizeOf<TestStruct>() * 3))
                 {
-                    var stack = new Stack<TestStruct>(3, &memory);
+                    var stack = new StackOfStruct<TestStruct>(3, &memory);
                     
                     var s1 = new TestStruct(1111, 55555555, true);
                     stack.Push(s1);

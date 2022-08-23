@@ -1,24 +1,26 @@
 ﻿using System.Collections;
+using System.Runtime.InteropServices;
 
 namespace StackMemoryCollections
 {
-    public unsafe struct Stack<T> : IDisposable, IEnumerable<T> where T : unmanaged
+    public unsafe struct StackOfStruct<T> : IDisposable, IEnumerable<T> where T : struct
     {
         private StackMemory* _stackMemory;
-        private T* _start;
+        private void* _start;
         private int _version = 0;
+        private nuint _sizeT = (nuint)Marshal.SizeOf<T>();
 
-        public Stack()
+        public StackOfStruct()
         {
             throw new ArgumentException("Default constructor not supported");
         }
 
-        public Stack(
+        public StackOfStruct(
             nuint count,
             StackMemory* stackMemory
             )
         {
-            _start = (T*)(*stackMemory).AllocateMemory<T>(count);
+            _start = (*stackMemory).AllocateMemory<T>(count);
             _stackMemory = stackMemory;
             Capacity = count;
         }
@@ -35,8 +37,8 @@ namespace StackMemoryCollections
             {
                 return;
             }
-            
-            if (new IntPtr((*_stackMemory).Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+
+            if (new IntPtr((*_stackMemory).Current) != new IntPtr((byte*)_start + (Capacity * _sizeT)))
             {
                 throw new Exception("Failed to reduce available memory, stack moved further");
             }
@@ -47,7 +49,7 @@ namespace StackMemoryCollections
             }
 
             Capacity -= reducingCount;
-            (*_stackMemory).FreeMemory(reducingCount * (nuint)sizeof(T));
+            (*_stackMemory).FreeMemory(reducingCount * _sizeT);
         }
 
         public void ExpandAvailableMemory(in nuint expandBytes)
@@ -68,7 +70,7 @@ namespace StackMemoryCollections
                 throw new Exception("Not enough memory to allocate stack element");
             }
 
-            *(_start + Size) = item;
+            Marshal.StructureToPtr(item, new IntPtr((byte*)_start + (Size * _sizeT)), false);
             Size = tempSize;
             _version++;
         }
@@ -81,7 +83,7 @@ namespace StackMemoryCollections
                 return false;
             }
 
-            *(_start + Size) = item;
+            Marshal.StructureToPtr(item, new IntPtr((byte*)_start + (Size * _sizeT)), false);
             Size = tempSize;
             _version++;
 
@@ -101,7 +103,7 @@ namespace StackMemoryCollections
 
         public void Clear()
         {
-            if(Size != 0)
+            if (Size != 0)
             {
                 Size = 0;
                 _version++;
@@ -110,28 +112,28 @@ namespace StackMemoryCollections
 
         public T Front()
         {
-            if(Size == 0)
+            if (Size == 0)
             {
                 throw new Exception("There are no elements on the stack");
             }
 
             return
-                *(_start + (Size - 1));
+                Marshal.PtrToStructure<T>(new IntPtr((byte*)_start + ((Size - 1) * _sizeT)));
         }
 
-        public T* FrontPtr()
+        public void* FrontPtr()
         {
             if (Size == 0)
             {
                 throw new Exception("There are no elements on the stack");
             }
 
-            return _start + (Size - 1);
+            return (byte*)_start + ((Size - 1) * _sizeT);
         }
 
         public void Dispose()
         {
-            (*_stackMemory).FreeMemory(Capacity * (nuint)sizeof(T));
+            (*_stackMemory).FreeMemory(Capacity * _sizeT);
         }
 
         #region IEnumerable<T>
@@ -153,12 +155,12 @@ namespace StackMemoryCollections
 
         public struct Enumerator : IEnumerator<T>, IEnumerator
         {
-            private readonly Stack<T> _stack;
+            private readonly StackOfStruct<T> _stack;
             private T _current;
             private int _currentIndex;
             private int _version;
 
-            internal Enumerator(Stack<T> stack)
+            internal Enumerator(StackOfStruct<T> stack)
             {
                 _stack = stack;
                 _currentIndex = -1;
@@ -177,32 +179,34 @@ namespace StackMemoryCollections
 
             public bool MoveNext()
             {
-                if(_version != _stack._version)
+                if (_version != _stack._version)
                 {
                     throw new InvalidOperationException("The stack was changed during the enumeration");
                 }
 
-                if(_stack.Size < 0)
+                if (_stack.Size < 0)
                 {
                     return false;
                 }
 
-                if(_currentIndex == -2)
+                if (_currentIndex == -2)
                 {
                     _currentIndex = (int)_stack.Size - 1;
-                    _current = *(_stack._start + _currentIndex);
+                    _current =
+                        Marshal.PtrToStructure<T>(new IntPtr((byte*)_stack._start + (_currentIndex * (int)_stack._sizeT)));
                     return true;
                 }
 
-                if(_currentIndex == -1)
+                if (_currentIndex == -1)
                 {
                     return false;
                 }
 
                 --_currentIndex;
-                if(_currentIndex >= 0)
+                if (_currentIndex >= 0)
                 {
-                    _current = *(_stack._start + _currentIndex);
+                    _current =
+                        Marshal.PtrToStructure<T>(new IntPtr((byte*)_stack._start + (_currentIndex * (int)_stack._sizeT)));
                     return true;
                 }
                 else
@@ -230,7 +234,7 @@ namespace StackMemoryCollections
                 }
 
                 return
-                    *(_start + (Size - 1 - index));
+                    Marshal.PtrToStructure<T>(new IntPtr((byte*)_start + ((Size - 1 - index) * _sizeT)));
             }
         }
     }

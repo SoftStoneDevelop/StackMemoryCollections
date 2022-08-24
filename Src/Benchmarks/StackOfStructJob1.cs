@@ -1,29 +1,15 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using StackMemoryCollections;
-using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 namespace Benchmark
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
-    public class StackOfStructJob
+    [Description("Optimal usage StackMemory")]
+    public class StackOfStructJob1
     {
-        private struct SimpleStruct
-        {
-            public SimpleStruct(
-                int int32,
-                long int64
-                )
-            {
-                Int32 = int32;
-                Int64 = int64;
-            }
-
-            public long Int64;
-            public int Int32;
-        }
-
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
 
@@ -32,15 +18,18 @@ namespace Benchmark
         {
             unsafe
             {
-                using (var memory = new StackMemory((nuint)Marshal.SizeOf<SimpleStruct>() * (nuint)Size))
+                using (var memory = new StackMemory(SimpleStructHelper.GetSize() * (nuint)Size))
                 {
+                    var item = new SimpleStruct(0, 0);
                     for (int j = 0; j < 100; j++)
                     {
                         {
-                            using var stack = new StackOfStruct<SimpleStruct>((nuint)Size, &memory);
+                            using var stack = new StackOfSimpleStruct((nuint)Size, &memory);
                             for (int i = 0; i < Size; i++)
                             {
-                                stack.Push(new SimpleStruct(i, i * 2));
+                                item.Int32 = i;
+                                item.Int64 = i * 2;
+                                stack.Push(in item);
                             }
 
                             if(j > 50)
@@ -56,15 +45,24 @@ namespace Benchmark
                             }
                         }
 
-                        using var stack2 = new StackOfStruct<SimpleStruct>((nuint)Size, &memory);
+                        using var stack2 = new StackOfSimpleStruct((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
-                            stack2.Push(new SimpleStruct(i, i * 2));
+                            item.Int32 = i;
+                            item.Int64 = i * 2;
+                            stack2.Push(in item);
                         }
 
-                        while (!stack2.IsEmpty)
+                        if (j > 50)
                         {
-                            stack2.Pop();
+                            stack2.Clear();
+                        }
+                        else
+                        {
+                            while (!stack2.IsEmpty)
+                            {
+                                stack2.Pop();
+                            }
                         }
                     }
                 }

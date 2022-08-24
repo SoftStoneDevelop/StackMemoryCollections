@@ -1,27 +1,53 @@
-﻿using System.Collections;
-using System.Runtime.InteropServices;
+﻿using GenerateAttibutes;
+using System.Collections;
 
 namespace StackMemoryCollections
 {
-    public unsafe struct StackOfStruct<T> : IDisposable, IEnumerable<T> where T : struct
+    [GenerateHelper]
+    [GenerateStack]
+    public struct SimpleStruct
+    {
+        public SimpleStruct(
+            int int32,
+            long int64
+            )
+        {
+            Int32 = int32;
+            Int64 = int64;
+        }
+
+        public long Int64;
+        public int Int32;
+    }
+
+    public unsafe struct StackOfSimpleStruct : IDisposable, IEnumerable<SimpleStruct>
     {
         private StackMemory* _stackMemory;
         private void* _start;
         private int _version = 0;
-        private nuint _sizeT = (nuint)Marshal.SizeOf<T>();
 
-        public StackOfStruct()
+        public StackOfSimpleStruct()
         {
             throw new ArgumentException("Default constructor not supported");
         }
 
-        public StackOfStruct(
+        public StackOfSimpleStruct(
             nuint count,
             StackMemory* stackMemory
             )
         {
-            _start = (*stackMemory).AllocateMemory<T>(count);
+            _start = (*stackMemory).AllocateMemory(SimpleStructHelper.GetSize() * count);
             _stackMemory = stackMemory;
+            Capacity = count;
+        }
+
+        public StackOfSimpleStruct(
+            nuint count,
+            void* memoryStart
+            )
+        {
+            _start = memoryStart;
+            _stackMemory = null;
             Capacity = count;
         }
 
@@ -38,18 +64,22 @@ namespace StackMemoryCollections
                 return;
             }
 
-            if (new IntPtr((*_stackMemory).Current) != new IntPtr((byte*)_start + (Capacity * _sizeT)))
-            {
-                throw new Exception("Failed to reduce available memory, stack moved further");
-            }
-
             if (Size < Capacity - reducingCount)
             {
                 throw new Exception("Can't reduce available memory, it's already in use");
             }
 
+            if(_stackMemory != null)
+            {
+                if (new IntPtr((*_stackMemory).Current) != new IntPtr((byte*)_start + (Capacity * SimpleStructHelper.GetSize())))
+                {
+                    throw new Exception("Failed to reduce available memory, stack moved further");
+                }
+
+                (*_stackMemory).FreeMemory(reducingCount * SimpleStructHelper.GetSize());
+            }
+
             Capacity -= reducingCount;
-            (*_stackMemory).FreeMemory(reducingCount * _sizeT);
         }
 
         public void ExpandAvailableMemory(in nuint expandBytes)
@@ -62,7 +92,8 @@ namespace StackMemoryCollections
             ReducingAvailableMemory(Capacity - Size);
         }
 
-        public void Push(in T item)
+
+        public void Push(in SimpleStruct item)
         {
             var tempSize = Size + 1;
             if (tempSize > Capacity)
@@ -70,12 +101,12 @@ namespace StackMemoryCollections
                 throw new Exception("Not enough memory to allocate stack element");
             }
 
-            Marshal.StructureToPtr(item, new IntPtr((byte*)_start + (Size * _sizeT)), false);
+            SimpleStructHelper.CopyToPtr(in item, (byte*)_start + (Size * SimpleStructHelper.GetSize()));
             Size = tempSize;
             _version++;
         }
 
-        public bool TryPush(in T item)
+        public bool TryPush(in SimpleStruct item)
         {
             var tempSize = Size + 1;
             if (tempSize > Capacity)
@@ -83,7 +114,7 @@ namespace StackMemoryCollections
                 return false;
             }
 
-            Marshal.StructureToPtr(item, new IntPtr((byte*)_start + (Size * _sizeT)), false);
+            SimpleStructHelper.CopyToPtr(in item, (byte*)_start + (Size * SimpleStructHelper.GetSize()));
             Size = tempSize;
             _version++;
 
@@ -110,15 +141,17 @@ namespace StackMemoryCollections
             }
         }
 
-        public T Front()
+        public SimpleStruct Front()
         {
             if (Size == 0)
             {
                 throw new Exception("There are no elements on the stack");
             }
 
+            SimpleStruct result = default;
+            SimpleStructHelper.CopyToValue((byte*)_start + ((Size - 1) * SimpleStructHelper.GetSize()), ref result);
             return
-                Marshal.PtrToStructure<T>(new IntPtr((byte*)_start + ((Size - 1) * _sizeT)));
+                result;
         }
 
         public void* FrontPtr()
@@ -128,17 +161,20 @@ namespace StackMemoryCollections
                 throw new Exception("There are no elements on the stack");
             }
 
-            return (byte*)_start + ((Size - 1) * _sizeT);
+            return (byte*)_start + ((Size - 1) * SimpleStructHelper.GetSize());
         }
 
         public void Dispose()
         {
-            (*_stackMemory).FreeMemory(Capacity * _sizeT);
+            if(_stackMemory != null)
+            {
+                (*_stackMemory).FreeMemory(Capacity * SimpleStructHelper.GetSize());
+            }
         }
 
         #region IEnumerable<T>
 
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<SimpleStruct> GetEnumerator()
         {
             return new Enumerator(this);
         }
@@ -153,14 +189,14 @@ namespace StackMemoryCollections
             throw new NotImplementedException();
         }
 
-        public struct Enumerator : IEnumerator<T>, IEnumerator
+        public struct Enumerator : IEnumerator<SimpleStruct>, IEnumerator
         {
-            private readonly StackOfStruct<T> _stack;
-            private T _current;
+            private readonly StackOfSimpleStruct _stack;
+            private SimpleStruct _current;
             private int _currentIndex;
             private int _version;
 
-            internal Enumerator(StackOfStruct<T> stack)
+            internal Enumerator(StackOfSimpleStruct stack)
             {
                 _stack = stack;
                 _currentIndex = -1;
@@ -168,7 +204,7 @@ namespace StackMemoryCollections
                 _version = _stack._version;
             }
 
-            public T Current => _current;
+            public SimpleStruct Current => _current;
 
             object IEnumerator.Current => Current;
 
@@ -192,8 +228,9 @@ namespace StackMemoryCollections
                 if (_currentIndex == -2)
                 {
                     _currentIndex = (int)_stack.Size - 1;
-                    _current =
-                        Marshal.PtrToStructure<T>(new IntPtr((byte*)_stack._start + (_currentIndex * (int)_stack._sizeT)));
+                    SimpleStruct result = default;
+                    SimpleStructHelper.CopyToValue((byte*)_stack._start + (_currentIndex * (int)SimpleStructHelper.GetSize()), ref result);
+                    _current = result;
                     return true;
                 }
 
@@ -205,8 +242,9 @@ namespace StackMemoryCollections
                 --_currentIndex;
                 if (_currentIndex >= 0)
                 {
-                    _current =
-                        Marshal.PtrToStructure<T>(new IntPtr((byte*)_stack._start + (_currentIndex * (int)_stack._sizeT)));
+                    SimpleStruct result = default;
+                    SimpleStructHelper.CopyToValue((byte*)_stack._start + (_currentIndex * (int)SimpleStructHelper.GetSize()), ref result);
+                    _current = result;
                     return true;
                 }
                 else
@@ -224,7 +262,7 @@ namespace StackMemoryCollections
 
         #endregion
 
-        public T this[nuint index]
+        public SimpleStruct this[nuint index]
         {
             get
             {
@@ -232,9 +270,10 @@ namespace StackMemoryCollections
                 {
                     throw new Exception("Element outside the stack");
                 }
-
+                SimpleStruct result = default;
+                SimpleStructHelper.CopyToValue((byte*)_start + ((Size - 1 - index) * SimpleStructHelper.GetSize()), ref result);
                 return
-                    Marshal.PtrToStructure<T>(new IntPtr((byte*)_start + ((Size - 1 - index) * _sizeT)));
+                    result;
             }
         }
     }

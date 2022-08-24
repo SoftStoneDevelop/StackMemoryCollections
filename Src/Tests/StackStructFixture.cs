@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using StackMemoryCollections;
 using System;
-using System.Runtime.InteropServices;
 
 namespace Tests
 {
@@ -53,13 +52,14 @@ namespace Tests
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 
                     var s1 = new SimpleStruct { Int32 = 1255, Int64 = 45465465654 };
-                    stack.Push(s1);
+                    stack.Push(in s1);
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)1));
 
-                    s1 = new SimpleStruct { Int32 = 8845, Int64 = 878778778787 };
-                    stack.Push(s1);
+                    s1.Int32 = 8845;
+                    s1.Int64 = 878778778787;
+                    stack.Push(in s1);
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)2));
@@ -83,11 +83,13 @@ namespace Tests
                 {
                     var stack = new StackOfSimpleStruct(3, &memory);
                     var s1 = new SimpleStruct { Int32 = 1255, Int64 = 45465465654 };
-                    stack.Push(s1);
-                    s1 = new SimpleStruct { Int32 = 8845, Int64 = 878778778787 };
-                    stack.Push(s1);
-                    s1 = new SimpleStruct { Int32 = 444, Int64 = 1332 };
-                    stack.Push(s1);
+                    stack.Push(in s1);
+                    s1.Int32 = 8845;
+                    s1.Int64 = 878778778787;
+                    stack.Push(in s1);
+                    s1.Int32 = 444;
+                    s1.Int64 = 1332;
+                    stack.Push(in s1);
 
                     Assert.That(stack[0], Is.EqualTo(new SimpleStruct { Int32 = 444, Int64 = 1332 }));
                     Assert.That(stack[1], Is.EqualTo(new SimpleStruct { Int32 = 8845, Int64 = 878778778787 }));
@@ -111,10 +113,11 @@ namespace Tests
                     var stack = new StackOfSimpleStruct(3, &memory);
                     
                     var s1 = new SimpleStruct { Int32 = 1111, Int64 = 55555555 };
-                    stack.Push(s1);
+                    stack.Push(in s1);
 
-                    s1 = new SimpleStruct { Int32 = 2222, Int64 = 333333333 };
-                    stack.Push(s1);
+                    s1.Int32 = 2222;
+                    s1.Int64 = 333333333;
+                    stack.Push(in s1);
 
                     var item = stack.Front();
                     var itemPtr = stack.FrontPtr();

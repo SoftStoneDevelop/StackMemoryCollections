@@ -34,17 +34,17 @@ namespace StackMemoryCollections
 
         public static void CopyToPrt(in SimpleStruct item, in void* ptr)
         {
-            var current = (byte*)ptr;
+            var current = ptr;
             *(int*)current = item.Int32;
-            current = current + sizeof(int);
-            * (long*)current = item.Int64;
+            current = (int*)current + 1;
+            *(long*)current = item.Int64;
         }
 
         public static void CopyToStruct(in void* ptr, ref SimpleStruct item)
         {
-            var current = (byte*)ptr;
+            var current = ptr;
             item.Int32 = *(int*)current;
-            current = current + sizeof(int);
+            current = (int*)current + 1;
             item.Int64 = *(long*)current;
         }
     }
@@ -71,6 +71,16 @@ namespace StackMemoryCollections
             Capacity = count;
         }
 
+        public StackOfSimpleStruct(
+            nuint count,
+            void* memoryStart
+            )
+        {
+            _start = memoryStart;
+            _stackMemory = null;
+            Capacity = count;
+        }
+
         public nuint Capacity { get; private set; }
 
         public nuint Size { get; private set; } = 0;
@@ -84,18 +94,22 @@ namespace StackMemoryCollections
                 return;
             }
 
-            if (new IntPtr((*_stackMemory).Current) != new IntPtr((byte*)_start + (Capacity * _sizeOf)))
-            {
-                throw new Exception("Failed to reduce available memory, stack moved further");
-            }
-
             if (Size < Capacity - reducingCount)
             {
                 throw new Exception("Can't reduce available memory, it's already in use");
             }
 
+            if(_stackMemory != null)
+            {
+                if (new IntPtr((*_stackMemory).Current) != new IntPtr((byte*)_start + (Capacity * _sizeOf)))
+                {
+                    throw new Exception("Failed to reduce available memory, stack moved further");
+                }
+
+                (*_stackMemory).FreeMemory(reducingCount * _sizeOf);
+            }
+
             Capacity -= reducingCount;
-            (*_stackMemory).FreeMemory(reducingCount * _sizeOf);
         }
 
         public void ExpandAvailableMemory(in nuint expandBytes)
@@ -108,6 +122,7 @@ namespace StackMemoryCollections
             ReducingAvailableMemory(Capacity - Size);
         }
 
+
         public void Push(in SimpleStruct item)
         {
             var tempSize = Size + 1;
@@ -116,7 +131,7 @@ namespace StackMemoryCollections
                 throw new Exception("Not enough memory to allocate stack element");
             }
 
-            StructHelper.CopyToPrt(item, (byte*)_start + (Size * _sizeOf));
+            StructHelper.CopyToPrt(in item, (byte*)_start + (Size * _sizeOf));
             Size = tempSize;
             _version++;
         }
@@ -129,7 +144,7 @@ namespace StackMemoryCollections
                 return false;
             }
 
-            StructHelper.CopyToPrt(item, (byte*)_start + (Size * _sizeOf));
+            StructHelper.CopyToPrt(in item, (byte*)_start + (Size * _sizeOf));
             Size = tempSize;
             _version++;
 
@@ -181,7 +196,10 @@ namespace StackMemoryCollections
 
         public void Dispose()
         {
-            (*_stackMemory).FreeMemory(Capacity * _sizeOf);
+            if(_stackMemory != null)
+            {
+                (*_stackMemory).FreeMemory(Capacity * _sizeOf);
+            }
         }
 
         #region IEnumerable<T>

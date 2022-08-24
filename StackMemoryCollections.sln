@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Src\Tests\Tests.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benchmark", "Src\Benchmarks\Benchmark.csproj", "{0326C3A3-4860-4B09-8D4F-F47371B78F3D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackGenerators", "Src\StackGenerators\StackGenerators.csproj", "{5075C89E-B4DF-4F7C-BFBB-142F7C7744F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{0326C3A3-4860-4B09-8D4F-F47371B78F3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0326C3A3-4860-4B09-8D4F-F47371B78F3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0326C3A3-4860-4B09-8D4F-F47371B78F3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5075C89E-B4DF-4F7C-BFBB-142F7C7744F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5075C89E-B4DF-4F7C-BFBB-142F7C7744F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5075C89E-B4DF-4F7C-BFBB-142F7C7744F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5075C89E-B4DF-4F7C-BFBB-142F7C7744F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

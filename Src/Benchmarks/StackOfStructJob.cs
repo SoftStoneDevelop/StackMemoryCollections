@@ -18,13 +18,16 @@ namespace Benchmark
             {
                 using (var memory = new StackMemory(StructHelper.GetSize<SimpleStruct>() * (nuint)Size))
                 {
+                    var item = new SimpleStruct(0, 0);
                     for (int j = 0; j < 100; j++)
                     {
                         {
                             using var stack = new StackOfSimpleStruct((nuint)Size, &memory);
                             for (int i = 0; i < Size; i++)
                             {
-                                stack.Push(new SimpleStruct(i, i * 2));
+                                item.Int32 = i;
+                                item.Int64 = i * 2;
+                                stack.Push(in item);
                             }
 
                             if(j > 50)
@@ -43,7 +46,9 @@ namespace Benchmark
                         using var stack2 = new StackOfSimpleStruct((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
-                            stack2.Push(new SimpleStruct(i, i * 2));
+                            item.Int32 = i;
+                            item.Int64 = i * 2;
+                            stack2.Push(in item);
                         }
 
                         while (!stack2.IsEmpty)

@@ -6,6 +6,6 @@
         public int Size;
         public string TypeName;
         public string MemberName;
-        public bool IsUnmanaged;
+        public bool IsPrimitive;
     }
 }

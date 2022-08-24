@@ -3,6 +3,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace StackGenerators
@@ -134,7 +136,7 @@ namespace StackGenerators
                                 throw new Exception($"The property must have GetMethod. Property name: '{member.Name}'");
                             }
 
-                            if (propertySymbol.GetMethod.DeclaredAccessibility.HasFlag(Accessibility.Public))
+                            if (!propertySymbol.GetMethod.DeclaredAccessibility.HasFlag(Accessibility.Public))
                             {
                                 throw new Exception($"GetMethod must be public. Property name: '{member.Name}'");
                             }
@@ -144,19 +146,19 @@ namespace StackGenerators
                                 throw new Exception($"The property must have SetMethod. Property name: '{member.Name}'");
                             }
 
-                            if (propertySymbol.SetMethod.DeclaredAccessibility.HasFlag(Accessibility.Public))
+                            if (!propertySymbol.SetMethod.DeclaredAccessibility.HasFlag(Accessibility.Public))
                             {
                                 throw new Exception($"SetMethod must be public. Property name: '{member.Name}'");
                             }
 
-                            if (propertySymbol.Type.IsUnmanagedType)
+                            if (IsPrimitive(propertySymbol.Type.Name))
                             {
                                 var memberInfo = new MemberInfo();
                                 memberInfo.Size = TypeToSize(propertySymbol.Type.Name);
                                 memberInfo.TypeName = propertySymbol.Type.Name;
                                 memberInfo.MemberName = propertySymbol.Name;
                                 memberInfo.Offset = offset;
-                                memberInfo.IsUnmanaged = true;
+                                memberInfo.IsPrimitive = true;
                                 offset += memberInfo.Size;
                                 info.Members.Add(memberInfo);
                                 continue;
@@ -206,17 +208,21 @@ namespace StackGenerators
                         {
                             if (!member.DeclaredAccessibility.HasFlag(Accessibility.Public))
                             {
-                                throw new Exception($"Generation is possible only for the public field. Field name: '{member.Name}'");
+                                if (!member.IsImplicitlyDeclared)
+                                {
+                                    throw new Exception($"Generation is possible only for the public field. Field name: '{member.Name}'");
+                                }
+                                continue;
                             }
 
-                            if (fieldSymbol.Type.IsUnmanagedType)
+                            if (IsPrimitive(fieldSymbol.Type.Name))
                             {
                                 var memberInfo = new MemberInfo();
                                 memberInfo.Size = TypeToSize(fieldSymbol.Type.Name);
                                 memberInfo.TypeName = fieldSymbol.Type.Name;
                                 memberInfo.MemberName = fieldSymbol.Name;
                                 memberInfo.Offset = offset;
-                                memberInfo.IsUnmanaged = true;
+                                memberInfo.IsPrimitive = true;
                                 offset += memberInfo.Size;
                                 info.Members.Add(memberInfo);
                                 continue;
@@ -313,7 +319,7 @@ namespace {currentType.ContainingNamespace}
 
 ");
 
-                    if (memberInfo.IsUnmanaged)
+                    if (memberInfo.IsPrimitive)
                     {
                         helperBuilder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
@@ -343,15 +349,15 @@ namespace {currentType.ContainingNamespace}
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
             {memberInfo.TypeName} result = default;
-            {currentType.Name}Helper.CopyToStruct((byte*)ptr + {memberInfo.Offset}, ref result);
+            {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {memberInfo.Offset}, ref result);
             return result;
         }}
 
 ");
                         helperBuilder.Append($@"
-        public static void Set{memberInfo.MemberName}Value(in void* ptr, in {memberInfo.TypeName} value)
+        public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
         {{
-            {memberInfo.TypeName}Helper.CopyToPtr(in value, in ptr);
+            {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {memberInfo.Offset});
         }}
 
 ");
@@ -416,14 +422,125 @@ namespace {currentType.ContainingNamespace}
                     return sizeof(Int32);
                 }
 
+                case "UInt32":
+                {
+                    return sizeof(UInt32);
+                }
+
                 case "Int64":
                 {
                     return sizeof(Int64);
                 }
 
+                case "UInt64":
+                {
+                    return sizeof(UInt64);
+                }
+
+                case "SByte":
+                {
+                    return sizeof(SByte);
+                }
+
+                case "Byte":
+                {
+                    return sizeof(Byte);
+                }
+
+                case "Int16":
+                {
+                    return sizeof(Int16);
+                }
+
+                case "UInt16":
+                {
+                    return sizeof(UInt16);
+                }
+
+                case "System.Char":
+                {
+                    return sizeof(Char);
+                }
+
+                case "System.Double":
+                {
+                    return sizeof(Double);
+                }
+
+                case "System.Boolean":
+                {
+                    return sizeof(Boolean);
+                }
+
                 default:
                 {
                     throw new Exception($"TypeToSize: unknown type {typeName}");
+                }
+            }
+        }
+
+        private bool IsPrimitive(string typeName)
+        {
+            switch (typeName)
+            {
+                case "Int32":
+                {
+                    return true;
+                }
+
+                case "UInt32":
+                {
+                    return true;
+                }
+
+                case "Int64":
+                {
+                    return true;
+                }
+
+                case "UInt64":
+                {
+                    return true;
+                }
+
+                case "SByte":
+                {
+                    return true;
+                }
+
+                case "Byte":
+                {
+                    return true;
+                }
+
+                case "Int16":
+                {
+                    return true;
+                }
+
+                case "UInt16":
+                {
+                    return true;
+                }
+
+                case "System.Char":
+                {
+                    return true;
+                }
+
+                case "System.Double":
+                {
+                    return true;
+                }
+
+                case "System.Boolean":
+                {
+                    return true;
+                }
+
+                default:
+                {
+                    return false;
                 }
             }
         }

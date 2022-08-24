@@ -6,7 +6,7 @@ namespace StackMemoryCollections.Struct
     {
         private readonly Struct.StackMemory* _stackMemoryS;
         private readonly Class.StackMemory? _stackMemoryC = null;
-        private T* _start;
+        private readonly T* _start;
         private int _version = 0;
 
         public Stack()
@@ -19,6 +19,11 @@ namespace StackMemoryCollections.Struct
             Struct.StackMemory* stackMemory
             )
         {
+            if(stackMemory == null)
+            {
+                throw new ArgumentNullException(nameof(stackMemory));
+            }
+
             _start = (T*)(*stackMemory).AllocateMemory((nuint)sizeof(T) * count);
             _stackMemoryS = stackMemory;
             Capacity = count;
@@ -29,6 +34,11 @@ namespace StackMemoryCollections.Struct
             Class.StackMemory stackMemory
             )
         {
+            if (stackMemory == null)
+            {
+                throw new ArgumentNullException(nameof(stackMemory));
+            }
+
             _start = (T*)stackMemory.AllocateMemory((nuint)sizeof(T) * count);
             _stackMemoryC = stackMemory;
             _stackMemoryS = null;
@@ -40,6 +50,11 @@ namespace StackMemoryCollections.Struct
             void* memoryStart
             )
         {
+            if (memoryStart == null)
+            {
+                throw new ArgumentNullException(nameof(memoryStart));
+            }
+
             _start = (T*)memoryStart;
             _stackMemoryC = null;
             _stackMemoryS = null;

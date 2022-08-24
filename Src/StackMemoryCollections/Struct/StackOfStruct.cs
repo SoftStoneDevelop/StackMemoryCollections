@@ -24,7 +24,7 @@ namespace StackMemoryCollections
     {
         private readonly Struct.StackMemory* _stackMemoryS;
         private readonly Class.StackMemory? _stackMemoryC = null;
-        private void* _start;
+        private readonly void* _start;
         private int _version = 0;
 
         public StackOfSimpleStruct()
@@ -37,6 +37,11 @@ namespace StackMemoryCollections
             Struct.StackMemory* stackMemory
             )
         {
+            if (stackMemory == null)
+            {
+                throw new ArgumentNullException(nameof(stackMemory));
+            }
+
             _start = (*stackMemory).AllocateMemory(SimpleStructHelper.GetSize() * count);
             _stackMemoryS = stackMemory;
             Capacity = count;
@@ -47,6 +52,11 @@ namespace StackMemoryCollections
             Class.StackMemory stackMemory
             )
         {
+            if (stackMemory == null)
+            {
+                throw new ArgumentNullException(nameof(stackMemory));
+            }
+
             _start = stackMemory.AllocateMemory(SimpleStructHelper.GetSize() * count);
             _stackMemoryC = stackMemory;
             _stackMemoryS = null;
@@ -58,6 +68,11 @@ namespace StackMemoryCollections
             void* memoryStart
             )
         {
+            if (memoryStart == null)
+            {
+                throw new ArgumentNullException(nameof(memoryStart));
+            }
+
             _start = memoryStart;
             _stackMemoryS = null;
             Capacity = count;
@@ -300,6 +315,17 @@ namespace StackMemoryCollections
                 return
                     result;
             }
+        }
+
+        public void* GetByIndex(nuint index)
+        {
+            if (Size <= 0 || Size <= index)
+            {
+                throw new Exception("Element outside the stack");
+            }
+            
+            return
+                (byte*)_start + ((Size - 1 - index) * SimpleStructHelper.GetSize());
         }
     }
 }

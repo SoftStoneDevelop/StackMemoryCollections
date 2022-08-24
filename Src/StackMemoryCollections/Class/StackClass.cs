@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿using StackMemoryCollections.Struct;
+using System.Collections;
 
-namespace StackMemoryCollections
+namespace StackMemoryCollections.Class
 {
-    public unsafe struct Stack<T> : IDisposable, IEnumerable<T> where T : unmanaged
+    public unsafe class Stack<T> : IDisposable, IEnumerable<T> where T : unmanaged
     {
-        private StackMemory* _stackMemory;
-        private T* _start;
+        private readonly Struct.StackMemory* _stackMemoryS;
+        private readonly Class.StackMemory? _stackMemoryC = null;
+        private readonly T* _start;
         private int _version = 0;
 
         public Stack()
@@ -15,11 +17,48 @@ namespace StackMemoryCollections
 
         public Stack(
             nuint count,
-            StackMemory* stackMemory
+            Struct.StackMemory* stackMemory
             )
         {
-            _start = (T*)(*stackMemory).AllocateMemory<T>(count);
-            _stackMemory = stackMemory;
+            if (stackMemory == null)
+            {
+                throw new ArgumentNullException(nameof(stackMemory));
+            }
+
+            _start = (T*)(*stackMemory).AllocateMemory((nuint)sizeof(T) * count);
+            _stackMemoryS = stackMemory;
+            Capacity = count;
+        }
+
+        public Stack(
+            nuint count,
+            Class.StackMemory stackMemory
+            )
+        {
+            if (stackMemory == null)
+            {
+                throw new ArgumentNullException(nameof(stackMemory));
+            }
+
+            _start = (T*)stackMemory.AllocateMemory((nuint)sizeof(T) * count);
+            _stackMemoryC = stackMemory;
+            _stackMemoryS = null;
+            Capacity = count;
+        }
+
+        public Stack(
+            nuint count,
+            void* memoryStart
+            )
+        {
+            if (memoryStart == null)
+            {
+                throw new ArgumentNullException(nameof(memoryStart));
+            }
+
+            _start = (T*)memoryStart;
+            _stackMemoryC = null;
+            _stackMemoryS = null;
             Capacity = count;
         }
 
@@ -35,19 +74,32 @@ namespace StackMemoryCollections
             {
                 return;
             }
-            
-            if (new IntPtr((*_stackMemory).Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
-            {
-                throw new Exception("Failed to reduce available memory, stack moved further");
-            }
 
             if (Size < Capacity - reducingCount)
             {
                 throw new Exception("Can't reduce available memory, it's already in use");
             }
 
+            if (_stackMemoryS != null)
+            {
+                if (new IntPtr((*_stackMemoryS).Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                {
+                    throw new Exception("Failed to reduce available memory, stack moved further");
+                }
+
+                (*_stackMemoryS).FreeMemory(reducingCount * (nuint)sizeof(T));
+            }
+            else if(_stackMemoryC != null)
+            {
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                {
+                    throw new Exception("Failed to reduce available memory, stack moved further");
+                }
+
+                _stackMemoryC.FreeMemory(reducingCount * (nuint)sizeof(T));
+            }
+
             Capacity -= reducingCount;
-            (*_stackMemory).FreeMemory(reducingCount * (nuint)sizeof(T));
         }
 
         public void ExpandAvailableMemory(in nuint expandBytes)
@@ -129,10 +181,39 @@ namespace StackMemoryCollections
             return _start + (Size - 1);
         }
 
+        #region IDisposable
+
+        private bool _disposed;
+
+        ~Stack() => Dispose(false);
+
         public void Dispose()
         {
-            (*_stackMemory).FreeMemory(Capacity * (nuint)sizeof(T));
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    if (_stackMemoryS != null)
+                    {
+                        (*_stackMemoryS).FreeMemory(Capacity * (nuint)sizeof(T));
+                    }
+                    else if (_stackMemoryC != null)
+                    {
+                        _stackMemoryC.FreeMemory(Capacity * (nuint)sizeof(T));
+                    }
+                }
+
+                _disposed = true;
+            }
+        }
+
+        #endregion
 
         #region IEnumerable<T>
 

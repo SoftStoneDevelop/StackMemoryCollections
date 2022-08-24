@@ -1,8 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace StackMemoryCollections
+namespace StackMemoryCollections.Class
 {
-    public unsafe struct StackMemory : IDisposable
+    public unsafe class StackMemory : IDisposable
     {
         private nuint _offsetBytes;
 
@@ -23,22 +23,13 @@ namespace StackMemoryCollections
         public void* Current { get; private set; }
         public nuint ByteCount { get; init; }
 
-        public void* AllocateMemory<T>(nuint count) where T : struct
-        {
-            var allocateBytes = count * (nuint)Marshal.SizeOf<T>();
-            if (ByteCount - _offsetBytes < allocateBytes)
-            {
-                throw new ArgumentException("Can't allocate memory");
-            }
-
-            _offsetBytes += allocateBytes;
-            var start = Current;
-            Current = (byte*)start + allocateBytes;
-            return start;
-        }
-
         public void* AllocateMemory(nuint allocateBytes)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(StackMemory));
+            }
+
             if (ByteCount - _offsetBytes < allocateBytes)
             {
                 throw new ArgumentException("Can't allocate memory");
@@ -52,6 +43,11 @@ namespace StackMemoryCollections
 
         public void FreeMemory(nuint reducingBytes)
         {
+            if(_disposed)
+            {
+                throw new ObjectDisposedException(nameof(StackMemory));
+            }
+
             var start = new IntPtr(Start);
             var newCurrent = new IntPtr((byte*)Current - reducingBytes);
 
@@ -64,9 +60,32 @@ namespace StackMemoryCollections
             Current = newCurrent.ToPointer();
         }
 
+        #region IDisposable
+
+        private bool _disposed;
+
+        ~StackMemory() => Dispose(false);
+
         public void Dispose()
         {
-            NativeMemory.Free(Start);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    
+                }
+
+                NativeMemory.Free(Start);
+                _disposed = true;
+            }
+        }
+
+        #endregion
     }
 }

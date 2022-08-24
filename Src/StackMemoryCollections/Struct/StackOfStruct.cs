@@ -22,8 +22,9 @@ namespace StackMemoryCollections
 
     public unsafe struct StackOfSimpleStruct : IDisposable, IEnumerable<SimpleStruct>
     {
-        private StackMemory* _stackMemory;
-        private void* _start;
+        private readonly Struct.StackMemory* _stackMemoryS;
+        private readonly Class.StackMemory? _stackMemoryC = null;
+        private readonly void* _start;
         private int _version = 0;
 
         public StackOfSimpleStruct()
@@ -33,11 +34,32 @@ namespace StackMemoryCollections
 
         public StackOfSimpleStruct(
             nuint count,
-            StackMemory* stackMemory
+            Struct.StackMemory* stackMemory
             )
         {
+            if (stackMemory == null)
+            {
+                throw new ArgumentNullException(nameof(stackMemory));
+            }
+
             _start = (*stackMemory).AllocateMemory(SimpleStructHelper.GetSize() * count);
-            _stackMemory = stackMemory;
+            _stackMemoryS = stackMemory;
+            Capacity = count;
+        }
+
+        public StackOfSimpleStruct(
+            nuint count,
+            Class.StackMemory stackMemory
+            )
+        {
+            if (stackMemory == null)
+            {
+                throw new ArgumentNullException(nameof(stackMemory));
+            }
+
+            _start = stackMemory.AllocateMemory(SimpleStructHelper.GetSize() * count);
+            _stackMemoryC = stackMemory;
+            _stackMemoryS = null;
             Capacity = count;
         }
 
@@ -46,8 +68,13 @@ namespace StackMemoryCollections
             void* memoryStart
             )
         {
+            if (memoryStart == null)
+            {
+                throw new ArgumentNullException(nameof(memoryStart));
+            }
+
             _start = memoryStart;
-            _stackMemory = null;
+            _stackMemoryS = null;
             Capacity = count;
         }
 
@@ -69,14 +96,23 @@ namespace StackMemoryCollections
                 throw new Exception("Can't reduce available memory, it's already in use");
             }
 
-            if(_stackMemory != null)
+            if(_stackMemoryS != null)
             {
-                if (new IntPtr((*_stackMemory).Current) != new IntPtr((byte*)_start + (Capacity * SimpleStructHelper.GetSize())))
+                if (new IntPtr((*_stackMemoryS).Current) != new IntPtr((byte*)_start + (Capacity * SimpleStructHelper.GetSize())))
                 {
                     throw new Exception("Failed to reduce available memory, stack moved further");
                 }
 
-                (*_stackMemory).FreeMemory(reducingCount * SimpleStructHelper.GetSize());
+                (*_stackMemoryS).FreeMemory(reducingCount * SimpleStructHelper.GetSize());
+            }
+            else if (_stackMemoryC != null)
+            {
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * SimpleStructHelper.GetSize())))
+                {
+                    throw new Exception("Failed to reduce available memory, stack moved further");
+                }
+
+                _stackMemoryC.FreeMemory(reducingCount * SimpleStructHelper.GetSize());
             }
 
             Capacity -= reducingCount;
@@ -166,9 +202,13 @@ namespace StackMemoryCollections
 
         public void Dispose()
         {
-            if(_stackMemory != null)
+            if(_stackMemoryS != null)
             {
-                (*_stackMemory).FreeMemory(Capacity * SimpleStructHelper.GetSize());
+                (*_stackMemoryS).FreeMemory(Capacity * SimpleStructHelper.GetSize());
+            }
+            else if (_stackMemoryC != null)
+            {
+                _stackMemoryC.FreeMemory(Capacity * SimpleStructHelper.GetSize());
             }
         }
 
@@ -275,6 +315,17 @@ namespace StackMemoryCollections
                 return
                     result;
             }
+        }
+
+        public void* GetByIndex(nuint index)
+        {
+            if (Size <= 0 || Size <= index)
+            {
+                throw new Exception("Element outside the stack");
+            }
+            
+            return
+                (byte*)_start + ((Size - 1 - index) * SimpleStructHelper.GetSize());
         }
     }
 }

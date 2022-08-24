@@ -18,7 +18,7 @@ namespace Benchmark
         {
             unsafe
             {
-                using (var memory = new StackMemory(SimpleStructHelper.GetSize() * (nuint)Size))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(SimpleStructHelper.GetSize() * (nuint)Size))
                 {
                     var item = new SimpleStruct(0, 0);
                     using var stack = new StackOfSimpleStruct((nuint)Size, &memory);

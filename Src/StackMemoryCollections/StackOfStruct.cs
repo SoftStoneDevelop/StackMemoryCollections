@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace StackMemoryCollections
 {
+    [GenerateHelper]
     [GenerateStack]
     public struct SimpleStruct
     {
@@ -19,72 +20,11 @@ namespace StackMemoryCollections
         public int Int32;
     }
 
-    public unsafe static class StructHelper
-    {
-        public static nuint GetSize()
-        {
-            return 12;
-        }
-
-        public static void* GetInt32Ptr(in void* ptr)
-        {
-            return ptr;
-        }
-
-        public static int GetInt32Value(in void* ptr)
-        {
-            return *(int*)ptr;
-        }
-
-        public static void SetInt32Value(in void* ptr, in int value)
-        {
-            *(int*)ptr = value;
-        }
-
-        public static void SetInt32Value(in void* ptr, in SimpleStruct item)
-        {
-            *(int*)ptr = item.Int32;
-        }
-
-        public static void* GetInt64Ptr(in void* ptr)
-        {
-            return (byte*)ptr + 4;
-        }
-
-        public static long GetInt64Value(in void* ptr)
-        {
-            return *(long*)((byte*)ptr + 4);
-        }
-
-        public static void SetInt64Value(in void* ptr, in long value)
-        {
-            *(long*)((byte*)ptr + 4) = value;
-        }
-
-        public static void SetInt64Value(in void* ptr, in SimpleStruct item)
-        {
-            *(long*)((byte*)ptr + 4)= item.Int64;
-        }
-
-        public static void CopyToPrt(in SimpleStruct item, in void* ptr)
-        {
-            SetInt32Value(in ptr, in item);
-            SetInt64Value(in ptr, in item);
-        }
-
-        public static void CopyToStruct(in void* ptr, ref SimpleStruct item)
-        {
-            item.Int32 = GetInt32Value(in ptr);
-            item.Int64 = GetInt64Value(in ptr);
-        }
-    }
-
     public unsafe struct StackOfSimpleStruct : IDisposable, IEnumerable<SimpleStruct>
     {
         private StackMemory* _stackMemory;
         private void* _start;
         private int _version = 0;
-        private nuint _sizeOf = StructHelper.GetSize();
 
         public StackOfSimpleStruct()
         {
@@ -96,7 +36,7 @@ namespace StackMemoryCollections
             StackMemory* stackMemory
             )
         {
-            _start = (*stackMemory).AllocateMemory(_sizeOf * count);
+            _start = (*stackMemory).AllocateMemory(SimpleStructHelper.GetSize() * count);
             _stackMemory = stackMemory;
             Capacity = count;
         }
@@ -131,12 +71,12 @@ namespace StackMemoryCollections
 
             if(_stackMemory != null)
             {
-                if (new IntPtr((*_stackMemory).Current) != new IntPtr((byte*)_start + (Capacity * _sizeOf)))
+                if (new IntPtr((*_stackMemory).Current) != new IntPtr((byte*)_start + (Capacity * SimpleStructHelper.GetSize())))
                 {
                     throw new Exception("Failed to reduce available memory, stack moved further");
                 }
 
-                (*_stackMemory).FreeMemory(reducingCount * _sizeOf);
+                (*_stackMemory).FreeMemory(reducingCount * SimpleStructHelper.GetSize());
             }
 
             Capacity -= reducingCount;
@@ -161,7 +101,7 @@ namespace StackMemoryCollections
                 throw new Exception("Not enough memory to allocate stack element");
             }
 
-            StructHelper.CopyToPrt(in item, (byte*)_start + (Size * _sizeOf));
+            SimpleStructHelper.CopyToPtr(in item, (byte*)_start + (Size * SimpleStructHelper.GetSize()));
             Size = tempSize;
             _version++;
         }
@@ -174,7 +114,7 @@ namespace StackMemoryCollections
                 return false;
             }
 
-            StructHelper.CopyToPrt(in item, (byte*)_start + (Size * _sizeOf));
+            SimpleStructHelper.CopyToPtr(in item, (byte*)_start + (Size * SimpleStructHelper.GetSize()));
             Size = tempSize;
             _version++;
 
@@ -209,7 +149,7 @@ namespace StackMemoryCollections
             }
 
             SimpleStruct result = default;
-            StructHelper.CopyToStruct((byte*)_start + ((Size - 1) * _sizeOf), ref result);
+            SimpleStructHelper.CopyToValue((byte*)_start + ((Size - 1) * SimpleStructHelper.GetSize()), ref result);
             return
                 result;
         }
@@ -221,14 +161,14 @@ namespace StackMemoryCollections
                 throw new Exception("There are no elements on the stack");
             }
 
-            return (byte*)_start + ((Size - 1) * _sizeOf);
+            return (byte*)_start + ((Size - 1) * SimpleStructHelper.GetSize());
         }
 
         public void Dispose()
         {
             if(_stackMemory != null)
             {
-                (*_stackMemory).FreeMemory(Capacity * _sizeOf);
+                (*_stackMemory).FreeMemory(Capacity * SimpleStructHelper.GetSize());
             }
         }
 
@@ -289,7 +229,7 @@ namespace StackMemoryCollections
                 {
                     _currentIndex = (int)_stack.Size - 1;
                     SimpleStruct result = default;
-                    StructHelper.CopyToStruct((byte*)_stack._start + (_currentIndex * (int)_stack._sizeOf), ref result);
+                    SimpleStructHelper.CopyToValue((byte*)_stack._start + (_currentIndex * (int)SimpleStructHelper.GetSize()), ref result);
                     _current = result;
                     return true;
                 }
@@ -303,7 +243,7 @@ namespace StackMemoryCollections
                 if (_currentIndex >= 0)
                 {
                     SimpleStruct result = default;
-                    StructHelper.CopyToStruct((byte*)_stack._start + (_currentIndex * (int)_stack._sizeOf), ref result);
+                    SimpleStructHelper.CopyToValue((byte*)_stack._start + (_currentIndex * (int)SimpleStructHelper.GetSize()), ref result);
                     _current = result;
                     return true;
                 }
@@ -331,7 +271,7 @@ namespace StackMemoryCollections
                     throw new Exception("Element outside the stack");
                 }
                 SimpleStruct result = default;
-                StructHelper.CopyToStruct((byte*)_start + ((Size - 1 - index) * _sizeOf), ref result);
+                SimpleStructHelper.CopyToValue((byte*)_start + ((Size - 1 - index) * SimpleStructHelper.GetSize()), ref result);
                 return
                     result;
             }

@@ -1,12 +1,14 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using StackMemoryCollections;
+using System.ComponentModel;
 
 namespace Benchmark
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
-    public class StackOfStructJob
+    [Description("Optimal usage StackMemory")]
+    public class StackOfStructJob1
     {
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
@@ -16,7 +18,7 @@ namespace Benchmark
         {
             unsafe
             {
-                using (var memory = new StackMemory(StructHelper.GetSize<SimpleStruct>() * (nuint)Size))
+                using (var memory = new StackMemory(StructHelper.GetSize() * (nuint)Size))
                 {
                     var item = new SimpleStruct(0, 0);
                     for (int j = 0; j < 100; j++)

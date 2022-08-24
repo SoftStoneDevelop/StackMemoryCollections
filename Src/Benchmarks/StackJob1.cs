@@ -1,12 +1,14 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using StackMemoryCollections;
+using System.ComponentModel;
 
 namespace Benchmark
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
-    public class StackJob
+    [Description("Optimal usage StackMemory")]
+    public class StackJob1
     {
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
@@ -84,7 +86,6 @@ namespace Benchmark
                         {
                             while (stack.TryPop(out _))
                             {
-                                stack.Pop();
                             }
                         }
                     }
@@ -103,7 +104,6 @@ namespace Benchmark
                     {
                         while (stack2.TryPop(out _))
                         {
-                            stack2.Pop();
                         }
                     }
                 }

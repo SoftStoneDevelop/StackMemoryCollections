@@ -21,34 +21,61 @@ namespace StackMemoryCollections
 
     public unsafe static class StructHelper
     {
-        public static nuint GetSize<T>()
+        public static nuint GetSize()
         {
-            var type = typeof(T);
-            if(type == typeof(SimpleStruct))
-            {
-                return 12;
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
+            return 12;
+        }
+
+        public static void* GetInt32Ptr(in void* ptr)
+        {
+            return ptr;
+        }
+
+        public static int GetInt32Value(in void* ptr)
+        {
+            return *(int*)ptr;
+        }
+
+        public static void SetInt32Value(in void* ptr, in int value)
+        {
+            *(int*)ptr = value;
+        }
+
+        public static void SetInt32Value(in void* ptr, in SimpleStruct item)
+        {
+            *(int*)ptr = item.Int32;
+        }
+
+        public static void* GetInt64Ptr(in void* ptr)
+        {
+            return (byte*)ptr + 8;
+        }
+
+        public static long GetInt64Value(in void* ptr)
+        {
+            return *(long*)((byte*)ptr + 8);
+        }
+
+        public static void SetInt64Value(in void* ptr, in long value)
+        {
+            *(long*)((byte*)ptr + 8) = value;
+        }
+
+        public static void SetInt64Value(in void* ptr, in SimpleStruct item)
+        {
+            *(long*)((byte*)ptr + 8)= item.Int64;
         }
 
         public static void CopyToPrt(in SimpleStruct item, in void* ptr)
         {
-            var current = ptr;
-            *(int*)current = item.Int32;
-            current = (int*)current + 1;
-            *(long*)current = item.Int64;
+            SetInt32Value(in ptr, in item);
+            SetInt64Value(in ptr, in item);
         }
 
         public static void CopyToStruct(in void* ptr, ref SimpleStruct item)
         {
-            GenerSpaces.PClass.HelloFrom("s");
-            var current = ptr;
-            item.Int32 = *(int*)current;
-            current = (int*)current + 1;
-            item.Int64 = *(long*)current;
+            item.Int32 = GetInt32Value(in ptr);
+            item.Int64 = GetInt64Value(in ptr);
         }
     }
 
@@ -57,7 +84,7 @@ namespace StackMemoryCollections
         private StackMemory* _stackMemory;
         private void* _start;
         private int _version = 0;
-        private nuint _sizeOf = StructHelper.GetSize<SimpleStruct>();
+        private nuint _sizeOf = StructHelper.GetSize();
 
         public StackOfSimpleStruct()
         {

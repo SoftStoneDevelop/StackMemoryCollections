@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
-using StackMemoryCollections;
 using System.ComponentModel;
 
 namespace Benchmark
@@ -18,12 +17,12 @@ namespace Benchmark
         {
             unsafe
             {
-                using (var memory = new StackMemory(sizeof(int) * (nuint)Size))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * (nuint)Size))
                 {
                     for (int j = 0; j < 100; j++)
                     {
                         {
-                            using var stack = new Stack<int>((nuint)Size, &memory);
+                            using var stack = new StackMemoryCollections.Struct.Stack<int>((nuint)Size, &memory);
                             for (int i = 0; i < Size; i++)
                             {
                                 stack.Push(in i);
@@ -42,7 +41,7 @@ namespace Benchmark
                             }
                         }
 
-                        using var stack2 = new Stack<int>((nuint)Size, &memory);
+                        using var stack2 = new StackMemoryCollections.Struct.Stack<int>((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
                             stack2.Push(in i);

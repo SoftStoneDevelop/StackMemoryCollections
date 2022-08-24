@@ -12,7 +12,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory(SimpleStructHelper.GetSize() * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(SimpleStructHelper.GetSize() * 3))
                 {
                     {
                         using var stack = new StackOfSimpleStruct(3, &memory);
@@ -28,7 +28,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory(SimpleStructHelper.GetSize() * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(SimpleStructHelper.GetSize() * 3))
                 {
                     {
                         var stack = new StackOfSimpleStruct(3, &memory);
@@ -44,7 +44,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory(SimpleStructHelper.GetSize() * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(SimpleStructHelper.GetSize() * 3))
                 {
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
                     var stack = new StackOfSimpleStruct(3, &memory);
@@ -79,7 +79,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory(SimpleStructHelper.GetSize() * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(SimpleStructHelper.GetSize() * 3))
                 {
                     var stack = new StackOfSimpleStruct(3, &memory);
                     var s1 = new SimpleStruct { Int32 = 1255, Int64 = 45465465654 };
@@ -108,7 +108,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory(SimpleStructHelper.GetSize() * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(SimpleStructHelper.GetSize() * 3))
                 {
                     var stack = new StackOfSimpleStruct(3, &memory);
                     

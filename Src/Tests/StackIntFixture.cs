@@ -12,10 +12,10 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory(sizeof(int) * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * 3))
                 {
                     {
-                        using var stack = new Stack<int>(3, &memory);
+                        using var stack = new StackMemoryCollections.Struct.Stack<int>(3, &memory);
                     }
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
@@ -28,10 +28,10 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory(sizeof(int) * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * 3))
                 {
                     {
-                        var stack = new Stack<int>(3, &memory);
+                        var stack = new StackMemoryCollections.Struct.Stack<int>(3, &memory);
                     }
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((int*)memory.Start + 3)));
@@ -44,10 +44,10 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory(sizeof(int) * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * 3))
                 {
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
-                    var stack = new Stack<int>(3, &memory);
+                    var stack = new StackMemoryCollections.Struct.Stack<int>(3, &memory);
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((int*)memory.Start + 3)));
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 
@@ -76,9 +76,9 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory(sizeof(int) * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * 3))
                 {
-                    var stack = new Stack<int>(3, &memory);
+                    var stack = new StackMemoryCollections.Struct.Stack<int>(3, &memory);
                     stack.Push(48);
                     stack.Push(12);
                     stack.Push(50);
@@ -100,9 +100,9 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemory(sizeof(int) * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * 3))
                 {
-                    var stack = new Stack<int>(3, &memory);
+                    var stack = new StackMemoryCollections.Struct.Stack<int>(3, &memory);
                     stack.Push(48);
                     stack.Push(12);
 

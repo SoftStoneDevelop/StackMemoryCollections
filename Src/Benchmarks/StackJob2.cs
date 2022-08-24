@@ -18,9 +18,9 @@ namespace Benchmark
         {
             unsafe
             {
-                using (var memory = new StackMemory(sizeof(int) * (nuint)Size))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * (nuint)Size))
                 {
-                    var stack = new Stack<int>((nuint)Size, &memory);
+                    var stack = new StackMemoryCollections.Struct.Stack<int>((nuint)Size, &memory);
                     for (int i = 0; i < Size; i++)
                     {
                         stack.Push(in i);

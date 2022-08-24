@@ -24,7 +24,7 @@ namespace Benchmark
                             using var stack = new Stack<int>((nuint)Size, &memory);
                             for (int i = 0; i < Size; i++)
                             {
-                                stack.Push(i);
+                                stack.Push(in i);
                             }
 
                             if(j > 50)
@@ -43,12 +43,19 @@ namespace Benchmark
                         using var stack2 = new Stack<int>((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
-                            stack2.Push(i);
+                            stack2.Push(in i);
                         }
 
-                        while (!stack2.IsEmpty)
+                        if (j > 50)
                         {
-                            stack2.Pop();
+                            stack2.Clear();
+                        }
+                        else
+                        {
+                            while (!stack2.IsEmpty)
+                            {
+                                stack2.Pop();
+                            }
                         }
                     }
                 }

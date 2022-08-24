@@ -51,9 +51,16 @@ namespace Benchmark
                             stack2.Push(in item);
                         }
 
-                        while (!stack2.IsEmpty)
+                        if (j > 50)
                         {
-                            stack2.Pop();
+                            stack2.Clear();
+                        }
+                        else
+                        {
+                            while (!stack2.IsEmpty)
+                            {
+                                stack2.Pop();
+                            }
                         }
                     }
                 }

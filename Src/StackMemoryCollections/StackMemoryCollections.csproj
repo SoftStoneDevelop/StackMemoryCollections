@@ -6,6 +6,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\GenerateAttibutes\GenerateAttibutes.csproj" />
 		<ProjectReference Include="..\StackGenerators\StackGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
 	</ItemGroup>
 </Project>

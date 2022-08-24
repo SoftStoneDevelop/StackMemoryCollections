@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using GenerateAttibutes;
+using System.Collections;
 
 namespace StackMemoryCollections
 {
+    [GenerateStack]
     public struct SimpleStruct
     {
         public SimpleStruct(
@@ -42,6 +44,7 @@ namespace StackMemoryCollections
 
         public static void CopyToStruct(in void* ptr, ref SimpleStruct item)
         {
+            GenerSpaces.PClass.HelloFrom("s");
             var current = ptr;
             item.Int32 = *(int*)current;
             current = (int*)current + 1;

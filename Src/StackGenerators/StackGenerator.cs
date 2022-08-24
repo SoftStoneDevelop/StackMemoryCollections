@@ -59,9 +59,22 @@ namespace GenerSpaces
             while(queue.Count != 0)
             {
                 var current = queue.Dequeue();
-                if (current is INamedTypeSymbol type)
+                if (current is INamedTypeSymbol type && (type.IsValueType || type.IsReferenceType))
                 {
-                    result.Add(type);
+                    var hasGeneratedAttribute = 
+                        type.GetAttributes()
+                        .Where(wh => 
+                        wh.AttributeClass.Name == "GenerateDictionaryAttribute" ||
+                        wh.AttributeClass.Name == "GenerateListAttribute" ||
+                        wh.AttributeClass.Name == "GenerateQueueAttribute" ||
+                        wh.AttributeClass.Name == "GenerateStackAttribute"
+                        )
+                        .Any();
+
+                    if (hasGeneratedAttribute)
+                    {
+                        result.Add(type);
+                    }
                 }
 
                 foreach (var child in current.GetMembers())

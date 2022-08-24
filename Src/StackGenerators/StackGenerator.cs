@@ -59,7 +59,11 @@ namespace GenerSpaces
             while(queue.Count != 0)
             {
                 var current = queue.Dequeue();
-                if (current is INamedTypeSymbol type && (type.IsValueType || type.IsReferenceType))
+                if (current is INamedTypeSymbol type && 
+                    !type.IsAbstract &&
+                    !type.IsGenericType &&
+                    !type.IsStatic &&
+                    (type.IsValueType || type.IsReferenceType))
                 {
                     var hasGeneratedAttribute = 
                         type.GetAttributes()

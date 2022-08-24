@@ -48,22 +48,22 @@ namespace StackMemoryCollections
 
         public static void* GetInt64Ptr(in void* ptr)
         {
-            return (byte*)ptr + 8;
+            return (byte*)ptr + 4;
         }
 
         public static long GetInt64Value(in void* ptr)
         {
-            return *(long*)((byte*)ptr + 8);
+            return *(long*)((byte*)ptr + 4);
         }
 
         public static void SetInt64Value(in void* ptr, in long value)
         {
-            *(long*)((byte*)ptr + 8) = value;
+            *(long*)((byte*)ptr + 4) = value;
         }
 
         public static void SetInt64Value(in void* ptr, in SimpleStruct item)
         {
-            *(long*)((byte*)ptr + 8)= item.Int64;
+            *(long*)((byte*)ptr + 4)= item.Int64;
         }
 
         public static void CopyToPrt(in SimpleStruct item, in void* ptr)

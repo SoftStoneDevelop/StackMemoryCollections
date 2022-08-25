@@ -1,16 +1,16 @@
-# FreeMemory(nuint) Method
+# ReducingCapacity(in nuint) Method
 
 ## Definition
 Free memory.
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public void ReducingCapacity(in nuint reducingCount)
 ```
 
 ## Parameters
-reducingBytes nuint
+reducingCount nuint
 
-Freed memory size in bytes
+Freed memory size in count of items
 
 ## Returns
 void
@@ -18,14 +18,11 @@ void
 ## Exceptions
 
 ```C#
-ObjectDisposedException
-```
--or-
-
-```C#
 Exception
 ```
-If all memory is already free
+If The number of elements to be deallocated exceeds the number of free slots in the collection
+-or-
+If The Stack collection is created using StackMemory and the StackMemory has moved further
 
 ## Remark
-Shifts the Current pointer by -reducingBytes
+Reduces Capacity by quantity 'reducingCount'

@@ -33,7 +33,7 @@ namespace {currentType.ContainingNamespace}.Struct
     public unsafe struct {currentType.Name}Wrapper : IDisposable
     {{
         private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
-        private readonly StackMemoryCollections.Class.StackMemory? _stackMemoryC = null;
+        private readonly StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
         private readonly void* _start;
 
         public {currentType.Name}Wrapper()
@@ -110,7 +110,7 @@ namespace {currentType.ContainingNamespace}.Class
     public unsafe class {currentType.Name}Wrapper : IDisposable
     {{
         private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
-        private readonly StackMemoryCollections.Class.StackMemory? _stackMemoryC = null;
+        private readonly StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
         private readonly void* _start;
 
         public {currentType.Name}Wrapper()

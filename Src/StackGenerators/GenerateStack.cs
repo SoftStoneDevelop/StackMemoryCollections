@@ -32,7 +32,7 @@ namespace {currentType.ContainingNamespace}.Struct
     public unsafe struct StackOf{currentType.Name} : IDisposable
     {{
         private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
-        private readonly StackMemoryCollections.Class.StackMemory? _stackMemoryC = null;
+        private readonly StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
         private readonly void* _start;
         private int _version = 0;
 
@@ -186,7 +186,7 @@ namespace {currentType.ContainingNamespace}.Struct
             }}
         }}
 
-        public {currentType.Name} Front()
+        public {currentType.Name} Top()
         {{
             if (Size == 0)
             {{
@@ -199,7 +199,7 @@ namespace {currentType.ContainingNamespace}.Struct
                 result;
         }}
 
-        public void* FrontPtr()
+        public void* TopPtr()
         {{
             if (Size == 0)
             {{
@@ -260,14 +260,9 @@ namespace {currentType.ContainingNamespace}.Class
     public unsafe class StackOf{currentType.Name} : IDisposable, System.Collections.Generic.IEnumerable<{currentType.Name}>
     {{
         private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
-        private readonly StackMemoryCollections.Class.StackMemory? _stackMemoryC = null;
+        private readonly StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
         private readonly void* _start;
         private int _version = 0;
-
-        public StackOf{currentType.Name}()
-        {{
-            throw new Exception(""Default constructor not supported"");
-        }}
 
         public StackOf{currentType.Name}(
             nuint count,
@@ -414,7 +409,7 @@ namespace {currentType.ContainingNamespace}.Class
             }}
         }}
 
-        public {currentType.Name} Front()
+        public {currentType.Name} Top()
         {{
             if (Size == 0)
             {{
@@ -427,7 +422,7 @@ namespace {currentType.ContainingNamespace}.Class
                 result;
         }}
 
-        public void* FrontPtr()
+        public void* TopPtr()
         {{
             if (Size == 0)
             {{

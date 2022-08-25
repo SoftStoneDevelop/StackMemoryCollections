@@ -126,8 +126,8 @@ namespace Tests
                     s1.Int64 = 333333333;
                     stack.Push(in s1);
 
-                    var item = stack.Front();
-                    var itemPtr = stack.FrontPtr();
+                    var item = stack.Top();
+                    var itemPtr = stack.TopPtr();
                     Assert.That(new IntPtr(itemPtr), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.GetSize())));
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
@@ -139,8 +139,8 @@ namespace Tests
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)1));
 
-                    item = stack.Front();
-                    itemPtr = stack.FrontPtr();
+                    item = stack.Top();
+                    itemPtr = stack.TopPtr();
                     Assert.That(new IntPtr(itemPtr), Is.EqualTo(new IntPtr((byte*)memory.Start)));
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
@@ -152,7 +152,7 @@ namespace Tests
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)0));
 
-                    Assert.That(() => stack.Front(),
+                    Assert.That(() => stack.Top(),
                         Throws.Exception.TypeOf(typeof(Exception))
                         .And.Message.EqualTo("There are no elements on the stack")
                         );

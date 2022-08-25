@@ -83,9 +83,9 @@ namespace Tests
                     stack.Push(12);
                     stack.Push(50);
 
-                    Assert.That(stack[0], Is.EqualTo(50));
-                    Assert.That(stack[1], Is.EqualTo(12));
-                    Assert.That(stack[2], Is.EqualTo(48));
+                    Assert.That(*stack[0], Is.EqualTo(50));
+                    Assert.That(*stack[1], Is.EqualTo(12));
+                    Assert.That(*stack[2], Is.EqualTo(48));
 
                     Assert.That(() => stack[3],
                         Throws.Exception.TypeOf(typeof(Exception))
@@ -106,8 +106,8 @@ namespace Tests
                     stack.Push(48);
                     stack.Push(12);
 
-                    var item = stack.Front();
-                    var itemPtr = stack.FrontPtr();
+                    var item = stack.Top();
+                    var itemPtr = stack.TopPtr();
                     Assert.That(new IntPtr(itemPtr), Is.EqualTo(new IntPtr((int*)memory.Start + 1)));
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
@@ -119,8 +119,8 @@ namespace Tests
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)1));
 
-                    item = stack.Front();
-                    itemPtr = stack.FrontPtr();
+                    item = stack.Top();
+                    itemPtr = stack.TopPtr();
                     Assert.That(new IntPtr(itemPtr), Is.EqualTo(new IntPtr((int*)memory.Start)));
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
@@ -132,7 +132,7 @@ namespace Tests
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)3));
                     Assert.That(stack.Size, Is.EqualTo((nuint)0));
 
-                    Assert.That(() => stack.Front(),
+                    Assert.That(() => stack.Top(),
                         Throws.Exception.TypeOf(typeof(Exception))
                         .And.Message.EqualTo("There are no elements on the stack")
                         );

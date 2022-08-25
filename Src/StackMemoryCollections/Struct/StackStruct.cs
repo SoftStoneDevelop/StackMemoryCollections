@@ -172,7 +172,7 @@
             }
         }
 
-        public T Front()
+        public T Top()
         {
             if(Size == 0)
             {
@@ -183,7 +183,7 @@
                 *(_start + (Size - 1));
         }
 
-        public T* FrontPtr()
+        public T* TopPtr()
         {
             if (Size == 0)
             {
@@ -205,7 +205,7 @@
             }
         }
 
-        public T this[nuint index]
+        public T* this[nuint index]
         {
             get
             {
@@ -215,8 +215,18 @@
                 }
 
                 return
-                    *(_start + (Size - 1 - index));
+                    _start + (Size - 1 - index);
             }
+        }
+
+        public void Copy(in void* ptrDest)
+        {
+            Buffer.MemoryCopy(
+                _start,
+                ptrDest,
+                Capacity * (nuint)sizeof(T),
+                Capacity * (nuint)sizeof(T)
+                );
         }
     }
 }

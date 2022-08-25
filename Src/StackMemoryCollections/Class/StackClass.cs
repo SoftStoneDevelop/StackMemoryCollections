@@ -174,7 +174,7 @@ namespace StackMemoryCollections.Class
             }
         }
 
-        public T Front()
+        public T Top()
         {
             if(Size == 0)
             {
@@ -185,7 +185,7 @@ namespace StackMemoryCollections.Class
                 *(_start + (Size - 1));
         }
 
-        public T* FrontPtr()
+        public T* TopPtr()
         {
             if (Size == 0)
             {

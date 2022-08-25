@@ -82,7 +82,7 @@ namespace StackMemoryCollections.Class
 
         public bool IsEmpty => Size == 0;
 
-        public void ReducingAvailableMemory(in nuint reducingCount)
+        public void ReducingCapacity(in nuint reducingCount)
         {
             if (reducingCount <= 0)
             {
@@ -116,14 +116,14 @@ namespace StackMemoryCollections.Class
             Capacity -= reducingCount;
         }
 
-        public void ExpandAvailableMemory(in nuint expandBytes)
+        public void ExpandCapacity(in nuint expandBytes)
         {
             Capacity += expandBytes;
         }
 
-        public void SetAvailableMemoryCurrentUsed()
+        public void TrimExcess()
         {
-            ReducingAvailableMemory(Capacity - Size);
+            ReducingCapacity(Capacity - Size);
         }
 
         public void Push(in T item)
@@ -241,15 +241,10 @@ namespace StackMemoryCollections.Class
             return new Enumerator(this);
         }
 
-        public void CopyTo(Array array, int index)
-        {
-            throw new NotImplementedException();
-        }
-
         public struct Enumerator : IEnumerator<T>, IEnumerator
         {
             private readonly Stack<T> _stack;
-            private T _current;
+            private T* _current;
             private int _currentIndex;
             private int _version;
 
@@ -261,7 +256,7 @@ namespace StackMemoryCollections.Class
                 _version = _stack._version;
             }
 
-            public T Current => _current;
+            public T Current => *_current;
 
             object IEnumerator.Current => Current;
 
@@ -285,7 +280,7 @@ namespace StackMemoryCollections.Class
                 if(_currentIndex == -2)
                 {
                     _currentIndex = (int)_stack.Size - 1;
-                    _current = *(_stack._start + _currentIndex);
+                    _current = _stack._start + _currentIndex;
                     return true;
                 }
 
@@ -297,7 +292,7 @@ namespace StackMemoryCollections.Class
                 --_currentIndex;
                 if(_currentIndex >= 0)
                 {
-                    _current = *(_stack._start + _currentIndex);
+                    _current = _stack._start + _currentIndex;
                     return true;
                 }
                 else
@@ -315,7 +310,7 @@ namespace StackMemoryCollections.Class
 
         #endregion
 
-        public T this[nuint index]
+        public T* this[nuint index]
         {
             get
             {
@@ -325,8 +320,18 @@ namespace StackMemoryCollections.Class
                 }
 
                 return
-                    *(_start + (Size - 1 - index));
+                    _start + (Size - 1 - index);
             }
+        }
+
+        public void Copy(in void* ptrDest)
+        {
+            Buffer.MemoryCopy(
+                _start,
+                ptrDest,
+                Capacity * (nuint)sizeof(T),
+                Capacity * (nuint)sizeof(T)
+                );
         }
     }
 }

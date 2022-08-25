@@ -1,8 +1,6 @@
-﻿using System.Collections;
-
-namespace StackMemoryCollections.Struct
+﻿namespace StackMemoryCollections.Struct
 {
-    public unsafe struct Stack<T> : IDisposable, IEnumerable<T> where T : unmanaged
+    public unsafe struct Stack<T> : IDisposable where T : unmanaged
     {
         private readonly Struct.StackMemory* _stackMemoryS;
         private readonly Class.StackMemory? _stackMemoryC = null;
@@ -82,7 +80,7 @@ namespace StackMemoryCollections.Struct
 
         public bool IsEmpty => Size == 0;
 
-        public void ReducingAvailableMemory(in nuint reducingCount)
+        public void ReducingCapacity(in nuint reducingCount)
         {
             if (reducingCount <= 0)
             {
@@ -116,14 +114,14 @@ namespace StackMemoryCollections.Struct
             Capacity -= reducingCount;
         }
 
-        public void ExpandAvailableMemory(in nuint expandBytes)
+        public void ExpandCapacity(in nuint expandBytes)
         {
             Capacity += expandBytes;
         }
 
-        public void SetAvailableMemoryCurrentUsed()
+        public void TrimExcess()
         {
-            ReducingAvailableMemory(Capacity - Size);
+            ReducingCapacity(Capacity - Size);
         }
 
         public void Push(in T item)
@@ -206,92 +204,6 @@ namespace StackMemoryCollections.Struct
                 _stackMemoryC.FreeMemory(Capacity * (nuint)sizeof(T));
             }
         }
-
-        #region IEnumerable<T>
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return new Enumerator(this);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new Enumerator(this);
-        }
-
-        public void CopyTo(Array array, int index)
-        {
-            throw new NotImplementedException();
-        }
-
-        public struct Enumerator : IEnumerator<T>, IEnumerator
-        {
-            private readonly Stack<T> _stack;
-            private T _current;
-            private int _currentIndex;
-            private int _version;
-
-            internal Enumerator(Stack<T> stack)
-            {
-                _stack = stack;
-                _currentIndex = -1;
-                _current = default;
-                _version = _stack._version;
-            }
-
-            public T Current => _current;
-
-            object IEnumerator.Current => Current;
-
-            public void Dispose()
-            {
-                _currentIndex = -1;
-            }
-
-            public bool MoveNext()
-            {
-                if(_version != _stack._version)
-                {
-                    throw new InvalidOperationException("The stack was changed during the enumeration");
-                }
-
-                if(_stack.Size < 0)
-                {
-                    return false;
-                }
-
-                if(_currentIndex == -2)
-                {
-                    _currentIndex = (int)_stack.Size - 1;
-                    _current = *(_stack._start + _currentIndex);
-                    return true;
-                }
-
-                if(_currentIndex == -1)
-                {
-                    return false;
-                }
-
-                --_currentIndex;
-                if(_currentIndex >= 0)
-                {
-                    _current = *(_stack._start + _currentIndex);
-                    return true;
-                }
-                else
-                {
-                    _current = default;
-                    return false;
-                }
-            }
-
-            public void Reset()
-            {
-                _currentIndex = -2;
-            }
-        }
-
-        #endregion
 
         public T this[nuint index]
         {

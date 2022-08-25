@@ -24,3 +24,38 @@ Represents memory management methods as a stack
 | [AllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/AllocateMemory.md)  | Allocate free memory |
 | [FreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/FreeMemory.md)  | Free up occupied memory |
 | [Dispose](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/Dispose.md)  | Free all memory |
+
+## Examples
+```C#
+
+unsafe
+{
+    using (var memory = new StackMemoryCollections.Struct.StackMemory(16))//allocate 16 bytes
+    {
+    }
+}
+
+```
+
+
+```C#
+
+unsafe
+{
+    using (var memory = new StackMemoryCollections.Struct.StackMemory())//throw error "Default constructor not supported"
+    {
+    }
+}
+
+```
+
+```C#
+
+unsafe
+{
+    using (var memory = new StackMemoryCollections.Class.StackMemory(16))//allocate 16 bytes
+    {
+    }
+}
+
+```

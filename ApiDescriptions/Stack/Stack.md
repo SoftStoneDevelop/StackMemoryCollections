@@ -62,10 +62,14 @@ IDisposable
 | [indexator[nuint]](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/indexator.md)  | Returns the pointer on item by index. |
 | [Copy(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Copy.md)  | Copy elements to memory |
 | [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Dispose.md)  | Free memory |
+
+## Only for the class
+| Name | Description |
+| ------------- | ------------- |
 | IEnumerator<{ItemTypeName}> GetEnumerator()  | Return enumerator |
 | IEnumerable GetEnumerator()  | Return enumerator |
 
-## Examples
+# Examples
 
 ```C#
 

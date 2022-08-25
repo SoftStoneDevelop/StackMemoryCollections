@@ -127,9 +127,28 @@ namespace {currentType.ContainingNamespace}.Struct
             Capacity -= reducingCount;
         }}
 
-        public void ExpandCapacity(in nuint expandBytes)
+        public void ExpandCapacity(in nuint expandCount)
         {{
-            Capacity += expandBytes;
+            if(_stackMemoryS != null)
+            {{
+                if (new IntPtr((*_stackMemoryS).Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                {{
+                    throw new Exception(""Failed to expand available memory, stack moved further"");
+                }}
+
+                (*_stackMemoryS).FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+            }}
+            else if (_stackMemoryC != null)
+            {{
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                {{
+                    throw new Exception(""Failed to expand available memory, stack moved further"");
+                }}
+
+                _stackMemoryC.FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+            }}
+
+            Capacity += expandCount;
         }}
 
         public void TrimExcess()
@@ -350,9 +369,28 @@ namespace {currentType.ContainingNamespace}.Class
             Capacity -= reducingCount;
         }}
 
-        public void ExpandCapacity(in nuint expandBytes)
+        public void ExpandCapacity(in nuint expandCount)
         {{
-            Capacity += expandBytes;
+            if(_stackMemoryS != null)
+            {{
+                if (new IntPtr((*_stackMemoryS).Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                {{
+                    throw new Exception(""Failed to expand available memory, stack moved further"");
+                }}
+
+                (*_stackMemoryS).FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+            }}
+            else if (_stackMemoryC != null)
+            {{
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                {{
+                    throw new Exception(""Failed to expand available memory, stack moved further"");
+                }}
+
+                _stackMemoryC.FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+            }}
+
+            Capacity += expandCount;
         }}
 
         public void TrimExcess()

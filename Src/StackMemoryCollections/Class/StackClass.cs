@@ -116,9 +116,28 @@ namespace StackMemoryCollections.Class
             Capacity -= reducingCount;
         }
 
-        public void ExpandCapacity(in nuint expandBytes)
+        public void ExpandCapacity(in nuint expandCount)
         {
-            Capacity += expandBytes;
+            if (_stackMemoryS != null)
+            {
+                if (new IntPtr((*_stackMemoryS).Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                {
+                    throw new Exception("Failed to expand available memory, stack moved further");
+                }
+
+                (*_stackMemoryS).AllocateMemory(expandCount * (nuint)sizeof(T));
+            }
+            else if (_stackMemoryC != null)
+            {
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                {
+                    throw new Exception("Failed to expand available memory, stack moved further");
+                }
+
+                _stackMemoryC.AllocateMemory(expandCount * (nuint)sizeof(T));
+            }
+
+            Capacity += expandCount;
         }
 
         public void TrimExcess()

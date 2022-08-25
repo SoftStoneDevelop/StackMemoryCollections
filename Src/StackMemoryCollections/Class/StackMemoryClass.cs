@@ -6,11 +6,6 @@ namespace StackMemoryCollections.Class
     {
         private nuint _offsetBytes;
 
-        public StackMemory()
-        {
-            throw new ArgumentException("Default constructor not supported");
-        }
-
         public StackMemory(nuint byteCount)
         {
             Start = NativeMemory.Alloc(byteCount);

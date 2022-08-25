@@ -1,31 +1,20 @@
-# FreeMemory(nuint) Method
+# Push(in {ItemTypeName}) Method
 
 ## Definition
-Free memory.
+Inserts an element at the top of the Stack..
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public void Push(in {ItemTypeName} item)
 ```
 
 ## Parameters
-reducingBytes nuint
+item {ItemTypeName}
 
-Freed memory size in bytes
-
-## Returns
-void
+Inserted element
 
 ## Exceptions
 
 ```C#
-ObjectDisposedException
-```
--or-
-
-```C#
 Exception
 ```
-If all memory is already free
-
-## Remark
-Shifts the Current pointer by -reducingBytes
+If there is no place for the element in the collection

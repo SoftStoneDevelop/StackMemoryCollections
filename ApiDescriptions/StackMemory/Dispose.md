@@ -1,26 +1,10 @@
-# Definition
-Represents memory management methods as a stack
+# Dispose() Method
 
-# Constructors
+## Definition
+Free all memory.
 
-| Name | Description |
-| ------------- | ------------- |
-| StackMemory(nuint)  | Creates an instance and allocates memory |
-
-# Properties
-
-| Name | Description |
-| ------------- | ------------- |
-| Start  | Start of memory |
-| Current  | Pointer to free memory |
-| ByteCount  | Total memory size |
-| FreeByteCount  | Free memory size |
-
-# Methods
-
-
-| Name | Description |
-| ------------- | ------------- |
-| AllocateMemory  | Allocate free memory |
-| FreeMemory  | Free up occupied memory |
-| Dispose  | Free all memory |
+```C#
+public void FreeMemory(nuint reducingBytes)
+```
+## Remark
+After calling Dispose, don't try to use the class/struct, it will result in UB

@@ -1,10 +1,10 @@
-# ReducingCapacity(in nuint) Method
+# ExpandCapacity(in nuint) Method
 
 ## Definition
 Allocate memory from StackMemory if use him.
 
 ```C#
-public void ReducingCapacity(in nuint expandCount)
+public void ExpandCapacity(in nuint expandCount)
 ```
 
 ## Parameters

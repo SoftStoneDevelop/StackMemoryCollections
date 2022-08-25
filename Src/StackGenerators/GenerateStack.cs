@@ -34,7 +34,6 @@ namespace {currentType.ContainingNamespace}.Struct
         private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
         private readonly StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
         private readonly void* _start;
-        private int _version = 0;
 
         public StackOf{currentType.Name}()
         {{
@@ -167,7 +166,6 @@ namespace {currentType.ContainingNamespace}.Struct
 
             {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {currentType.Name}Helper.GetSize()));
             Size = tempSize;
-            _version++;
         }}
 
         public bool TryPush(in {currentType.Name} item)
@@ -180,7 +178,6 @@ namespace {currentType.ContainingNamespace}.Struct
 
             {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {currentType.Name}Helper.GetSize()));
             Size = tempSize;
-            _version++;
 
             return true;
         }}
@@ -193,7 +190,6 @@ namespace {currentType.ContainingNamespace}.Struct
             }}
 
             Size--;
-            _version++;
         }}
 
         public void Clear()
@@ -201,7 +197,6 @@ namespace {currentType.ContainingNamespace}.Struct
             if (Size != 0)
             {{
                 Size = 0;
-                _version++;
             }}
         }}
 

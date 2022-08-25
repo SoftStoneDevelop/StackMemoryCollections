@@ -5,7 +5,6 @@
         private readonly Struct.StackMemory* _stackMemoryS;
         private readonly Class.StackMemory? _stackMemoryC = null;
         private readonly T* _start;
-        private int _version = 0;
 
         public Stack()
         {
@@ -153,7 +152,6 @@
 
             *(_start + Size) = item;
             Size = tempSize;
-            _version++;
         }
 
         public bool TryPush(in T item)
@@ -166,7 +164,6 @@
 
             *(_start + Size) = item;
             Size = tempSize;
-            _version++;
 
             return true;
         }
@@ -179,7 +176,6 @@
             }
 
             Size--;
-            _version++;
         }
 
         public void Clear()
@@ -187,7 +183,6 @@
             if(Size != 0)
             {
                 Size = 0;
-                _version++;
             }
         }
 

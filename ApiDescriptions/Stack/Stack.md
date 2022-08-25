@@ -114,11 +114,11 @@ public struct JobStruct
 
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.GetSize() * (nuint)Size))
+    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.GetSize() * (nuint)5))
     {
         var item = new JobStruct(0, 0);
-        using var stack = new Struct.StackOfJobStruct((nuint)Size, &memory);
-        for (int i = 0; i < Size; i++)
+        using var stack = new Struct.StackOfJobStruct((nuint)5, &memory);
+        for (int i = 0; i < 5; i++)
         {
             item.Int32 = i;
             item.Int64 = i * 2;

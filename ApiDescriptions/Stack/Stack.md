@@ -13,6 +13,8 @@ namespace {ItemTypeNamespace}.Class
 }
 
 ```
+Implements
+IEnumerable<{ItemType}>, IEnumerable, IDisposable
 
 Struct
 ```C#
@@ -25,7 +27,7 @@ namespace {ItemTypeNamespace}.Struct
 ```
 
 Implements
-IEnumerable<{ItemType}>, IEnumerable, IDisposable
+IDisposable
 
 # Constructors
 

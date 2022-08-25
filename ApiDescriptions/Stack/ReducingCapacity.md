@@ -1,7 +1,7 @@
 # ReducingCapacity(in nuint) Method
 
 ## Definition
-Free memory.
+Free memory from StackMemory if use him.
 
 ```C#
 public void ReducingCapacity(in nuint reducingCount)

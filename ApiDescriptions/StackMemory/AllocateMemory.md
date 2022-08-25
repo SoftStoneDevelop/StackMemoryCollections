@@ -1,18 +1,18 @@
 # AllocateMemory(nuint) Method
 
-# Definition
+## Definition
 Allocate free memory.
 
 ```C#
 public void* AllocateMemory(nuint allocateBytes)
 ```
 
-# Parameters
+## Parameters
 allocateBytes nuint
 
 Size of allocated memory in bytes
 
-# Returns
+## Returns
 void*
 
 Pointer to start of allocated memory(same as Current property)
@@ -28,3 +28,6 @@ ObjectDisposedException
 ArgumentException
 ```
 If more memory requested than can be allocated
+
+## Remark
+Shifts the Current pointer by +allocateBytes

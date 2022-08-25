@@ -135,7 +135,7 @@ namespace {currentType.ContainingNamespace}.Struct
                     throw new Exception(""Failed to expand available memory, stack moved further"");
                 }}
 
-                (*_stackMemoryS).FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+                (*_stackMemoryS).AllocateMemory(expandCount * {currentType.Name}Helper.GetSize());
             }}
             else if (_stackMemoryC != null)
             {{
@@ -144,7 +144,7 @@ namespace {currentType.ContainingNamespace}.Struct
                     throw new Exception(""Failed to expand available memory, stack moved further"");
                 }}
 
-                _stackMemoryC.FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+                _stackMemoryC.AllocateMemory(expandCount * {currentType.Name}Helper.GetSize());
             }}
 
             Capacity += expandCount;
@@ -373,7 +373,7 @@ namespace {currentType.ContainingNamespace}.Class
                     throw new Exception(""Failed to expand available memory, stack moved further"");
                 }}
 
-                (*_stackMemoryS).FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+                (*_stackMemoryS).AllocateMemory(expandCount * {currentType.Name}Helper.GetSize());
             }}
             else if (_stackMemoryC != null)
             {{
@@ -382,7 +382,7 @@ namespace {currentType.ContainingNamespace}.Class
                     throw new Exception(""Failed to expand available memory, stack moved further"");
                 }}
 
-                _stackMemoryC.FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+                _stackMemoryC.AllocateMemory(expandCount * {currentType.Name}Helper.GetSize());
             }}
 
             Capacity += expandCount;

@@ -1,31 +1,18 @@
-# FreeMemory(nuint) Method
+# TryPush(in {ItemTypeName}) Method
 
 ## Definition
-Free memory.
+Inserts an element at the top of the Stack..
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public bool TryPush(in {ItemTypeName} item)
 ```
 
 ## Parameters
-reducingBytes nuint
+item {ItemTypeName}
 
-Freed memory size in bytes
+Inserted element
 
 ## Returns
-void
+bool
 
-## Exceptions
-
-```C#
-ObjectDisposedException
-```
--or-
-
-```C#
-Exception
-```
-If all memory is already free
-
-## Remark
-Shifts the Current pointer by -reducingBytes
+True if operation successful otherwise false

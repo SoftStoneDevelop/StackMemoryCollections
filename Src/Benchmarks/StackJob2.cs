@@ -1,19 +1,16 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
-using StackMemoryCollections;
-using System.ComponentModel;
 
 namespace Benchmark
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
-    [Description("Simple usage StackMemory")]
     public class StackJob2
     {
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
 
-        [Benchmark(Description = $"Using StackMemoryCollections.Stack<T>: unmanaged memory = Size*4 bytes")]
+        [Benchmark(Description = $"StackMemoryCollections.Stack<T>: memory = (Size*4) + Allocated column")]
         public void StackMemory()
         {
             unsafe

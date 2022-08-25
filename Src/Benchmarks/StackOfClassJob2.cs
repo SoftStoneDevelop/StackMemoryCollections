@@ -1,25 +1,24 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
-using System.ComponentModel;
 
 namespace Benchmark
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
-    public class StackOfStructJob2
+    public class StackOfClassJob2
     {
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
 
-        [Benchmark(Description = $"Using StackOfJobStruct: memory = (Size * 12) + Allocated column")]
+        [Benchmark(Description = $"Using StackOfJobClass: memory = (Size * 12) + Allocated column")]
         public void StackMemory()
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.GetSize() * (nuint)Size))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(JobClassHelper.GetSize() * (nuint)Size))
                 {
-                    var item = new JobStruct(0, 0);
-                    using var stack = new Benchmark.Struct.StackOfJobStruct((nuint)Size, &memory);
+                    var item = new JobClass(0, 0);
+                    using var stack = new Benchmark.Struct.StackOfJobClass((nuint)Size, &memory);
                     for (int i = 0; i < Size; i++)
                     {
                         item.Int32 = i;
@@ -40,10 +39,10 @@ namespace Benchmark
         {
             unsafe
             {
-                var stack = new System.Collections.Generic.Stack<JobStruct>(Size);
+                var stack = new System.Collections.Generic.Stack<JobClass>(Size);
                 for (int i = 0; i < Size; i++)
                 {
-                    stack.Push(new JobStruct(i, i * 2));
+                    stack.Push(new JobClass(i, i * 2));
                 }
 
                 while (stack.TryPop(out _))

@@ -1,21 +1,21 @@
 # FreeMemory(nuint) Method
 
-# Definition
+## Definition
 Free memory.
 
 ```C#
 public void FreeMemory(nuint reducingBytes)
 ```
 
-# Parameters
+## Parameters
 reducingBytes nuint
 
 Freed memory size in bytes
 
-# Returns
+## Returns
 void
 
-# Exceptions
+## Exceptions
 
 ```C#
 ObjectDisposedException
@@ -26,3 +26,6 @@ ObjectDisposedException
 Exception
 ```
 If all memory is already free
+
+## Remark
+Shifts the Current pointer by -reducingBytes

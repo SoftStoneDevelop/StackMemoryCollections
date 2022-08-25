@@ -22,6 +22,7 @@ namespace StackMemoryCollections.Struct
         public void* Start { get; init; }
         public void* Current { get; private set; }
         public nuint ByteCount { get; init; }
+        public nuint FreeByteCount => ByteCount - _offsetBytes;
 
         public void* AllocateMemory(nuint allocateBytes)
         {

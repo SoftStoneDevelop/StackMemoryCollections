@@ -133,3 +133,32 @@ unsafe
 }
 
 ```
+
+```C#
+
+unsafe
+{
+    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.GetSize() * (nuint)10))
+    {
+        var item = new JobStruct(0, 0);
+        using var stack = new Struct.StackOfJobStruct((nuint)5, &memory);
+        for (int i = 0; i < 10; i++)
+        {
+            item.Int32 = i;
+            item.Int64 = i * 2;
+            
+            if(!stack.TryPush(in item))
+            {
+                stack.ExpandCapacity(1);//No copy just pointer offset
+                stack.Push(in item);
+            }
+        }
+
+        while (!stack.IsEmpty)
+        {
+            stack.Pop();
+        }
+    }
+}
+
+```

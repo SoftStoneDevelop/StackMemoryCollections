@@ -36,7 +36,7 @@ namespace StackMemoryCollections.Class
 
 ```
 Implements
-IEnumerable<{ItemType}>, IEnumerable, IDisposable
+IEnumerable<T>, IEnumerable, IDisposable
 
 Struct
 ```C#

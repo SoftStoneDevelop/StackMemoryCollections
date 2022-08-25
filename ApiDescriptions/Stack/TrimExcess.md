@@ -1,31 +1,11 @@
-# FreeMemory(nuint) Method
+# TrimExcess() Method
 
 ## Definition
-Free memory.
+Sets the capacity to the actual number of elements in the Stack.
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public void TrimExcess()
 ```
-
-## Parameters
-reducingBytes nuint
-
-Freed memory size in bytes
-
-## Returns
-void
 
 ## Exceptions
-
-```C#
-ObjectDisposedException
-```
--or-
-
-```C#
-Exception
-```
-If all memory is already free
-
-## Remark
-Shifts the Current pointer by -reducingBytes
+Same as [ReducingCapacity method](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/ReducingCapacity.md)

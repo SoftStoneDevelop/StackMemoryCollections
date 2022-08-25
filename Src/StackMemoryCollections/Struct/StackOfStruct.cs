@@ -21,7 +21,7 @@ namespace StackMemoryCollections
         public int Int32;
     }
 
-    public unsafe struct StackOfSimpleStruct : IDisposable, IEnumerable<SimpleStruct>
+    public unsafe struct StackOfSimpleStruct : IDisposable, System.Collections.Generic.IEnumerable<SimpleStruct>
     {
         private readonly Struct.StackMemory* _stackMemoryS;
         private readonly Class.StackMemory? _stackMemoryC = null;

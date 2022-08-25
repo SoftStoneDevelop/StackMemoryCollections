@@ -1,5 +1,4 @@
-﻿using StackMemoryCollections.Struct;
-using System.Collections;
+﻿using System.Collections;
 
 namespace StackMemoryCollections.Class
 {
@@ -25,6 +24,11 @@ namespace StackMemoryCollections.Class
                 throw new ArgumentNullException(nameof(stackMemory));
             }
 
+            if(!TypeHelper.IsPrimitive<T>())
+            {
+                throw new ArgumentNullException("T must be primitive type");
+            }
+
             _start = (T*)(*stackMemory).AllocateMemory((nuint)sizeof(T) * count);
             _stackMemoryS = stackMemory;
             Capacity = count;
@@ -38,6 +42,11 @@ namespace StackMemoryCollections.Class
             if (stackMemory == null)
             {
                 throw new ArgumentNullException(nameof(stackMemory));
+            }
+
+            if (!TypeHelper.IsPrimitive<T>())
+            {
+                throw new ArgumentNullException("T must be primitive type");
             }
 
             _start = (T*)stackMemory.AllocateMemory((nuint)sizeof(T) * count);
@@ -54,6 +63,11 @@ namespace StackMemoryCollections.Class
             if (memoryStart == null)
             {
                 throw new ArgumentNullException(nameof(memoryStart));
+            }
+
+            if (!TypeHelper.IsPrimitive<T>())
+            {
+                throw new ArgumentNullException("T must be primitive type");
             }
 
             _start = (T*)memoryStart;

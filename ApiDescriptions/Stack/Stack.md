@@ -1,61 +1,55 @@
 # Definition
-Represents memory management methods as a stack
+Represents a simple last-in-first-out (LIFO) collection of {ItemName}. Where ItemName is you class/struct name.
+The collection is auto-generated, for generation the class {ItemName} must be marked with the attribute [GenerateStack].
+
+
+
+Class
+```C#
+
+namespace {ItemTypeNamespace}.Class
+{
+    public unsafe class StackOf{ItemTypeName} : IDisposable, System.Collections.Generic.IEnumerable<{ItemType}>
+}
+
+```
+
+Struct
+```C#
+
+namespace {ItemTypeNamespace}.Struct
+{
+    public unsafe struct StackOf{ItemTypeName} : IDisposable, System.Collections.Generic.IEnumerable<{ItemType}>
+}
+
+```
+
+Implements
+IEnumerable<{ItemType}>, IEnumerable, IDisposable
 
 # Constructors
 
 | Name | Description |
 | ------------- | ------------- |
-| [StackMemory(nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/Constructor1.md)  | Creates an instance and allocates memory |
+| StackOfJobStruct(nuint, StackMemoryCollections.Struct.StackMemory* stackMemory)  | Creates a new instance of the collection, allocates memory using StackMemory |
+| StackOfJobStruct(nuint, StackMemoryCollections.Class.StackMemory stackMemory)  | Creates a new instance of the collection, allocates memory using StackMemory |
+| StackOfJobStruct(nuint, void* memoryStart)  | Creates a new collection instance at a pointer to memory |
 
 # Properties
 
 | Name | Description |
 | ------------- | ------------- |
-| Start  | Start of memory |
-| Current  | Pointer to free memory |
-| ByteCount  | Total memory size |
-| FreeByteCount  | Free memory size |
+| Capacity  | Сollection capacity |
+| Size  | Current collection size |
+| IsEmpty  | Sign of an empty collection |
 
 # Methods
 
 
 | Name | Description |
 | ------------- | ------------- |
-| [AllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/AllocateMemory.md)  | Allocate free memory |
-| [FreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/FreeMemory.md)  | Free up occupied memory |
-| [Dispose](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/Dispose.md)  | Free all memory |
+| ReducingCapacity  | Reducing the capacity of a collection |
+//TODO
 
 ## Examples
-```C#
-
-unsafe
-{
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(16))//allocate 16 bytes
-    {
-    }
-}
-
-```
-
-
-```C#
-
-unsafe
-{
-    using (var memory = new StackMemoryCollections.Struct.StackMemory())//throw error "Default constructor not supported"
-    {
-    }
-}
-
-```
-
-```C#
-
-unsafe
-{
-    using (var memory = new StackMemoryCollections.Class.StackMemory(16))//allocate 16 bytes
-    {
-    }
-}
-
-```
+//TODO

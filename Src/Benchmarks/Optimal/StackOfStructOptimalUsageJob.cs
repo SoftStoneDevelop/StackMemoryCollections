@@ -18,17 +18,49 @@ namespace Benchmark
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.GetSize() * (nuint)Size))
                 {
                     var item = new JobStruct(0, 0);
-                    using var stack = new Benchmark.Struct.StackOfJobStruct((nuint)Size, &memory);
-                    for (int i = 0; i < Size; i++)
+                    for (int j = 0; j < 100; j++)
                     {
-                        item.Int32 = i;
-                        item.Int64 = i * 2;
-                        stack.Push(in item);
-                    }
+                        {
+                            using var stack = new Benchmark.Struct.StackOfJobStruct((nuint)Size, &memory);
+                            for (int i = 0; i < Size; i++)
+                            {
+                                item.Int32 = i;
+                                item.Int64 = i * 2;
+                                stack.Push(in item);
+                            }
 
-                    while (!stack.IsEmpty)
-                    {
-                        stack.Pop();
+                            if(j > 50)
+                            {
+                                stack.Clear();
+                            }
+                            else
+                            {
+                                while (!stack.IsEmpty)
+                                {
+                                    stack.Pop();
+                                }
+                            }
+                        }
+
+                        using var stack2 = new Benchmark.Struct.StackOfJobStruct((nuint)Size, &memory);
+                        for (int i = 0; i < Size; i++)
+                        {
+                            item.Int32 = i;
+                            item.Int64 = i * 2;
+                            stack2.Push(in item);
+                        }
+
+                        if (j > 50)
+                        {
+                            stack2.Clear();
+                        }
+                        else
+                        {
+                            while (!stack2.IsEmpty)
+                            {
+                                stack2.Pop();
+                            }
+                        }
                     }
                 }
             }
@@ -39,14 +71,48 @@ namespace Benchmark
         {
             unsafe
             {
-                var stack = new System.Collections.Generic.Stack<JobStruct>(Size);
-                for (int i = 0; i < Size; i++)
+                var item = new JobStruct(0, 0);
+                for (int j = 0; j < 100; j++)
                 {
-                    stack.Push(new JobStruct(i, i * 2));
-                }
+                    {
+                        var stack = new System.Collections.Generic.Stack<JobStruct>(Size);
+                        for (int i = 0; i < Size; i++)
+                        {
+                            item.Int32 = i;
+                            item.Int64 = i * 2;
+                            stack.Push(item);
+                        }
 
-                while (stack.TryPop(out _))
-                {
+                        if (j > 50)
+                        {
+                            stack.Clear();
+                        }
+                        else
+                        {
+                            while (stack.TryPop(out _))
+                            {
+                            }
+                        }
+                    }
+
+                    var stack2 = new System.Collections.Generic.Stack<JobStruct>(Size);
+                    for (int i = 0; i < Size; i++)
+                    {
+                        item.Int32 = i;
+                        item.Int64 = i * 2;
+                        stack2.Push(item);
+                    }
+
+                    if (j > 50)
+                    {
+                        stack2.Clear();
+                    }
+                    else
+                    {
+                        while (stack2.TryPop(out _))
+                        {
+                        }
+                    }
                 }
             }
         }

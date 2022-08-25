@@ -17,15 +17,45 @@ namespace Benchmark
             {
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * (nuint)Size))
                 {
-                    var stack = new StackMemoryCollections.Struct.Stack<int>((nuint)Size, &memory);
-                    for (int i = 0; i < Size; i++)
+                    for (int j = 0; j < 100; j++)
                     {
-                        stack.Push(in i);
-                    }
+                        {
+                            using var stack = new StackMemoryCollections.Struct.Stack<int>((nuint)Size, &memory);
+                            for (int i = 0; i < Size; i++)
+                            {
+                                stack.Push(in i);
+                            }
 
-                    while (!stack.IsEmpty)
-                    {
-                        stack.Pop();
+                            if(j > 50)
+                            {
+                                stack.Clear();
+                            }
+                            else
+                            {
+                                while (!stack.IsEmpty)
+                                {
+                                    stack.Pop();
+                                }
+                            }
+                        }
+
+                        using var stack2 = new StackMemoryCollections.Struct.Stack<int>((nuint)Size, &memory);
+                        for (int i = 0; i < Size; i++)
+                        {
+                            stack2.Push(in i);
+                        }
+
+                        if (j > 50)
+                        {
+                            stack2.Clear();
+                        }
+                        else
+                        {
+                            while (!stack2.IsEmpty)
+                            {
+                                stack2.Pop();
+                            }
+                        }
                     }
                 }
             }
@@ -36,14 +66,43 @@ namespace Benchmark
         {
             unsafe
             {
-                var stack = new System.Collections.Generic.Stack<int>(Size);
-                for (int i = 0; i < Size; i++)
+                for (int j = 0; j < 100; j++)
                 {
-                    stack.Push(i);
-                }
+                    {
+                        var stack = new System.Collections.Generic.Stack<int>(Size);
+                        for (int i = 0; i < Size; i++)
+                        {
+                            stack.Push(i);
+                        }
 
-                while (stack.TryPop(out _))
-                {
+                        if (j > 50)
+                        {
+                            stack.Clear();
+                        }
+                        else
+                        {
+                            while (stack.TryPop(out _))
+                            {
+                            }
+                        }
+                    }
+
+                    var stack2 = new System.Collections.Generic.Stack<int>(Size);
+                    for (int i = 0; i < Size; i++)
+                    {
+                        stack2.Push(i);
+                    }
+
+                    if (j > 50)
+                    {
+                        stack2.Clear();
+                    }
+                    else
+                    {
+                        while (stack2.TryPop(out _))
+                        {
+                        }
+                    }
                 }
             }
         }

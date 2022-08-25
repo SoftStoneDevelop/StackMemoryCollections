@@ -10,9 +10,9 @@ namespace Benchmark
             BenchmarkRunner.Run<StackOfStructSimpleUsageJob>();
             BenchmarkRunner.Run<StackOfClassSimpleUsageJob>();
 
-            BenchmarkRunner.Run<StackOptimalUsageJob>();
-            BenchmarkRunner.Run<StackOfStructOptimalUsageJob>();
-            BenchmarkRunner.Run<StackOfClassOptimalUsageJob>();
+            BenchmarkRunner.Run<StackSimpleUsageJob>();
+            BenchmarkRunner.Run<StackOfStructSimpleUsageJob>();
+            BenchmarkRunner.Run<StackOfClassSimpleUsageJob>();
         }
     }
 }

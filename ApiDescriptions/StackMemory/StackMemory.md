@@ -21,7 +21,7 @@ namespace StackMemoryCollections.Struct
 
 ```
 
-Implements IEnumerable<{ItemType}>, IEnumerable, IDisposable
+Implements IDisposable
 
 # Constructors
 

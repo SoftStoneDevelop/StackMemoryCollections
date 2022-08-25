@@ -1,26 +1,28 @@
+# FreeMemory(nuint) Method
+
 # Definition
-Represents memory management methods as a stack
+Free memory.
 
-# Constructors
+```C#
+public void FreeMemory(nuint reducingBytes)
+```
 
-| Name | Description |
-| ------------- | ------------- |
-| StackMemory(nuint)  | Creates an instance and allocates memory |
+# Parameters
+reducingBytes nuint
 
-# Properties
+Freed memory size in bytes
 
-| Name | Description |
-| ------------- | ------------- |
-| Start  | Start of memory |
-| Current  | Pointer to free memory |
-| ByteCount  | Total memory size |
-| FreeByteCount  | Free memory size |
+# Returns
+void
 
-# Methods
+# Exceptions
 
+```C#
+ObjectDisposedException
+```
+-or-
 
-| Name | Description |
-| ------------- | ------------- |
-| AllocateMemory  | Allocate free memory |
-| FreeMemory  | Free up occupied memory |
-| Dispose  | Free all memory |
+```C#
+Exception
+```
+If all memory is already free

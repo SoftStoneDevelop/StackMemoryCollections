@@ -12,9 +12,6 @@ reducingCount nuint
 
 Freed memory size in count of items
 
-## Returns
-void
-
 ## Exceptions
 
 ```C#

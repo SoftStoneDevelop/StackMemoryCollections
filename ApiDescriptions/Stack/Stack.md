@@ -2,8 +2,7 @@
 Represents a simple last-in-first-out (LIFO) collection of {ItemTypeName}. Where ItemName is you class/struct name.
 The collection is auto-generated, for generation the class/struct {ItemTypeName} must be marked with the attribute [GenerateStack].
 
-
-
+For class/struct items:
 Class
 ```C#
 
@@ -25,6 +24,30 @@ namespace {ItemTypeNamespace}.Struct
 }
 
 ```
+
+For primitive types:
+Class
+```C#
+
+namespace StackMemoryCollections.Class
+{
+    public unsafe class Stack<T> : IDisposable, IEnumerable<T> where T : unmanaged
+}
+
+```
+Implements
+IEnumerable<{ItemType}>, IEnumerable, IDisposable
+
+Struct
+```C#
+
+namespace StackMemoryCollections.Struct
+{
+    public unsafe struct Stack<T> : IDisposable where T : unmanaged
+}
+
+```
+
 
 Implements
 IDisposable

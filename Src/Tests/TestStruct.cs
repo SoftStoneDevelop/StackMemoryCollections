@@ -2,7 +2,9 @@
 
 namespace Tests
 {
+    [GenerateHelper]
     [GenerateStack]
+    [GenerateWrapper]
     public struct TestStruct
     {
         public TestStruct(

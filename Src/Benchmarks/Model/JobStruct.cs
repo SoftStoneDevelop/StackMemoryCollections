@@ -2,7 +2,9 @@
 
 namespace Benchmark
 {
+    [GenerateHelper]
     [GenerateStack]
+    [GenerateWrapper]
     public struct JobStruct
     {
         public JobStruct(

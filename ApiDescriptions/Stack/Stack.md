@@ -118,13 +118,14 @@ unsafe
     {
         var item = new JobStruct(0, 0);
         using var stack = new Struct.StackOfJobStruct((nuint)5, &memory);
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 3; i++)
         {
             item.Int32 = i;
             item.Int64 = i * 2;
             stack.Push(in item);
         }
 
+        stack.TrimExcess();//No copy just pointer offset
         while (!stack.IsEmpty)
         {
             stack.Pop();

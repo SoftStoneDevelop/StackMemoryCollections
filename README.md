@@ -3,6 +3,8 @@ Collections for memory reuse by stack type.
 
 Supported collections([API description](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/ApiReadme.md)):
 - Stack
+- List TODO
+- Queue TODO
 
 ## Benchmarks:
 

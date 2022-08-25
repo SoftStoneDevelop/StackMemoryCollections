@@ -1,26 +1,30 @@
+# AllocateMemory(nuint) Method
+
 # Definition
-Represents memory management methods as a stack
+Allocate free memory.
 
-# Constructors
+```C#
+public void* AllocateMemory(nuint allocateBytes)
+```
 
-| Name | Description |
-| ------------- | ------------- |
-| StackMemory(nuint)  | Creates an instance and allocates memory |
+# Parameters
+allocateBytes nuint
 
-# Properties
+Size of allocated memory in bytes
 
-| Name | Description |
-| ------------- | ------------- |
-| Start  | Start of memory |
-| Current  | Pointer to free memory |
-| ByteCount  | Total memory size |
-| FreeByteCount  | Free memory size |
+# Returns
+void*
 
-# Methods
+Pointer to start of allocated memory(same as Current property)
 
+# Exceptions
 
-| Name | Description |
-| ------------- | ------------- |
-| AllocateMemory  | Allocate free memory |
-| FreeMemory  | Free up occupied memory |
-| Dispose  | Free all memory |
+```C#
+ObjectDisposedException
+```
+-or-
+
+```C#
+ArgumentException
+```
+If more memory requested than can be allocated

@@ -225,15 +225,10 @@ namespace StackMemoryCollections
             return new Enumerator(this);
         }
 
-        public void CopyTo(Array array, int index)
-        {
-            throw new NotImplementedException();
-        }
-
         public struct Enumerator : IEnumerator<SimpleStruct>, IEnumerator
         {
             private readonly StackOfSimpleStruct _stack;
-            private SimpleStruct _current;
+            private void* _current;
             private int _currentIndex;
             private int _version;
 
@@ -245,7 +240,15 @@ namespace StackMemoryCollections
                 _version = _stack._version;
             }
 
-            public SimpleStruct Current => _current;
+            public SimpleStruct Current 
+            {
+                get
+                {
+                    SimpleStruct result = new SimpleStruct();
+                    SimpleStructHelper.CopyToValue(_current, ref result);
+                    return result;
+                }
+            }
 
             object IEnumerator.Current => Current;
 
@@ -269,9 +272,7 @@ namespace StackMemoryCollections
                 if (_currentIndex == -2)
                 {
                     _currentIndex = (int)_stack.Size - 1;
-                    SimpleStruct result = default;
-                    SimpleStructHelper.CopyToValue((byte*)_stack._start + (_currentIndex * (int)SimpleStructHelper.GetSize()), ref result);
-                    _current = result;
+                    _current = (byte*)_stack._start + (_currentIndex * (int)SimpleStructHelper.GetSize());
                     return true;
                 }
 
@@ -283,9 +284,7 @@ namespace StackMemoryCollections
                 --_currentIndex;
                 if (_currentIndex >= 0)
                 {
-                    SimpleStruct result = default;
-                    SimpleStructHelper.CopyToValue((byte*)_stack._start + (_currentIndex * (int)SimpleStructHelper.GetSize()), ref result);
-                    _current = result;
+                    _current = (byte*)_stack._start + (_currentIndex * (int)SimpleStructHelper.GetSize());
                     return true;
                 }
                 else

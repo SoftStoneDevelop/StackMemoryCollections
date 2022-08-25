@@ -22,5 +22,5 @@ Represents memory management methods as a stack
 | Name | Description |
 | ------------- | ------------- |
 | [AllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/AllocateMemory.md)  | Allocate free memory |
-| FreeMemory  | Free up occupied memory |
-| Dispose  | Free all memory |
+| [FreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/FreeMemory.md)  | Free up occupied memory |
+| [Dispose](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/Dispose.md)  | Free all memory |

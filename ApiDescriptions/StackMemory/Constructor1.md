@@ -1,26 +1,50 @@
-# Definition
-Represents memory management methods as a stack
+# StackMemory(nuint) Constructor
 
-# Constructors
+## Definition
+Creates an instance and allocates memory
 
-| Name | Description |
-| ------------- | ------------- |
-| StackMemory(nuint)  | Creates an instance and allocates memory |
+```C#
+public StackMemory(nuint byteCount)
+```
+## Parametrs
+byteCount nuint
 
-# Properties
+Size of allocated memory in bytes
 
-| Name | Description |
-| ------------- | ------------- |
-| Start  | Start of memory |
-| Current  | Pointer to free memory |
-| ByteCount  | Total memory size |
-| FreeByteCount  | Free memory size |
+## Remarks
+The default constructor of a struct will throw an Exception
 
-# Methods
+## Examples
+```C#
+
+unsafe
+{
+    using (var memory = new StackMemoryCollections.Struct.StackMemory(16))//allocate 16 bytes
+    {
+    }
+}
+
+```
 
 
-| Name | Description |
-| ------------- | ------------- |
-| AllocateMemory  | Allocate free memory |
-| FreeMemory  | Free up occupied memory |
-| Dispose  | Free all memory |
+```C#
+
+unsafe
+{
+    using (var memory = new StackMemoryCollections.Struct.StackMemory())//throw error "Default constructor not supported"
+    {
+    }
+}
+
+```
+
+```C#
+
+unsafe
+{
+    using (var memory = new StackMemoryCollections.Class.StackMemory(16))//allocate 16 bytes
+    {
+    }
+}
+
+```

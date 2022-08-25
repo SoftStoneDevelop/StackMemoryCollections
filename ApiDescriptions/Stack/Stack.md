@@ -50,18 +50,18 @@ IDisposable
 
 | Name | Description |
 | ------------- | ------------- |
-| ReducingCapacity(in nuint)  | Reducing The Capacity of a collection |
-| ExpandCapacity(in nuint)  | Expand The Capacity of a collection |
-| TrimExcess()  |  |
-| Push(in {ItemTypeName})  | Inserts an item at the top of The Stack. |
-| TryPush(in {ItemTypeName})  | Inserts an item at the top of The Stack. |
-| Pop())  | Removes the item at the top of The Stack. |
-| Clear())  | Removes all items from The Stack. |
-| Top())  | Returns the item at the top of The Stack. |
-| TopPtr())  | Returns the pointer on item at the top of The Stack. |
-| [nuint])  | Returns the pointer on item by index. |
-| copy(in void*)  | Copy elements to memory |
-| Dispose()  | Free memory |
+| [ReducingCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/ReducingCapacity.md)  | Reducing The Capacity of a collection |
+| [ExpandCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/ExpandCapacity.md)  | Expand The Capacity of a collection |
+| [TrimExcess()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/TrimExcess.md)  |  |
+| [Push(in {ItemTypeName}](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Push.md))  | Inserts an item at the top of The Stack. |
+| [TryPush(in {ItemTypeName})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/TryPush.md)  | Inserts an item at the top of The Stack. |
+| [Pop()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Pop.md)  | Removes the item at the top of The Stack. |
+| [Clear()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Clear.md)  | Removes all items from The Stack. |
+| [Top()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Top.md)  | Returns the item at the top of The Stack. |
+| [TopPtr()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/TopPtr.md)  | Returns the pointer on item at the top of The Stack. |
+| [indexator[nuint]](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/indexator.md)  | Returns the pointer on item by index. |
+| [Copy(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Copy.md)  | Copy elements to memory |
+| [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Dispose.md)  | Free memory |
 | IEnumerator<{ItemTypeName}> GetEnumerator()  | Return enumerator |
 | IEnumerable GetEnumerator()  | Return enumerator |
 

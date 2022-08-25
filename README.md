@@ -5,6 +5,9 @@ Supported collections([API description](https://github.com/SoftStoneDevelop/Stac
 - Stack
 
 ## Benchmarks:
+
+<details><summary>Stack</summary>
+
 ### StackSimpleUsageJob([code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Simple/StackSimpleUsageJob.cs))
 ![StackSimpleUsageJob](/BenchmarkResults/StackSimpleUsageJob.png)
 
@@ -22,3 +25,5 @@ Supported collections([API description](https://github.com/SoftStoneDevelop/Stac
 
 ### StackOfClassOptimalUsageJob([code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Optimal/StackOfClassOptimalUsageJob.cs))
 ![example](/BenchmarkResults/StackOfClassOptimalUsageJob.png)
+  
+</details>

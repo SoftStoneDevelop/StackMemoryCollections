@@ -1,31 +1,23 @@
-# FreeMemory(nuint) Method
+# ReducingCapacity(in nuint) Method
 
 ## Definition
-Free memory.
+Allocate memory from StackMemory if use him.
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public void ReducingCapacity(in nuint expandCount)
 ```
 
 ## Parameters
-reducingBytes nuint
+expandCount nuint
 
-Freed memory size in bytes
-
-## Returns
-void
+Allocate memory size in count of items
 
 ## Exceptions
 
 ```C#
-ObjectDisposedException
-```
--or-
-
-```C#
 Exception
 ```
-If all memory is already free
+If The Stack collection is created using StackMemory and the StackMemory has moved further
 
 ## Remark
-Shifts the Current pointer by -reducingBytes
+Increases Capacity by quantity 'expandCount'

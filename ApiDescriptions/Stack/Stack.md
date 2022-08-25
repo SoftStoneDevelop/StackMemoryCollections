@@ -76,7 +76,7 @@ IDisposable
 | [ReducingCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/ReducingCapacity.md)  | Reducing The Capacity of a collection |
 | [ExpandCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/ExpandCapacity.md)  | Expand The Capacity of a collection |
 | [TrimExcess()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/TrimExcess.md)  |  |
-| [Push(in {ItemTypeName}](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Push.md))  | Inserts an item at the top of The Stack. |
+| [Push(in {ItemTypeName})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Push.md)  | Inserts an item at the top of The Stack. |
 | [TryPush(in {ItemTypeName})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/TryPush.md)  | Inserts an item at the top of The Stack. |
 | [Pop()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Pop.md)  | Removes the item at the top of The Stack. |
 | [Clear()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/Stack/Clear.md)  | Removes all items from The Stack. |

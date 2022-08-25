@@ -4,6 +4,9 @@ Collections for memory reuse by stack type.
 Supported collections(link to API description):
 - Stack
 
+Common Types:
+- StackMemory
+
 ## Usage:
 ```C#
 

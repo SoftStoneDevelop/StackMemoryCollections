@@ -5,28 +5,25 @@ namespace Benchmark
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
-    public class StackOfClassJob1
+    public class StackSimpleUsageJob
     {
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
 
-        [Benchmark(Description = $"Using StackOfJobClass: memory = (Size * 12) + Allocated column")]
+        [Benchmark(Description = $"StackMemoryCollections.Stack<T>: memory = (Size*4) + Allocated column")]
         public void StackMemory()
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(JobClassHelper.GetSize() * (nuint)Size))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * (nuint)Size))
                 {
-                    var item = new JobClass(0, 0);
                     for (int j = 0; j < 100; j++)
                     {
                         {
-                            using var stack = new Benchmark.Struct.StackOfJobClass((nuint)Size, &memory);
+                            using var stack = new StackMemoryCollections.Struct.Stack<int>((nuint)Size, &memory);
                             for (int i = 0; i < Size; i++)
                             {
-                                item.Int32 = i;
-                                item.Int64 = i * 2;
-                                stack.Push(in item);
+                                stack.Push(in i);
                             }
 
                             if(j > 50)
@@ -42,12 +39,10 @@ namespace Benchmark
                             }
                         }
 
-                        using var stack2 = new Benchmark.Struct.StackOfJobClass((nuint)Size, &memory);
+                        using var stack2 = new StackMemoryCollections.Struct.Stack<int>((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
-                            item.Int32 = i;
-                            item.Int64 = i * 2;
-                            stack2.Push(in item);
+                            stack2.Push(in i);
                         }
 
                         if (j > 50)
@@ -74,10 +69,10 @@ namespace Benchmark
                 for (int j = 0; j < 100; j++)
                 {
                     {
-                        var stack = new System.Collections.Generic.Stack<JobClass>(Size);
+                        var stack = new System.Collections.Generic.Stack<int>(Size);
                         for (int i = 0; i < Size; i++)
                         {
-                            stack.Push(new JobClass(i, i * 2));
+                            stack.Push(i);
                         }
 
                         if (j > 50)
@@ -92,10 +87,10 @@ namespace Benchmark
                         }
                     }
 
-                    var stack2 = new System.Collections.Generic.Stack<JobClass>(Size);
+                    var stack2 = new System.Collections.Generic.Stack<int>(Size);
                     for (int i = 0; i < Size; i++)
                     {
-                        stack2.Push(new JobClass(i, i * 2));
+                        stack2.Push(i);
                     }
 
                     if (j > 50)

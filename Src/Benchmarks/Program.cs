@@ -6,15 +6,13 @@ namespace Benchmark
     {
         static void Main(string[] args)
         {
-            //simple usage custom stack
-            BenchmarkRunner.Run<StackJob1>();
-            BenchmarkRunner.Run<StackOfStructJob1>();
-            BenchmarkRunner.Run<StackOfClassJob1>();
+            BenchmarkRunner.Run<StackSimpleUsageJob>();
+            BenchmarkRunner.Run<StackOfStructSimpleUsageJob>();
+            BenchmarkRunner.Run<StackOfClassSimpleUsageJob>();
 
-            //optimal usage custom stack
-            BenchmarkRunner.Run<StackJob2>();
-            BenchmarkRunner.Run<StackOfStructJob2>();
-            BenchmarkRunner.Run<StackOfClassJob2>();
+            BenchmarkRunner.Run<StackOptimalUsageJob>();
+            BenchmarkRunner.Run<StackOfStructOptimalUsageJob>();
+            BenchmarkRunner.Run<StackOfClassOptimalUsageJob>();
         }
     }
 }

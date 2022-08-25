@@ -1,6 +1,26 @@
 # Definition
 Represents memory management methods as a stack
 
+Class
+```C#
+
+namespace StackMemoryCollections.Class
+{
+    public unsafe class StackMemory : IDisposable
+}
+
+```
+
+Struct
+```C#
+
+namespace StackMemoryCollections.Struct
+{
+    public unsafe struct StackMemory : IDisposable
+}
+
+```
+
 # Constructors
 
 | Name | Description |

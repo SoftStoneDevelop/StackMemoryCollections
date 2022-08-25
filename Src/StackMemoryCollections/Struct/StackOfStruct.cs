@@ -5,6 +5,7 @@ namespace StackMemoryCollections
 {
     [GenerateHelper]
     [GenerateStack]
+    [GenerateWrapper]
     public struct SimpleStruct
     {
         public SimpleStruct(
@@ -29,7 +30,7 @@ namespace StackMemoryCollections
 
         public StackOfSimpleStruct()
         {
-            throw new ArgumentException("Default constructor not supported");
+            throw new Exception("Default constructor not supported");
         }
 
         public StackOfSimpleStruct(

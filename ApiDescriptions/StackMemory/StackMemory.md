@@ -5,7 +5,7 @@ Represents memory management methods as a stack
 
 | Name | Description |
 | ------------- | ------------- |
-| StackMemory(nuint)  | Creates an instance and allocates memory |
+| [StackMemory(nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/Constructor1.md)  | Creates an instance and allocates memory |
 
 # Properties
 

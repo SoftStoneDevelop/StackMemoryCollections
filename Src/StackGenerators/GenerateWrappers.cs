@@ -59,10 +59,14 @@ namespace {currentType.ContainingNamespace}.Struct
         private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
         private readonly StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
         private readonly void* _start;
+        private readonly bool _memoryOwner = false;
 
         public {currentType.Name}Wrapper()
         {{
-            throw new Exception(""Default constructor not supported"");
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)});
+            _start = _stackMemoryC.Start;
+            _memoryOwner = true;
+            _stackMemoryS = null;
         }}
 
         public {currentType.Name}Wrapper(
@@ -74,7 +78,7 @@ namespace {currentType.ContainingNamespace}.Struct
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = (*stackMemory).AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+            _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
             _stackMemoryS = stackMemory;
         }}
 
@@ -110,14 +114,24 @@ namespace {currentType.ContainingNamespace}.Struct
 
         public void Dispose()
         {{
-            if(_stackMemoryC != null)
+            if(!_memoryOwner)
             {{
-                _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                if(_stackMemoryC != null)
+                {{
+                    _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                }}
+                else if (_stackMemoryS != null)
+                {{
+                    _stackMemoryS->FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                }}
             }}
-            else if (_stackMemoryS != null)
+            else
             {{
-                (*_stackMemoryS).FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                _stackMemoryC.Dispose();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             }}
+            
         }}
     }}
 }}
@@ -160,10 +174,13 @@ namespace {currentType.ContainingNamespace}.Class
         private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
         private readonly StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
         private readonly void* _start;
+        private readonly bool _memoryOwner = false;
 
         public {currentType.Name}Wrapper()
         {{
-            throw new Exception(""Default constructor not supported"");
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)});
+            _start = _stackMemoryC.Start;
+            _memoryOwner = true;
         }}
 
         public {currentType.Name}Wrapper(
@@ -175,7 +192,7 @@ namespace {currentType.ContainingNamespace}.Class
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = (*stackMemory).AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+            _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
             _stackMemoryS = stackMemory;
         }}
 
@@ -225,16 +242,25 @@ namespace {currentType.ContainingNamespace}.Class
         {{
             if (!_disposed)
             {{
-                if (disposing)
+                if(!_memoryOwner)
                 {{
-                    if(_stackMemoryC != null)
+                    if (disposing)
                     {{
-                        _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                        if(_stackMemoryC != null)
+                        {{
+                            _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                        }}
+                        else if (_stackMemoryS != null)
+                        {{
+                            _stackMemoryS->FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                        }}
                     }}
-                    else if (_stackMemoryS != null)
-                    {{
-                        (*_stackMemoryS).FreeMemory({typeInfo.Members.Sum(s => s.Size)});
-                    }}
+                }}
+                else
+                {{
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                    _stackMemoryC.Dispose();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 }}
 
                 _disposed = true;

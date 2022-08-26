@@ -5,13 +5,22 @@ namespace StackMemoryCollections.Class
     public unsafe class Stack<T> : IDisposable, IEnumerable<T> where T : unmanaged
     {
         private readonly Struct.StackMemory* _stackMemoryS;
-        private readonly Class.StackMemory? _stackMemoryC = null;
-        private readonly T* _start;
+        private Class.StackMemory? _stackMemoryC = null;
+        private T* _start;
+        private readonly bool _memoryOwner = false;
         private int _version = 0;
 
         public Stack()
         {
-            throw new ArgumentException("Default constructor not supported");
+            if (!TypeHelper.IsPrimitive<T>())
+            {
+                throw new ArgumentNullException("T must be primitive type");
+            }
+
+            _stackMemoryC = new Class.StackMemory((nuint)(sizeof(T) * 4));
+            _start = (T*)_stackMemoryC.Start;
+            Capacity = 4;
+            _memoryOwner = true;
         }
 
         public Stack(
@@ -94,23 +103,41 @@ namespace StackMemoryCollections.Class
                 throw new Exception("Can't reduce available memory, it's already in use");
             }
 
-            if (_stackMemoryS != null)
+            if (_memoryOwner)
             {
-                if (new IntPtr((*_stackMemoryS).Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
-                {
-                    throw new Exception("Failed to reduce available memory, stack moved further");
-                }
-
-                (*_stackMemoryS).FreeMemory(reducingCount * (nuint)sizeof(T));
+                var newMemory = new Class.StackMemory((nuint)sizeof(T) * (Capacity - reducingCount ));
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                Buffer.MemoryCopy(
+                    _stackMemoryC.Start,
+                    newMemory.Start,
+                    newMemory.ByteCount,
+                    (nuint)sizeof(T) * (Capacity - reducingCount)
+                    );
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                _stackMemoryC.Dispose();
+                _stackMemoryC = newMemory;
+                _start = (T*)_stackMemoryC.Start;
             }
-            else if(_stackMemoryC != null)
+            else
             {
-                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                if (_stackMemoryS != null)
                 {
-                    throw new Exception("Failed to reduce available memory, stack moved further");
-                }
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                    {
+                        throw new Exception("Failed to reduce available memory, stack moved further");
+                    }
 
-                _stackMemoryC.FreeMemory(reducingCount * (nuint)sizeof(T));
+                    _stackMemoryS->FreeMemory(reducingCount * (nuint)sizeof(T));
+                }
+                else if (_stackMemoryC != null)
+                {
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                    {
+                        throw new Exception("Failed to reduce available memory, stack moved further");
+                    }
+
+                    _stackMemoryC.FreeMemory(reducingCount * (nuint)sizeof(T));
+                }
             }
 
             Capacity -= reducingCount;
@@ -118,23 +145,41 @@ namespace StackMemoryCollections.Class
 
         public void ExpandCapacity(in nuint expandCount)
         {
-            if (_stackMemoryS != null)
+            if (_memoryOwner)
             {
-                if (new IntPtr((*_stackMemoryS).Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
-                {
-                    throw new Exception("Failed to expand available memory, stack moved further");
-                }
-
-                (*_stackMemoryS).AllocateMemory(expandCount * (nuint)sizeof(T));
+                var newMemory = new Class.StackMemory((nuint)sizeof(T) * (Capacity + expandCount));
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                Buffer.MemoryCopy(
+                    _stackMemoryC.Start,
+                    newMemory.Start,
+                    newMemory.ByteCount,
+                    _stackMemoryC.ByteCount
+                    );
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                _stackMemoryC.Dispose();
+                _stackMemoryC = newMemory;
+                _start = (T*)_stackMemoryC.Start;
             }
-            else if (_stackMemoryC != null)
+            else
             {
-                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                if (_stackMemoryS != null)
                 {
-                    throw new Exception("Failed to expand available memory, stack moved further");
-                }
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                    {
+                        throw new Exception("Failed to expand available memory, stack moved further");
+                    }
 
-                _stackMemoryC.AllocateMemory(expandCount * (nuint)sizeof(T));
+                    _stackMemoryS->AllocateMemory(expandCount * (nuint)sizeof(T));
+                }
+                else if (_stackMemoryC != null)
+                {
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                    {
+                        throw new Exception("Failed to expand available memory, stack moved further");
+                    }
+
+                    _stackMemoryC.AllocateMemory(expandCount * (nuint)sizeof(T));
+                }
             }
 
             Capacity += expandCount;
@@ -150,7 +195,14 @@ namespace StackMemoryCollections.Class
             var tempSize = Size + 1;
             if (tempSize > Capacity)
             {
-                throw new Exception("Not enough memory to allocate stack element");
+                if(_memoryOwner)
+                {
+                    ExpandCapacity(Capacity);
+                }
+                else
+                {
+                    throw new Exception("Not enough memory to allocate stack element");
+                }
             }
 
             *(_start + Size) = item;
@@ -230,16 +282,25 @@ namespace StackMemoryCollections.Class
         {
             if (!_disposed)
             {
-                if (disposing)
+                if (!_memoryOwner)
                 {
-                    if (_stackMemoryS != null)
+                    if (disposing)
                     {
-                        (*_stackMemoryS).FreeMemory(Capacity * (nuint)sizeof(T));
+                        if (_stackMemoryS != null)
+                        {
+                            _stackMemoryS->FreeMemory(Capacity * (nuint)sizeof(T));
+                        }
+                        else if (_stackMemoryC != null)
+                        {
+                            _stackMemoryC.FreeMemory(Capacity * (nuint)sizeof(T));
+                        }
                     }
-                    else if (_stackMemoryC != null)
-                    {
-                        _stackMemoryC.FreeMemory(Capacity * (nuint)sizeof(T));
-                    }
+                }
+                else
+                {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                    _stackMemoryC.Dispose();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 }
 
                 _disposed = true;

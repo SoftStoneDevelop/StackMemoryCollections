@@ -16,7 +16,8 @@ Supported collections:
 
 <details><summary>Stack</summary>
 
-### Primitive:
+### Primitive types:
+Stack elements are primitives: byte, float, int, short, decimal... .
 
 [PrimitiveSimpleJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.PrimitiveSimpleJob-report-github.md):
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/PrimitiveSimpleJob.cs)
@@ -26,6 +27,7 @@ Supported collections:
 
 ______
 ### Class:
+Stack elements are classes.
 
 [ClassSimpleJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.ClassSimpleJob-report-github.md):
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/ClassSimpleJob.cs)
@@ -35,6 +37,7 @@ ______
 
 ______
 ### Struct:
+Stack elements are structures.
 
 [StructSimpleJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.StructSimpleJob-report-github.md):
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/StructSimpleJob.cs)

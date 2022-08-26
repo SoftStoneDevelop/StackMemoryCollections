@@ -39,6 +39,25 @@ namespace Tests
         }
 
         [Test]
+        public void ReseizeTest()
+        {
+            unsafe
+            {
+                var stack = new StackMemoryCollections.Struct.Stack<int>();
+                stack.Push(5);
+                stack.Push(5);
+                stack.Push(5);
+                stack.Push(5);
+                Assert.That(stack.Size, Is.EqualTo((nuint)4));
+                Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
+
+                stack.Push(5);
+                Assert.That(stack.Size, Is.EqualTo((nuint)5));
+                Assert.That(stack.Capacity, Is.EqualTo((nuint)8));
+            }
+        }
+
+        [Test]
         public void PushTest()
         {
             unsafe

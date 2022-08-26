@@ -5,7 +5,7 @@ Allows you to allocate memory for a method / class and place all sets of variabl
 Avoid repeated copying of structures when placing them in collections.
 And other use cases.
 
-See [documentation](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/ApiReadme.md) for details.
+See [documentation](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Readme.md) for details.
 
 Supported collections:
 - Stack

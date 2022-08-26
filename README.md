@@ -1,5 +1,5 @@
 # Readme:
-Collections for memory reuse by stack type.
+Fast unsafe collections(generated at build time with Roslyn Generator) for memory reuse by stack type. Can also be used in as classic collection with resizing or on a custom memory allocator(constructor with `void*`), then it's your responsibility to make sure the pointer is correct.
 
 Allows you to allocate memory for a method / class and place all sets of variables in it.
 Avoid repeated copying of structures when placing them in collections.
@@ -16,7 +16,8 @@ Supported collections:
 
 <details><summary>Stack</summary>
 
-### Primitive:
+### Primitive types:
+Stack elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
 
 [PrimitiveSimpleJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.PrimitiveSimpleJob-report-github.md):
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/PrimitiveSimpleJob.cs)
@@ -26,6 +27,7 @@ Supported collections:
 
 ______
 ### Class:
+Stack elements are classes.
 
 [ClassSimpleJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.ClassSimpleJob-report-github.md):
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/ClassSimpleJob.cs)
@@ -35,6 +37,7 @@ ______
 
 ______
 ### Struct:
+Stack elements are structures.
 
 [StructSimpleJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.StructSimpleJob-report-github.md):
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/StructSimpleJob.cs)

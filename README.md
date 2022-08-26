@@ -17,7 +17,7 @@ Supported collections:
 <details><summary>Stack</summary>
 
 ### Primitive types:
-Stack elements are primitives: byte, float, int, short, decimal... .
+Stack elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
 
 [PrimitiveSimpleJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.PrimitiveSimpleJob-report-github.md):
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/PrimitiveSimpleJob.cs)

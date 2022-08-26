@@ -27,7 +27,7 @@ Implements IDisposable
 
 | Name | Description |
 | ------------- | ------------- |
-| [StackMemory(nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/Constructor1.md)  | Creates an instance and allocates memory |
+| [StackMemory(nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Constructor1.md)  | Creates an instance and allocates memory |
 
 # Properties
 
@@ -43,9 +43,9 @@ Implements IDisposable
 
 | Name | Description |
 | ------------- | ------------- |
-| [AllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/AllocateMemory.md)  | Allocate free memory |
-| [FreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/FreeMemory.md)  | Free up occupied memory |
-| [Dispose](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/StackMemory/Dispose.md)  | Free all memory |
+| [AllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/AllocateMemory.md)  | Allocate free memory |
+| [FreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/FreeMemory.md)  | Free up occupied memory |
+| [Dispose](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Dispose.md)  | Free all memory |
 
 ## Examples
 ```C#

@@ -101,8 +101,13 @@ namespace Tests
                     stack.Push(12);
                     stack.Push(50);
 
+                    Assert.That(new IntPtr(stack[0]), Is.EqualTo(new IntPtr((int*)memory.Start + 2)));
                     Assert.That(*stack[0], Is.EqualTo(50));
+
+                    Assert.That(new IntPtr(stack[1]), Is.EqualTo(new IntPtr((int*)memory.Start + 1)));
                     Assert.That(*stack[1], Is.EqualTo(12));
+
+                    Assert.That(new IntPtr(stack[2]), Is.EqualTo(new IntPtr((int*)memory.Start)));
                     Assert.That(*stack[2], Is.EqualTo(48));
 
                     Assert.That(() => stack[3],

@@ -11,7 +11,7 @@
         {
             if (!TypeHelper.IsPrimitive<T>())
             {
-                throw new ArgumentNullException("T must be primitive type");
+                throw new ArgumentException("T must be primitive type");
             }
 
             _stackMemoryC = new Class.StackMemory((nuint)sizeof(T));
@@ -30,7 +30,7 @@
 
             if (!TypeHelper.IsPrimitive<T>())
             {
-                throw new ArgumentNullException("T must be primitive type");
+                throw new ArgumentException("T must be primitive type");
             }
 
             _start = (T*)stackMemory->AllocateMemory((nuint)sizeof(T));
@@ -48,7 +48,7 @@
 
             if (!TypeHelper.IsPrimitive<T>())
             {
-                throw new ArgumentNullException("T must be primitive type");
+                throw new ArgumentException("T must be primitive type");
             }
 
             _start = (T*)stackMemory.AllocateMemory((nuint)sizeof(T));
@@ -67,7 +67,7 @@
 
             if (!TypeHelper.IsPrimitive<T>())
             {
-                throw new ArgumentNullException("T must be primitive type");
+                throw new ArgumentException("T must be primitive type");
             }
 
             _start = (T*)start;

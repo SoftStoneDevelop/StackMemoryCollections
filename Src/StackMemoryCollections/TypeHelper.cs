@@ -72,7 +72,7 @@
                     return true;
                 }
 
-                case "System.Single":
+                case "Single":
                 {
                     return true;
                 }

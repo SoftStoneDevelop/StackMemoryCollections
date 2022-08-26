@@ -87,9 +87,11 @@ namespace StackMemoryCollections.Class
 
         public nuint Capacity { get; private set; }
 
-        public nuint Size { get; private set; } = 0;
+        public nuint Size { get; set; } = 0;
 
         public bool IsEmpty => Size == 0;
+
+        public T* Start => _start;
 
         public void ReducingCapacity(in nuint reducingCount)
         {
@@ -424,6 +426,23 @@ namespace StackMemoryCollections.Class
                 Capacity * (nuint)sizeof(T),
                 Capacity * (nuint)sizeof(T)
                 );
+        }
+
+        public void Copy(in Class.Stack<T> destStack)
+        {
+            if (destStack.Capacity < Capacity)
+            {
+                throw new ArgumentException("Destination stack not enough capacity");
+            }
+
+            Buffer.MemoryCopy(
+                _start,
+                destStack.Start,
+                destStack.Capacity * (nuint)sizeof(T),
+                Capacity * (nuint)sizeof(T)
+                );
+
+            destStack.Size = Size;
         }
     }
 }

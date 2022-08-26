@@ -118,9 +118,11 @@ namespace {currentType.ContainingNamespace}.Struct
 
         public nuint Capacity {{ get; private set; }}
 
-        public nuint Size {{ get; private set; }} = 0;
+        public nuint Size {{ get; set; }} = 0;
 
         public bool IsEmpty => Size == 0;
+
+        public void* Start => _start;
 
         public void ReducingCapacity(in nuint reducingCount)
         {{
@@ -354,6 +356,23 @@ namespace {currentType.ContainingNamespace}.Struct
                 Capacity * {typeInfo.Members.Sum(s => s.Size)}
                 );
         }}
+
+        public void Copy(in {currentType.ContainingNamespace}.Class.StackOf{currentType.Name} destStack)
+        {{
+            if (destStack.Capacity < Capacity)
+            {{
+                throw new ArgumentException(""Destination stack not enough capacity"");
+            }}
+
+            Buffer.MemoryCopy(
+                _start,
+                destStack.Start,
+                destStack.Capacity * {typeInfo.Members.Sum(s => s.Size)},
+                Capacity * {typeInfo.Members.Sum(s => s.Size)}
+                );
+
+            destStack.Size = Size;
+        }}
     }}
 }}
 ");
@@ -456,9 +475,11 @@ namespace {currentType.ContainingNamespace}.Class
 
         public nuint Capacity {{ get; private set; }}
 
-        public nuint Size {{ get; private set; }} = 0;
+        public nuint Size {{ get; set; }} = 0;
 
         public bool IsEmpty => Size == 0;
+
+        public void* Start => _start;
 
         public void ReducingCapacity(in nuint reducingCount)
         {{
@@ -804,6 +825,23 @@ namespace {currentType.ContainingNamespace}.Class
                 Capacity * {typeInfo.Members.Sum(s => s.Size)},
                 Capacity * {typeInfo.Members.Sum(s => s.Size)}
                 );
+        }}
+
+        public void Copy(in {currentType.ContainingNamespace}.Class.StackOf{currentType.Name} destStack)
+        {{
+            if (destStack.Capacity < Capacity)
+            {{
+                throw new ArgumentException(""Destination stack not enough capacity"");
+            }}
+
+            Buffer.MemoryCopy(
+                _start,
+                destStack.Start,
+                destStack.Capacity * {typeInfo.Members.Sum(s => s.Size)},
+                Capacity * {typeInfo.Members.Sum(s => s.Size)}
+                );
+
+            destStack.Size = Size;
         }}
     }}
 }}

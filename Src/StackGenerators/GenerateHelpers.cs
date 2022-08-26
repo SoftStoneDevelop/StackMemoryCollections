@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
-using System.Text;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace StackGenerators
 {
@@ -19,7 +19,48 @@ namespace StackGenerators
             {
                 var currentType = typeHelpers[i];
                 builder.Clear();
-                builder.Append($@"
+
+                if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
+                {
+                    throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
+                }
+
+                GenerateStart(in builder, in currentType);
+                GenerateSize(in builder, in typeInfo);
+                
+                for (int j = 0; j < typeInfo.Members.Count; j++)
+                {
+                    MemberInfo memberInfo = typeInfo.Members[j];
+                    GenerateGetPtr(in builder, in memberInfo);
+                    
+                    if (memberInfo.IsPrimitive)
+                    {
+                        GenerateGetPrimitiveValue(in builder, in memberInfo);
+                        GenerateSetPrimitiveValue(in builder, in memberInfo);
+                        GenerateSetPrimitiveValueFrom(in builder, in memberInfo, in currentType);
+                    }
+                    else
+                    {
+                        GenerateGetСompositeValue(in builder, in memberInfo);
+                        GenerateSetСompositeValueFrom(in builder, in memberInfo, in currentType);
+                    }
+                }
+
+                GenerateCopyToPtr(in builder, in typeInfo, in currentType);
+                GenerateCopyToValue(in builder, in typeInfo, in currentType);
+                GenerateCopy(in builder, in typeInfo);
+                GenerateEnd(in builder);
+
+                context.AddSource($"{currentType.Name}Helper.g.cs", builder.ToString());
+            }
+        }
+
+        private void GenerateStart(
+            in StringBuilder builder,
+            in INamedTypeSymbol currentType
+            )
+        {
+            builder.Append($@"
 /*
 MIT License
 
@@ -52,56 +93,86 @@ namespace {currentType.ContainingNamespace}
     {{
 
 ");
-                if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
-                {
-                    throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
-                }
+        }
 
-                builder.Append($@"
+        private void GenerateSize(
+            in StringBuilder builder,
+            in TypeInfo typeInfo
+            )
+        {
+            builder.Append($@"
         public static nuint GetSize()
         {{
             return {typeInfo.Members.Sum(s => s.Size)};
         }}
 
 ");
-                for (int j = 0; j < typeInfo.Members.Count; j++)
-                {
-                    MemberInfo memberInfo = typeInfo.Members[j];
-                    builder.Append($@"
+        }
+
+        private void GenerateGetPtr(
+            in StringBuilder builder,
+            in MemberInfo memberInfo
+            )
+        {
+            builder.Append($@"
         public static void* Get{memberInfo.MemberName}Ptr(in void* ptr)
         {{
             return (byte*)ptr + {memberInfo.Offset};
         }}
 
 ");
+        }
 
-                    if (memberInfo.IsPrimitive)
-                    {
-                        builder.Append($@"
+        private void GenerateGetPrimitiveValue(
+            in StringBuilder builder,
+            in MemberInfo memberInfo
+            )
+        {
+            builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
             return *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset});
         }}
 
 ");
-                        builder.Append($@"
+        }
+
+        private void GenerateSetPrimitiveValue(
+            in StringBuilder builder,
+            in MemberInfo memberInfo
+            )
+        {
+            builder.Append($@"
         public static void Set{memberInfo.MemberName}Value(in void* ptr, in {memberInfo.TypeName} value)
         {{
             *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset}) = value;
         }}
 
 ");
-                        builder.Append($@"
+        }
+
+        private void GenerateSetPrimitiveValueFrom(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in INamedTypeSymbol currentType
+            )
+        {
+            builder.Append($@"
         public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
         {{
             *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset}) = value.{memberInfo.MemberName};
         }}
 
 ");
-                    }
-                    else
-                    {
-                        builder.Append($@"
+        }
+
+
+        private void GenerateGetСompositeValue(
+            in StringBuilder builder,
+            in MemberInfo memberInfo
+            )
+        {
+            builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
             {memberInfo.TypeName} result = default;
@@ -110,63 +181,78 @@ namespace {currentType.ContainingNamespace}
         }}
 
 ");
-                        builder.Append($@"
+        }
+
+        private void GenerateSetСompositeValueFrom(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in INamedTypeSymbol currentType
+            )
+        {
+            builder.Append($@"
         public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
         {{
             {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {memberInfo.Offset});
         }}
 
 ");
-                    }
+        }
 
-                }
-
-                #region CopyToPtr
-
-                builder.Append($@"
+        private void GenerateCopyToPtr(
+            in StringBuilder builder,
+            in TypeInfo typeInfo,
+            in INamedTypeSymbol currentType
+            )
+        {
+            builder.Append($@"
         public static void CopyToPtr(in {currentType.Name} value, in void* ptr)
         {{
 
 ");
-                foreach (var memberInfo in typeInfo.Members)
-                {
-                    builder.Append($@"
+            foreach (var memberInfo in typeInfo.Members)
+            {
+                builder.Append($@"
             Set{memberInfo.MemberName}Value(in ptr, in value);
 ");
-                }
+            }
 
-                builder.Append($@"
+            builder.Append($@"
 
         }}
 
 ");
+        }
 
-                #endregion
-
-                #region CopyToValue
-
-                builder.Append($@"
+        private void GenerateCopyToValue(
+            in StringBuilder builder,
+            in TypeInfo typeInfo,
+            in INamedTypeSymbol currentType
+            )
+        {
+            builder.Append($@"
         public static void CopyToValue(in void* ptr, ref {currentType.Name} value)
         {{
 
 ");
-                foreach (var memberInfo in typeInfo.Members)
-                {
-                    builder.Append($@"
+            foreach (var memberInfo in typeInfo.Members)
+            {
+                builder.Append($@"
             value.{memberInfo.MemberName} = Get{memberInfo.MemberName}Value(in ptr);
 ");
-                }
+            }
 
-                builder.Append($@"
+            builder.Append($@"
         }}
 
 ");
+        }
 
-                #endregion
-
-                #region CopyFromPtrToPtr
-
-                builder.Append($@"
+        private void GenerateCopy(
+            in StringBuilder builder,
+            in TypeInfo typeInfo
+            )
+        {
+            builder.Append($@"
         public static void Copy(in void* ptrSource, in void* ptrDest)
         {{
             Buffer.MemoryCopy(
@@ -177,16 +263,15 @@ namespace {currentType.ContainingNamespace}
                 );
         }}
 ");
+        }
 
-                #endregion
-
-                builder.Append($@"
+        private void GenerateEnd(in StringBuilder builder)
+        {
+            builder.Append($@"
 
     }}
 }}
 ");
-                context.AddSource($"{currentType.Name}Helper.g.cs", builder.ToString());
-            }
         }
     }
 }

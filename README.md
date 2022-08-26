@@ -15,6 +15,7 @@ Supported collections:
 ## Benchmarks:
 
 <details><summary>Stack</summary>
+
 ### Primitive:
 
 [PrimitiveSimpleJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.PrimitiveSimpleJob-report-github.md):

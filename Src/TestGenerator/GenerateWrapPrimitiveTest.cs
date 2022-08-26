@@ -274,8 +274,6 @@ namespace TestGenerator
                 throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
             }
 
-            var isChar = typeof(T) == typeof(char);
-
             builder.Clear();
             builder.Append($@"
 using NUnit.Framework;

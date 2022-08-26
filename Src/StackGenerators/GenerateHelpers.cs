@@ -11,15 +11,15 @@ namespace StackGenerators
         private void GenerateHelpers(
             in List<INamedTypeSymbol> typeHelpers,
             in GeneratorExecutionContext context,
-            in Dictionary<string, TypeInfo> typeInfos
+            in Dictionary<string, TypeInfo> typeInfos,
+            in StringBuilder builder
             )
         {
-            var helperBuilder = new StringBuilder();
             for (int i = 0; i < typeHelpers.Count; i++)
             {
                 var currentType = typeHelpers[i];
-                helperBuilder.Clear();
-                helperBuilder.Append($@"
+                builder.Clear();
+                builder.Append($@"
 /*
 MIT License
 
@@ -57,7 +57,7 @@ namespace {currentType.ContainingNamespace}
                     throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
                 }
 
-                helperBuilder.Append($@"
+                builder.Append($@"
         public static nuint GetSize()
         {{
             return {typeInfo.Members.Sum(s => s.Size)};
@@ -67,7 +67,7 @@ namespace {currentType.ContainingNamespace}
                 for (int j = 0; j < typeInfo.Members.Count; j++)
                 {
                     MemberInfo memberInfo = typeInfo.Members[j];
-                    helperBuilder.Append($@"
+                    builder.Append($@"
         public static void* Get{memberInfo.MemberName}Ptr(in void* ptr)
         {{
             return (byte*)ptr + {memberInfo.Offset};
@@ -77,21 +77,21 @@ namespace {currentType.ContainingNamespace}
 
                     if (memberInfo.IsPrimitive)
                     {
-                        helperBuilder.Append($@"
+                        builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
             return *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset});
         }}
 
 ");
-                        helperBuilder.Append($@"
+                        builder.Append($@"
         public static void Set{memberInfo.MemberName}Value(in void* ptr, in {memberInfo.TypeName} value)
         {{
             *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset}) = value;
         }}
 
 ");
-                        helperBuilder.Append($@"
+                        builder.Append($@"
         public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
         {{
             *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset}) = value.{memberInfo.MemberName};
@@ -101,7 +101,7 @@ namespace {currentType.ContainingNamespace}
                     }
                     else
                     {
-                        helperBuilder.Append($@"
+                        builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
             {memberInfo.TypeName} result = default;
@@ -110,7 +110,7 @@ namespace {currentType.ContainingNamespace}
         }}
 
 ");
-                        helperBuilder.Append($@"
+                        builder.Append($@"
         public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
         {{
             {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {memberInfo.Offset});
@@ -123,19 +123,19 @@ namespace {currentType.ContainingNamespace}
 
                 #region CopyToPtr
 
-                helperBuilder.Append($@"
+                builder.Append($@"
         public static void CopyToPtr(in {currentType.Name} value, in void* ptr)
         {{
 
 ");
                 foreach (var memberInfo in typeInfo.Members)
                 {
-                    helperBuilder.Append($@"
+                    builder.Append($@"
             Set{memberInfo.MemberName}Value(in ptr, in value);
 ");
                 }
 
-                helperBuilder.Append($@"
+                builder.Append($@"
 
         }}
 
@@ -145,19 +145,19 @@ namespace {currentType.ContainingNamespace}
 
                 #region CopyToValue
 
-                helperBuilder.Append($@"
+                builder.Append($@"
         public static void CopyToValue(in void* ptr, ref {currentType.Name} value)
         {{
 
 ");
                 foreach (var memberInfo in typeInfo.Members)
                 {
-                    helperBuilder.Append($@"
+                    builder.Append($@"
             value.{memberInfo.MemberName} = Get{memberInfo.MemberName}Value(in ptr);
 ");
                 }
 
-                helperBuilder.Append($@"
+                builder.Append($@"
         }}
 
 ");
@@ -166,7 +166,7 @@ namespace {currentType.ContainingNamespace}
 
                 #region CopyFromPtrToPtr
 
-                helperBuilder.Append($@"
+                builder.Append($@"
         public static void Copy(in void* ptrSource, in void* ptrDest)
         {{
             Buffer.MemoryCopy(
@@ -180,12 +180,12 @@ namespace {currentType.ContainingNamespace}
 
                 #endregion
 
-                helperBuilder.Append($@"
+                builder.Append($@"
 
     }}
 }}
 ");
-                context.AddSource($"{currentType.Name}Helper.g.cs", helperBuilder.ToString());
+                context.AddSource($"{currentType.Name}Helper.g.cs", builder.ToString());
             }
         }
     }

@@ -11,20 +11,20 @@ namespace StackGenerators
         private void GenerateStack(
             in List<INamedTypeSymbol> typeStack,
             in GeneratorExecutionContext context,
-            in Dictionary<string, TypeInfo> typeInfos
+            in Dictionary<string, TypeInfo> typeInfos,
+            in StringBuilder builder
             )
         {
-            var helperBuilder = new StringBuilder();
             for (int i = 0; i < typeStack.Count; i++)
             {
                 var currentType = typeStack[i];
-                helperBuilder.Clear();
+                builder.Clear();
                 if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
                 {
                     throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
                 }
 
-                helperBuilder.Append($@"
+                builder.Append($@"
 /*
 MIT License
 
@@ -376,10 +376,10 @@ namespace {currentType.ContainingNamespace}.Struct
     }}
 }}
 ");
-                context.AddSource($"{currentType.Name}StackStruct.g.cs", helperBuilder.ToString());
+                context.AddSource($"{currentType.Name}StackStruct.g.cs", builder.ToString());
 
-                helperBuilder.Clear();
-                helperBuilder.Append($@"
+                builder.Clear();
+                builder.Append($@"
 /*
 MIT License
 
@@ -846,7 +846,7 @@ namespace {currentType.ContainingNamespace}.Class
     }}
 }}
 ");
-                context.AddSource($"{currentType.Name}StackClass.g.cs", helperBuilder.ToString());
+                context.AddSource($"{currentType.Name}StackClass.g.cs", builder.ToString());
             }
         }
     }

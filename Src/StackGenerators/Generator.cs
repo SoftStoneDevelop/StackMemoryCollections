@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace StackGenerators
 {
@@ -32,9 +33,11 @@ namespace StackGenerators
 
             var infos = new Dictionary<string, TypeInfo>();
             FillTypeInfos(in typeHelpers, in infos);
-            GenerateHelpers(in typeHelpers, in context, in infos);
-            GenerateWrappers(in typeWrappers, in context, in infos);
-            GenerateStack(in typeGeneratedStack, in context, in infos);
+
+            var builder = new StringBuilder();
+            GenerateHelpers(in typeHelpers, in context, in infos, in builder);
+            GenerateWrappers(in typeWrappers, in context, in infos, in builder);
+            GenerateStack(in typeGeneratedStack, in context, in infos, in builder);
         }
 
         public void Initialize(GeneratorInitializationContext context)

@@ -11,20 +11,20 @@ namespace StackGenerators
         private void GenerateWrappers(
             in List<INamedTypeSymbol> typeWrappers,
             in GeneratorExecutionContext context,
-            in Dictionary<string, TypeInfo> typeInfos
+            in Dictionary<string, TypeInfo> typeInfos,
+            in StringBuilder builder
             )
         {
-            var helperBuilder = new StringBuilder();
             for (int i = 0; i < typeWrappers.Count; i++)
             {
                 var currentType = typeWrappers[i];
-                helperBuilder.Clear();
+                builder.Clear();
                 if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
                 {
                     throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
                 }
 
-                helperBuilder.Append($@"
+                builder.Append($@"
 /*
 MIT License
 
@@ -136,10 +136,10 @@ namespace {currentType.ContainingNamespace}.Struct
     }}
 }}
 ");
-                context.AddSource($"{currentType.Name}WrapperStruct.g.cs", helperBuilder.ToString());
+                context.AddSource($"{currentType.Name}WrapperStruct.g.cs", builder.ToString());
 
-                helperBuilder.Clear();
-                helperBuilder.Append($@"
+                builder.Clear();
+                builder.Append($@"
 /*
 MIT License
 
@@ -271,7 +271,7 @@ namespace {currentType.ContainingNamespace}.Class
     }}
 }}
 ");
-                context.AddSource($"{currentType.Name}WrapperClass.g.cs", helperBuilder.ToString());
+                context.AddSource($"{currentType.Name}WrapperClass.g.cs", builder.ToString());
             }
         }
     }

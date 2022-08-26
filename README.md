@@ -1,5 +1,5 @@
 # Readme:
-Collections for memory reuse by stack type.
+Fast unsafe collections for memory reuse by stack type. Can also be used in as classic collection with resizing or on a custom memory allocator(constructor with `void*`), then it's your responsibility to make sure the pointer is correct.
 
 Allows you to allocate memory for a method / class and place all sets of variables in it.
 Avoid repeated copying of structures when placing them in collections.

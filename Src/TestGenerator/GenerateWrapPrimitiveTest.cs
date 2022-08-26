@@ -266,7 +266,7 @@ namespace TestGenerator
             in List<T> values,
             in StringBuilder builder,
             in string wrapperNamespace,
-            Func<T, string> toStr
+            in Func<T, string> toStr
             ) where T : unmanaged
         {
             if (values.Count < 5)
@@ -275,6 +275,23 @@ namespace TestGenerator
             }
 
             builder.Clear();
+            GenerateStart<T>(in builder, in wrapperNamespace);
+
+            //generate methods
+            GenerateDispose(in values, in builder, in wrapperNamespace);
+            GenerateNotDispose(in values, in builder, in wrapperNamespace);
+            GenerateValue(in values, in builder, in wrapperNamespace, in toStr);
+
+            GenerateEnd(in builder);
+            
+            context.AddSource($"Wrapper{wrapperNamespace}{typeof(T).Name}Fixture.g.cs", builder.ToString());
+        }
+
+        private void GenerateStart<T>(
+            in StringBuilder builder,
+            in string wrapperNamespace
+            ) where T : unmanaged
+        {
             builder.Append($@"
 using NUnit.Framework;
 using System;
@@ -284,6 +301,17 @@ namespace Tests
     [TestFixture]
     public class Wrapper{wrapperNamespace}{typeof(T).Name}Fixture
     {{
+                    
+");
+        }
+
+        private void GenerateDispose<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string wrapperNamespace
+            ) where T : unmanaged
+        {
+            builder.Append($@"
         [Test]
         public void DisposeTest()
         {{
@@ -308,6 +336,17 @@ namespace Tests
                 }}
             }}
         }}
+
+");
+        }
+
+        private void GenerateNotDispose<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string wrapperNamespace
+            ) where T : unmanaged
+        {
+            builder.Append($@"
 
         [Test]
         public void NotDisposeTest()
@@ -335,6 +374,18 @@ namespace Tests
             }}
         }}
 
+");
+        }
+
+        private void GenerateValue<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string wrapperNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            builder.Append($@"
+
         [Test]
         public void ValueTest()
         {{
@@ -357,10 +408,17 @@ namespace Tests
                 }}
             }}
         }}
+
+");
+        }
+
+        private void GenerateEnd(in StringBuilder builder)
+        {
+            builder.Append($@"
+
     }}
 }}
 ");
-            context.AddSource($"Wrapper{wrapperNamespace}{typeof(T).Name}Fixture.g.cs", builder.ToString());
         }
     }
 }

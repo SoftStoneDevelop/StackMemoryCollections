@@ -52,17 +52,27 @@
                     return true;
                 }
 
-                case "System.Char":
+                case "Char":
                 {
                     return true;
                 }
 
-                case "System.Double":
+                case "Decimal":
                 {
                     return true;
                 }
 
-                case "System.Boolean":
+                case "Double":
+                {
+                    return true;
+                }
+
+                case "Boolean":
+                {
+                    return true;
+                }
+
+                case "System.Single":
                 {
                     return true;
                 }

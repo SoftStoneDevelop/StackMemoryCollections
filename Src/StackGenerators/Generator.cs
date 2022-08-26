@@ -328,19 +328,29 @@ namespace StackGenerators
                     return sizeof(UInt16);
                 }
 
-                case "System.Char":
+                case "Char":
                 {
                     return sizeof(Char);
                 }
 
-                case "System.Double":
+                case "Decimal":
+                {
+                    return sizeof(Decimal);
+                }
+
+                case "Double":
                 {
                     return sizeof(Double);
                 }
 
-                case "System.Boolean":
+                case "Boolean":
                 {
                     return sizeof(Boolean);
+                }
+
+                case "Single":
+                {
+                    return sizeof(Single);
                 }
 
                 default:
@@ -394,17 +404,27 @@ namespace StackGenerators
                     return true;
                 }
 
-                case "System.Char":
+                case "Char":
                 {
                     return true;
                 }
 
-                case "System.Double":
+                case "Decimal":
                 {
                     return true;
                 }
 
-                case "System.Boolean":
+                case "Double":
+                {
+                    return true;
+                }
+
+                case "Boolean":
+                {
+                    return true;
+                }
+
+                case "Single":
                 {
                     return true;
                 }

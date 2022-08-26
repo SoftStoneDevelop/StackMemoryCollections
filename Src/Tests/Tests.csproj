@@ -12,5 +12,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Src\StackMemoryCollections\StackMemoryCollections.csproj" />
 		<ProjectReference Include="..\StackGenerators\StackGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
+		<ProjectReference Include="..\TestGenerator\TestGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False"/>
 	</ItemGroup>
 </Project>

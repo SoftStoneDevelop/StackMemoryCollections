@@ -129,7 +129,7 @@ namespace {currentType.ContainingNamespace}.Struct
                 return;
             }}
 
-            if (Size < Capacity - reducingCount)
+            if (Size > 0 && Size < Capacity - reducingCount)
             {{
                 throw new Exception(""Can't reduce available memory, it's already in use"");
             }}
@@ -219,7 +219,19 @@ namespace {currentType.ContainingNamespace}.Struct
 
         public void TrimExcess()
         {{
-            ReducingCapacity(Capacity - Size);
+            if (_memoryOwner)
+            {{
+                ReducingCapacity(
+                    Size == 0 ?
+                        Capacity > 4 ? (nuint)(-(4 - (long)Capacity))
+                            : 0
+                        : Capacity - Size
+                        );
+            }}
+            else
+            {{
+                ReducingCapacity(Capacity - Size);
+            }}
         }}
 
 
@@ -455,7 +467,7 @@ namespace {currentType.ContainingNamespace}.Class
                 return;
             }}
 
-            if (Size < Capacity - reducingCount)
+            if (Size > 0 && Size < Capacity - reducingCount)
             {{
                 throw new Exception(""Can't reduce available memory, it's already in use"");
             }}
@@ -544,7 +556,19 @@ namespace {currentType.ContainingNamespace}.Class
 
         public void TrimExcess()
         {{
-            ReducingCapacity(Capacity - Size);
+            if(_memoryOwner)
+            {{
+                ReducingCapacity(
+                    Size == 0 ?
+                        Capacity > 4 ? (nuint)(-(4 - (long)Capacity))
+                            : 0
+                        : Capacity - Size
+                        );
+            }}
+            else
+            {{
+                ReducingCapacity(Capacity - Size);
+            }}
         }}
 
 

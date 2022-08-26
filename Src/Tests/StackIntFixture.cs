@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using StackMemoryCollections;
 using System;
 
 namespace Tests

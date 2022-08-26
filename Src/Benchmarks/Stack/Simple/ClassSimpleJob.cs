@@ -5,7 +5,7 @@ namespace Benchmark
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
-    public class StackOfClassSimpleUsageJob
+    public class ClassSimpleJob
     {
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;

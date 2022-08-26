@@ -13,7 +13,7 @@ namespace {ItemTypeNamespace}.Class
 
 ```
 Implements
-IEnumerable<{ItemType}>, IEnumerable, IDisposable
+`IEnumerable<{ItemType}>, IEnumerable, IDisposable`
 
 Struct
 ```C#
@@ -36,7 +36,7 @@ namespace StackMemoryCollections.Class
 
 ```
 Implements
-IEnumerable<{ItemType}>, IEnumerable, IDisposable
+`IEnumerable<T>, IEnumerable, IDisposable`
 
 Struct
 ```C#
@@ -50,7 +50,7 @@ namespace StackMemoryCollections.Struct
 
 
 Implements
-IDisposable
+`IDisposable`
 
 # Constructors
 

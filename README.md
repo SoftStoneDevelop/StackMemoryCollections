@@ -1,24 +1,37 @@
 # Readme:
 Collections for memory reuse by stack type.
 
-Supported collections([API description](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/ApiReadme.md)):
-- Stack
+Allows you to allocate memory for a method / class and place all sets of variables in it.
+Avoid repeated copying of structures when placing them in collections.
+And other use cases.
 
-## Benchmarks([code](https://github.com/SoftStoneDevelop/StackMemoryCollections/tree/main/Src/Benchmarks)):
-### StackSimpleUsageJob
+See [documentation](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/ApiDescriptions/ApiReadme.md) for details.
+
+Supported collections:
+- Stack
+- List TODO
+- Queue TODO
+
+## Benchmarks:
+
+<details><summary>Stack</summary>
+
+### StackSimpleUsageJob([code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Simple/StackSimpleUsageJob.cs))
 ![StackSimpleUsageJob](/BenchmarkResults/StackSimpleUsageJob.png)
 
-### StackOptimalUsageJob
+### StackOptimalUsageJob([code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Optimal/StackOptimalUsageJob.cs))
 ![StackOptimalUsageJob](/BenchmarkResults/StackOptimalUsageJob.png)
 
-### StackOfStructSimpleUsageJob
+### StackOfStructSimpleUsageJob([code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Simple/StackOfStructSimpleUsageJob.cs))
 ![example](/BenchmarkResults/StackOfStructSimpleUsageJob.png)
 
-### StackOfStructOptimalUsageJob
+### StackOfStructOptimalUsageJob([code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Optimal/StackOfStructOptimalUsageJob.cs))
 ![example](/BenchmarkResults/StackOfStructOptimalUsageJob.png)
 
-### StackOfClassSimpleUsageJob
+### StackOfClassSimpleUsageJob([code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Simple/StackOfClassSimpleUsageJob.cs))
 ![example](/BenchmarkResults/StackOfClassSimpleUsageJob.png)
 
-### StackOfClassOptimalUsageJob
+### StackOfClassOptimalUsageJob([code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Optimal/StackOfClassOptimalUsageJob.cs))
 ![example](/BenchmarkResults/StackOfClassOptimalUsageJob.png)
+  
+</details>

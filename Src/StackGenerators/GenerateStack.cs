@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System;
+using System.Linq;
 
 namespace StackGenerators
 {
@@ -62,7 +63,7 @@ namespace {currentType.ContainingNamespace}.Struct
 
         public StackOf{currentType.Name}()
         {{
-            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({currentType.Name}Helper.GetSize() * (nuint)4);
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)} * 4);
             _start = _stackMemoryC.Start;
             Capacity = 4;
             _memoryOwner = true;
@@ -79,7 +80,7 @@ namespace {currentType.ContainingNamespace}.Struct
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory->AllocateMemory({currentType.Name}Helper.GetSize() * count);
+            _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size)} * count);
             _stackMemoryS = stackMemory;
             Capacity = count;
         }}
@@ -94,7 +95,7 @@ namespace {currentType.ContainingNamespace}.Struct
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory.AllocateMemory({currentType.Name}Helper.GetSize() * count);
+            _start = stackMemory.AllocateMemory({typeInfo.Members.Sum(s => s.Size)} * count);
             _stackMemoryC = stackMemory;
             _stackMemoryS = null;
             Capacity = count;
@@ -135,13 +136,13 @@ namespace {currentType.ContainingNamespace}.Struct
 
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory({currentType.Name}Helper.GetSize() * (Capacity - reducingCount));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)} * (Capacity - reducingCount));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 Buffer.MemoryCopy(
                     _stackMemoryC.Start,
                     newMemory.Start,
                     newMemory.ByteCount,
-                    {currentType.Name}Helper.GetSize() * (Capacity - reducingCount)
+                    {typeInfo.Members.Sum(s => s.Size)} * (Capacity - reducingCount)
                     );
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
@@ -152,21 +153,21 @@ namespace {currentType.ContainingNamespace}.Struct
             {{
                 if(_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
                     {{
                         throw new Exception(""Failed to reduce available memory, stack moved further"");
                     }}
 
-                    _stackMemoryS->FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+                    _stackMemoryS->FreeMemory(reducingCount * {typeInfo.Members.Sum(s => s.Size)});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
                     {{
                         throw new Exception(""Failed to reduce available memory, stack moved further"");
                     }}
 
-                    _stackMemoryC.FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+                    _stackMemoryC.FreeMemory(reducingCount * {typeInfo.Members.Sum(s => s.Size)});
                 }}
             }}
 
@@ -178,7 +179,7 @@ namespace {currentType.ContainingNamespace}.Struct
 
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory({currentType.Name}Helper.GetSize() * (Capacity + expandCount));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)} * (Capacity + expandCount));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 Buffer.MemoryCopy(
                     _stackMemoryC.Start,
@@ -195,21 +196,21 @@ namespace {currentType.ContainingNamespace}.Struct
             {{
                 if(_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
                     {{
                         throw new Exception(""Failed to expand available memory, stack moved further"");
                     }}
 
-                    _stackMemoryS->AllocateMemory(expandCount * {currentType.Name}Helper.GetSize());
+                    _stackMemoryS->AllocateMemory(expandCount * {typeInfo.Members.Sum(s => s.Size)});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
                     {{
                         throw new Exception(""Failed to expand available memory, stack moved further"");
                     }}
 
-                    _stackMemoryC.AllocateMemory(expandCount * {currentType.Name}Helper.GetSize());
+                    _stackMemoryC.AllocateMemory(expandCount * {typeInfo.Members.Sum(s => s.Size)});
                 }}
             }}
 
@@ -237,7 +238,7 @@ namespace {currentType.ContainingNamespace}.Struct
                 }}
             }}
 
-            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {currentType.Name}Helper.GetSize()));
+            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
             Size = tempSize;
         }}
 
@@ -249,7 +250,7 @@ namespace {currentType.ContainingNamespace}.Struct
                 return false;
             }}
 
-            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {currentType.Name}Helper.GetSize()));
+            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
             Size = tempSize;
 
             return true;
@@ -281,7 +282,7 @@ namespace {currentType.ContainingNamespace}.Struct
             }}
 
             {currentType.Name} result = new {currentType.Name}();
-            {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {currentType.Name}Helper.GetSize()), ref result);
+            {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), ref result);
             return
                 result;
         }}
@@ -293,7 +294,7 @@ namespace {currentType.ContainingNamespace}.Struct
                 throw new Exception(""There are no elements on the stack"");
             }}
 
-            return (byte*)_start + ((Size - 1) * {currentType.Name}Helper.GetSize());
+            return (byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)});
         }}
 
         public void Dispose()
@@ -302,11 +303,11 @@ namespace {currentType.ContainingNamespace}.Struct
             {{
                 if(_stackMemoryS != null)
                 {{
-                    _stackMemoryS->FreeMemory(Capacity * {currentType.Name}Helper.GetSize());
+                    _stackMemoryS->FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size)});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    _stackMemoryC.FreeMemory(Capacity * {currentType.Name}Helper.GetSize());
+                    _stackMemoryC.FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size)});
                 }}
             }}
             else
@@ -328,7 +329,7 @@ namespace {currentType.ContainingNamespace}.Struct
                 }}
 
                 return
-                    (byte*)_start + ((Size - 1 - index) * {currentType.Name}Helper.GetSize());
+                    (byte*)_start + ((Size - 1 - index) * {typeInfo.Members.Sum(s => s.Size)});
             }}
         }}
 
@@ -337,8 +338,8 @@ namespace {currentType.ContainingNamespace}.Struct
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,
-                Capacity * {currentType.Name}Helper.GetSize(),
-                Capacity * {currentType.Name}Helper.GetSize()
+                Capacity * {typeInfo.Members.Sum(s => s.Size)},
+                Capacity * {typeInfo.Members.Sum(s => s.Size)}
                 );
         }}
     }}
@@ -388,7 +389,7 @@ namespace {currentType.ContainingNamespace}.Class
 
         public StackOf{currentType.Name}()
         {{
-            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({currentType.Name}Helper.GetSize() * (nuint)4);
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)} * 4);
             _start = _stackMemoryC.Start;
             Capacity = 4;
             _memoryOwner = true;
@@ -405,7 +406,7 @@ namespace {currentType.ContainingNamespace}.Class
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory->AllocateMemory({currentType.Name}Helper.GetSize() * count);
+            _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size)} * count);
             _stackMemoryS = stackMemory;
             Capacity = count;
         }}
@@ -420,7 +421,7 @@ namespace {currentType.ContainingNamespace}.Class
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory.AllocateMemory({currentType.Name}Helper.GetSize() * count);
+            _start = stackMemory.AllocateMemory({typeInfo.Members.Sum(s => s.Size)} * count);
             _stackMemoryC = stackMemory;
             _stackMemoryS = null;
             Capacity = count;
@@ -461,13 +462,13 @@ namespace {currentType.ContainingNamespace}.Class
 
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory({currentType.Name}Helper.GetSize() * (Capacity - reducingCount ));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)} * (Capacity - reducingCount ));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 Buffer.MemoryCopy(
                     _stackMemoryC.Start,
                     newMemory.Start,
                     newMemory.ByteCount,
-                    {currentType.Name}Helper.GetSize() * (Capacity - reducingCount)
+                    {typeInfo.Members.Sum(s => s.Size)} * (Capacity - reducingCount)
                     );
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
@@ -478,21 +479,21 @@ namespace {currentType.ContainingNamespace}.Class
             {{
                 if(_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
                     {{
                         throw new Exception(""Failed to reduce available memory, stack moved further"");
                     }}
 
-                    _stackMemoryS->FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+                    _stackMemoryS->FreeMemory(reducingCount * {typeInfo.Members.Sum(s => s.Size)});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
                     {{
                         throw new Exception(""Failed to reduce available memory, stack moved further"");
                     }}
 
-                    _stackMemoryC.FreeMemory(reducingCount * {currentType.Name}Helper.GetSize());
+                    _stackMemoryC.FreeMemory(reducingCount * {typeInfo.Members.Sum(s => s.Size)});
                 }}
             }}
 
@@ -503,7 +504,7 @@ namespace {currentType.ContainingNamespace}.Class
         {{
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory({currentType.Name}Helper.GetSize() * (Capacity + expandCount));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)} * (Capacity + expandCount));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 Buffer.MemoryCopy(
                     _stackMemoryC.Start,
@@ -520,21 +521,21 @@ namespace {currentType.ContainingNamespace}.Class
             {{
                 if(_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
                     {{
                         throw new Exception(""Failed to expand available memory, stack moved further"");
                     }}
 
-                    _stackMemoryS->AllocateMemory(expandCount * {currentType.Name}Helper.GetSize());
+                    _stackMemoryS->AllocateMemory(expandCount * {typeInfo.Members.Sum(s => s.Size)});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {currentType.Name}Helper.GetSize())))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
                     {{
                         throw new Exception(""Failed to expand available memory, stack moved further"");
                     }}
 
-                    _stackMemoryC.AllocateMemory(expandCount * {currentType.Name}Helper.GetSize());
+                    _stackMemoryC.AllocateMemory(expandCount * {typeInfo.Members.Sum(s => s.Size)});
                 }}
             }}
 
@@ -562,7 +563,7 @@ namespace {currentType.ContainingNamespace}.Class
                 }}
             }}
 
-            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {currentType.Name}Helper.GetSize()));
+            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
             Size = tempSize;
             _version++;
         }}
@@ -575,7 +576,7 @@ namespace {currentType.ContainingNamespace}.Class
                 return false;
             }}
 
-            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {currentType.Name}Helper.GetSize()));
+            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
             Size = tempSize;
             _version++;
 
@@ -610,7 +611,7 @@ namespace {currentType.ContainingNamespace}.Class
             }}
 
             {currentType.Name} result = new {currentType.Name}();
-            {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {currentType.Name}Helper.GetSize()), ref result);
+            {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), ref result);
             return
                 result;
         }}
@@ -622,7 +623,7 @@ namespace {currentType.ContainingNamespace}.Class
                 throw new Exception(""There are no elements on the stack"");
             }}
 
-            return (byte*)_start + ((Size - 1) * {currentType.Name}Helper.GetSize());
+            return (byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)});
         }}
 
         #region IDisposable
@@ -647,11 +648,11 @@ namespace {currentType.ContainingNamespace}.Class
                     {{
                         if(_stackMemoryS != null)
                         {{
-                            _stackMemoryS->FreeMemory(Capacity * {currentType.Name}Helper.GetSize());
+                            _stackMemoryS->FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size)});
                         }}
                         else if (_stackMemoryC != null)
                         {{
-                            _stackMemoryC.FreeMemory(Capacity * {currentType.Name}Helper.GetSize());
+                            _stackMemoryC.FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size)});
                         }}
                     }}
                 }}
@@ -727,7 +728,7 @@ namespace {currentType.ContainingNamespace}.Class
                 if (_currentIndex == -2)
                 {{
                     _currentIndex = (int)_stack.Size - 1;
-                    _current = (byte*)_stack._start + (_currentIndex * (int){currentType.Name}Helper.GetSize());
+                    _current = (byte*)_stack._start + (_currentIndex * {typeInfo.Members.Sum(s => s.Size)});
                     return true;
                 }}
 
@@ -739,7 +740,7 @@ namespace {currentType.ContainingNamespace}.Class
                 --_currentIndex;
                 if (_currentIndex >= 0)
                 {{
-                    _current = (byte*)_stack._start + (_currentIndex * (int){currentType.Name}Helper.GetSize());
+                    _current = (byte*)_stack._start + (_currentIndex * {typeInfo.Members.Sum(s => s.Size)});
                     return true;
                 }}
                 else
@@ -767,7 +768,7 @@ namespace {currentType.ContainingNamespace}.Class
                 }}
 
                 return
-                    (byte*)_start + ((Size - 1 - index) * {currentType.Name}Helper.GetSize());
+                    (byte*)_start + ((Size - 1 - index) * {typeInfo.Members.Sum(s => s.Size)});
             }}
         }}
 
@@ -776,8 +777,8 @@ namespace {currentType.ContainingNamespace}.Class
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,
-                Capacity * {currentType.Name}Helper.GetSize(),
-                Capacity * {currentType.Name}Helper.GetSize()
+                Capacity * {typeInfo.Members.Sum(s => s.Size)},
+                Capacity * {typeInfo.Members.Sum(s => s.Size)}
                 );
         }}
     }}

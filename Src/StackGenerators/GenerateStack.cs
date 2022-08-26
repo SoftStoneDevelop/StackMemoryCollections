@@ -63,7 +63,7 @@ namespace {currentType.ContainingNamespace}.Struct
 
         public StackOf{currentType.Name}()
         {{
-            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)} * 4);
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size) * 4});
             _start = _stackMemoryC.Start;
             Capacity = 4;
             _memoryOwner = true;
@@ -389,7 +389,7 @@ namespace {currentType.ContainingNamespace}.Class
 
         public StackOf{currentType.Name}()
         {{
-            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)} * 4);
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size) * 4});
             _start = _stackMemoryC.Start;
             Capacity = 4;
             _memoryOwner = true;

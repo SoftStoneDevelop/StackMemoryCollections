@@ -275,6 +275,7 @@ namespace TestGenerator
             StackPrimitiveTrimExcessOwn(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveExpandCapacity(in values, in builder, in stackNamespace);
             StackPrimitiveReducingCapacity(in values, in builder, in stackNamespace);
+            StackPrimitiveSize(in values, in builder, in stackNamespace, in toStr);
 
             StackPrimitiveEnd(in builder);
             
@@ -833,6 +834,43 @@ namespace Tests
                 Assert.That(stack.Capacity, Is.EqualTo((nuint)10));
                 stack.ReducingCapacity(1);
                 Assert.That(stack.Capacity, Is.EqualTo((nuint)9));
+            }}
+        }}
+");
+        }
+
+        private void StackPrimitiveSize<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void SizeTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    stack.Push({toStr(values[i])});
+                    Assert.That(stack.Size, Is.EqualTo((nuint){i + 1}));
+");
+            }
+
+            builder.Append($@"
+                }}
             }}
         }}
 ");

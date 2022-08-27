@@ -270,6 +270,7 @@ namespace TestGenerator
             StackPrimitiveTryPush(in values, in builder, in wrapperNamespace, in toStr);
             StackPrimitiveClear(in values, in builder, in wrapperNamespace, in toStr);
             StackPrimitiveClearOwn(in values, in builder, in wrapperNamespace, in toStr);
+            StackPrimitiveCopy(in values, in builder, in wrapperNamespace, in toStr);
 
             StackPrimitiveEnd(in builder);
             
@@ -571,6 +572,100 @@ namespace Tests
             }}
         }}
 ");
+        }
+
+        private void StackPrimitiveCopy<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string wrapperNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            if(wrapperNamespace == "Class")
+            {
+                builder.Append($@"
+        [Test]
+        public void CopyTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                using (var memory2 = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+");
+                for (int i = 0; i < values.Count; i++)
+                {
+                    builder.Append($@"
+                    stack.Push({toStr(values[i])});
+");
+                }
+
+                builder.Append($@"
+                    var stack2 = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory2);
+                    stack.Copy(in stack2);
+
+                    Assert.That(stack.Size, Is.EqualTo(stack2.Size));
+");
+                for (int i = 0; i < values.Count; i++)
+                {
+                    builder.Append($@"
+                    Assert.That(*stack[{i}], Is.EqualTo(*stack[{i}]));
+");
+                }
+                
+                builder.Append($@"
+                }}
+            }}
+        }}
+");
+            }
+            else if (wrapperNamespace == "Struct")
+            {
+                builder.Append($@"
+        [Test]
+        public void CopyTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                using (var memory2 = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+");
+                for (int i = 0; i < values.Count; i++)
+                {
+                    builder.Append($@"
+                    stack.Push({toStr(values[i])});
+");
+                }
+
+                builder.Append($@"
+                    var stack2 = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory2);
+                    stack.Copy(stack2.Start);
+
+                    Assert.That(stack2.Size, Is.EqualTo((nuint)0));
+                    stack2.Size = stack.Size;
+                    Assert.That(stack.Size, Is.EqualTo(stack2.Size));
+");
+                for (int i = 0; i < values.Count; i++)
+                {
+                    builder.Append($@"
+                    Assert.That(*stack[{i}], Is.EqualTo(*stack[{i}]));
+");
+                }
+
+                builder.Append($@"
+                }}
+            }}
+        }}
+");
+            }
         }
 
         private void StackPrimitiveEnd(

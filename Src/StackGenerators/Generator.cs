@@ -132,6 +132,14 @@ namespace StackGenerators
                     var info = new TypeInfo();
                     var offset = 0;
 
+                    var typeAttributes = currentType.GetAttributes();
+                    var hasStructLayout = typeAttributes.Any(wh => wh.AttributeClass.Name == "StructLayoutAttribute");
+                    if(hasStructLayout)
+                    {
+                        //TODO check real type Layout
+                        info.IsStructLayoutSequential = false;
+                    }
+
                     var needSkip = false;
                     foreach (var member in currentType.GetMembers())
                     {

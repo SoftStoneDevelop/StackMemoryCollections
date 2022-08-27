@@ -1,10 +1,12 @@
 ﻿using GenerateAttibutes;
+using System.Runtime.InteropServices;
 
 namespace Benchmark
 {
     [GenerateHelper]
     [GenerateStack]
     [GenerateWrapper]
+    [StructLayout(LayoutKind.Sequential)]
     public struct JobStruct
     {
         public JobStruct(

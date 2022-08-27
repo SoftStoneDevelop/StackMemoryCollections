@@ -181,7 +181,10 @@ namespace {currentType.ContainingNamespace}
                     throw new Exception($"Type information not found, types filling error. Type name: {memberInfo.TypeName}");
                 }
 
-                if (typeInfo.Members.All(all => all.IsUnmanagedType))
+                if (typeInfo.IsStructLayoutSequential &&
+                    typeInfo.Members.All(all => all.IsUnmanagedType) &&
+                    typeInfo.AllIsStructLayoutSequential(in typeInfos)
+                    )
                 {
                     builder.Append($@"
         [SkipLocalsInit]

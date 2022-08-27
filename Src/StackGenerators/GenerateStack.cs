@@ -657,6 +657,7 @@ namespace {currentType.ContainingNamespace}.Class
 
             {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
             Size = tempSize;
+            _version++;
         }}
 
         public bool TryPush(in {currentType.Name} item)
@@ -698,6 +699,7 @@ namespace {currentType.ContainingNamespace}.Class
 
             {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
             Size = tempSize;
+            _version++;
 
             return true;
         }}
@@ -942,6 +944,16 @@ namespace {currentType.ContainingNamespace}.Class
 ");
                 context.AddSource($"{currentType.Name}StackClass.g.cs", builder.ToString());
             }
+        }
+
+        private void StackStart(
+            in List<INamedTypeSymbol> typeStack,
+            in GeneratorExecutionContext context,
+            in Dictionary<string, TypeInfo> typeInfos,
+            in StringBuilder builder
+            )
+        {
+
         }
     }
 }

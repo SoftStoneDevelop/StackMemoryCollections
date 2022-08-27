@@ -241,6 +241,7 @@ namespace StackMemoryCollections.Class
 
             *(_start + Size) = *(T*)ptr;
             Size = tempSize;
+            _version++;
         }
 
         public bool TryPush(in T item)
@@ -282,6 +283,7 @@ namespace StackMemoryCollections.Class
 
             *(_start + Size) = *ptr;
             Size = tempSize;
+            _version++;
 
             return true;
         }

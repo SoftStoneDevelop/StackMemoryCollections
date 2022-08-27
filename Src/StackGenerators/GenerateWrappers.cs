@@ -258,7 +258,8 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 var currentMember = typeInfo.Members[i];
                 if (currentMember.IsPrimitive)
                 {
-                    WrapperPrimitiveGet(in builder, in currentMember, in typeInfo);
+                    WrapperPrimitiveGetSet(in builder, in currentMember, in typeInfo);
+                    WrapperPrimitiveGetOut(in builder, in currentMember, in typeInfo);
                 }
                 else
                 {
@@ -267,7 +268,8 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                         throw new Exception($"Type information not found, types filling error. Type name: {currentMember.TypeName}");
                     }
 
-                    WrapperСompositeGet(in builder, in currentMember, in memberTypeInfo);
+                    WrapperСompositeGetSet(in builder, in currentMember, in memberTypeInfo);
+                    WrapperСompositeGetOut(in builder, in currentMember, in memberTypeInfo);
                 }
             }
         }
@@ -281,25 +283,75 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
         }
 
-        private void WrapperPrimitiveGet(
+        private void WrapperPrimitiveGetSet(
             in StringBuilder builder,
             in MemberInfo memberInfo,
             in TypeInfo containingType
             )
         {
             builder.Append($@"
-        public {memberInfo.TypeName} {memberInfo.MemberName} => {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Value(in _start);
+        public {memberInfo.TypeName} {memberInfo.MemberName} 
+        {{
+            get
+            {{
+                return {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Value(in _start);
+            }}
+
+            set
+            {{
+                {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Set{memberInfo.MemberName}Value(in _start, in value);
+            }}
+        }}
 ");
         }
 
-        private void WrapperСompositeGet(
+        private void WrapperPrimitiveGetOut(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in TypeInfo containingType
+            )
+        {
+            builder.Append($@"
+        public void GetOut{memberInfo.MemberName}(out {memberInfo.TypeName} item)
+        {{
+            {containingType.ContainingNamespace}.{containingType.TypeName}Helper.GetOut{memberInfo.MemberName}Value(in _start, out item);
+        }}
+");
+        }
+
+        private void WrapperСompositeGetSet(
             in StringBuilder builder,
             in MemberInfo memberInfo,
             in TypeInfo memberTypeInfo
             )
         {
             builder.Append($@"
-        public {memberInfo.TypeName} {memberInfo.MemberName} => {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.Get{memberInfo.MemberName}Value(in _start);
+        public {memberInfo.TypeName} {memberInfo.MemberName} 
+        {{
+            get
+            {{
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.Get{memberInfo.MemberName}Value(in _start);
+            }}
+
+            set
+            {{
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.Set{memberInfo.MemberName}Value(in _start, in value);
+            }}
+        }}
+");
+        }
+
+        private void WrapperСompositeGetOut(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in TypeInfo memberTypeInfo
+            )
+        {
+            builder.Append($@"
+        public void GetOut{memberInfo.MemberName}(out {memberInfo.TypeName} item)
+        {{
+            {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToValueOut{memberInfo.MemberName}Value(in _start, out item);
+        }}
 ");
         }
 

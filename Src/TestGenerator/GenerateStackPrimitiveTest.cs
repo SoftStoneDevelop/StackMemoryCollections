@@ -7,13 +7,13 @@ namespace TestGenerator
 {
     public partial class Generator
     {
-        private void GenerateWrapPrimitiveTest(
+        private void GenerateStackPrimitiveTest(
             in GeneratorExecutionContext context,
             in StringBuilder builder
             )
         {
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     Int32Values,
                     in builder,
@@ -21,7 +21,7 @@ namespace TestGenerator
                     Int32Convert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     Int32Values,
                     in builder,
@@ -31,7 +31,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     UInt32Values,
                     in builder,
@@ -39,7 +39,7 @@ namespace TestGenerator
                     UInt32Convert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     UInt32Values,
                     in builder,
@@ -49,7 +49,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     Int64Values,
                     in builder,
@@ -57,7 +57,7 @@ namespace TestGenerator
                     Int64Convert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     Int64Values,
                     in builder,
@@ -67,7 +67,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     UInt64Values,
                     in builder,
@@ -75,7 +75,7 @@ namespace TestGenerator
                     UInt64Convert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     UInt64Values,
                     in builder,
@@ -85,7 +85,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     SByteValues,
                     in builder,
@@ -93,7 +93,7 @@ namespace TestGenerator
                     SByteConvert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     SByteValues,
                     in builder,
@@ -103,7 +103,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     ByteValues,
                     in builder,
@@ -111,7 +111,7 @@ namespace TestGenerator
                     ByteConvert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     ByteValues,
                     in builder,
@@ -121,7 +121,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     Int16Values,
                     in builder,
@@ -129,7 +129,7 @@ namespace TestGenerator
                     Int16Convert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     Int16Values,
                     in builder,
@@ -139,7 +139,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     UInt16Values,
                     in builder,
@@ -147,7 +147,7 @@ namespace TestGenerator
                     UInt16Convert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     UInt16Values,
                     in builder,
@@ -157,7 +157,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     CharValues,
                     in builder,
@@ -165,7 +165,7 @@ namespace TestGenerator
                     CharConvert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     CharValues,
                     in builder,
@@ -175,7 +175,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     DecimalValues,
                     in builder,
@@ -183,7 +183,7 @@ namespace TestGenerator
                     DecimalConvert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     DecimalValues,
                     in builder,
@@ -193,7 +193,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     DoubleValues,
                     in builder,
@@ -201,7 +201,7 @@ namespace TestGenerator
                     DoubleConvert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     DoubleValues,
                     in builder,
@@ -211,7 +211,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     BooleanValues,
                     in builder,
@@ -219,7 +219,7 @@ namespace TestGenerator
                     BooleanConvert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     BooleanValues,
                     in builder,
@@ -229,7 +229,7 @@ namespace TestGenerator
             }
 
             {
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     SingleValues,
                     in builder,
@@ -237,7 +237,7 @@ namespace TestGenerator
                     SingleConvert
                     );
 
-                WrapPrimitiveTest(
+                StackPrimitiveTest(
                     in context,
                     SingleValues,
                     in builder,
@@ -247,7 +247,7 @@ namespace TestGenerator
             }
         }
 
-        private void WrapPrimitiveTest<T>(
+        private void StackPrimitiveTest<T>(
             in GeneratorExecutionContext context,
             in List<T> values,
             in StringBuilder builder,
@@ -261,19 +261,19 @@ namespace TestGenerator
             }
 
             builder.Clear();
-            WrapPrimitiveStart<T>(in builder, in wrapperNamespace);
+            StackPrimitiveStart<T>(in builder, in wrapperNamespace);
 
-            //generate methods
-            WrapPrimitiveDispose(in values, in builder, in wrapperNamespace);
-            WrapPrimitiveNotDispose(in values, in builder, in wrapperNamespace);
-            WrapPrimitiveValue(in values, in builder, in wrapperNamespace, in toStr);
+            StackPrimitiveDispose(in values, in builder, in wrapperNamespace);
+            StackPrimitiveNotDispose(in values, in builder, in wrapperNamespace);
+            StackPrimitiveReseize(in values, in builder, in wrapperNamespace, in toStr);
+            StackPrimitivePush(in values, in builder, in wrapperNamespace, in toStr);
 
-            WrapPrimitiveEnd(in builder);
+            StackPrimitiveEnd(in builder);
             
-            context.AddSource($"Wrapper{wrapperNamespace}{typeof(T).Name}Fixture.g.cs", builder.ToString());
+            context.AddSource($"Stack{wrapperNamespace}{typeof(T).Name}Fixture.g.cs", builder.ToString());
         }
 
-        private void WrapPrimitiveStart<T>(
+        private void StackPrimitiveStart<T>(
             in StringBuilder builder,
             in string wrapperNamespace
             ) where T : unmanaged
@@ -285,18 +285,23 @@ using System;
 namespace Tests
 {{
     [TestFixture]
-    public class Wrapper{wrapperNamespace}{typeof(T).Name}Fixture
+    public class Stack{wrapperNamespace}{typeof(T).Name}Fixture
     {{
                     
 ");
         }
 
-        private void WrapPrimitiveDispose<T>(
+        private void StackPrimitiveDispose<T>(
             in List<T> values,
             in StringBuilder builder,
             in string wrapperNamespace
             ) where T : unmanaged
         {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
             builder.Append($@"
         [Test]
         public void DisposeTest()
@@ -305,18 +310,9 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    
-");
-            for (int i = 0; i < values.Count - 1; i++)
-            {
-                builder.Append($@"
                     {{
-                        using var {typeof(T).Name}W{i} = new StackMemoryCollections.{wrapperNamespace}.Wrapper<{typeof(T).Name}>(&memory);
+                        using var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
                     }}
-");
-            }
-
-            builder.Append($@"
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
                 }}
@@ -326,14 +322,18 @@ namespace Tests
 ");
         }
 
-        private void WrapPrimitiveNotDispose<T>(
+        private void StackPrimitiveNotDispose<T>(
             in List<T> values,
             in StringBuilder builder,
             in string wrapperNamespace
             ) where T : unmanaged
         {
-            builder.Append($@"
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
 
+            builder.Append($@"
         [Test]
         public void NotDisposeTest()
         {{
@@ -341,21 +341,11 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    
-");
-            for (int i = 0; i < values.Count - 1; i++)
-            {
-                builder.Append($@"
-
                     {{
-                        var {typeof(T).Name}W{i} = new StackMemoryCollections.{wrapperNamespace}.Wrapper<{typeof(T).Name}>(&memory);
+                        var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
                     }}
-");
-            }
 
-            builder.Append($@"
-
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (sizeof({typeof(T).Name}) * {values.Count - 1}))));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
                 }}
             }}
         }}
@@ -363,30 +353,129 @@ namespace Tests
 ");
         }
 
-        private void WrapPrimitiveValue<T>(
+        private void StackPrimitiveReseize<T>(
             in List<T> values,
             in StringBuilder builder,
             in string wrapperNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
-            builder.Append($@"
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
 
+            builder.Append($@"
         [Test]
-        public void ValueTest()
+        public void ReseizeTest()
+        {{
+            unsafe
+            {{
+                var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>();
+");
+            for (int i = 0; i < 4; i++)
+            {
+                builder.Append($@"
+
+                stack.Push({toStr(values[i])});
+");
+            }
+
+            builder.Append($@"
+                Assert.That(stack.Size, Is.EqualTo((nuint)4));
+                Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
+
+                stack.Push({toStr(values[0])});
+                Assert.That(stack.Size, Is.EqualTo((nuint)5));
+                Assert.That(stack.Capacity, Is.EqualTo((nuint)8));
+            }}
+        }}
+
+");
+        }
+
+        private void StackPrimitivePush<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string wrapperNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void PushTest()
         {{
             unsafe
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-  
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
+                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
+                    Assert.That(stack.IsEmpty, Is.EqualTo(true));
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    var {typeof(T).Name}W{i} = new StackMemoryCollections.{wrapperNamespace}.Wrapper<{typeof(T).Name}>(&memory);
-                    *{typeof(T).Name}W{i}.Ptr = {toStr(values[i])};
-                    Assert.That(*{typeof(T).Name}W{i}.Ptr, Is.EqualTo(({typeof(T).Name})({toStr(values[i])})));
+
+                    stack.Push({toStr(values[i])});
+                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(stack.Size, Is.EqualTo((nuint){i + 1}));
+");
+            }
+
+            builder.Append($@"
+
+                    Assert.That(() => stack.Push({toStr(values[0])}),
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo(""Not enough memory to allocate stack element"")
+                        );
+                }}
+            }}
+        }}
+");
+        }
+
+        private void StackPrimitiveTryPush<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string wrapperNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void TryPushTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+
+                    Assert.That(stack.TryPush({toStr(values[i])}),Is.EqualTo(true));
+");
+            }
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    Assert.That(stack.TryPush({toStr(values[i])}), Is.EqualTo(false));
 ");
             }
 
@@ -394,16 +483,17 @@ namespace Tests
                 }}
             }}
         }}
-
 ");
         }
 
-        private void WrapPrimitiveEnd(in StringBuilder builder)
+        private void StackPrimitiveEnd(
+            in StringBuilder builder
+            )
         {
             builder.Append($@"
 
     }}
-}}
+}}                
 ");
         }
     }

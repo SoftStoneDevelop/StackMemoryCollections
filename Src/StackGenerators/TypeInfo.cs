@@ -10,5 +10,6 @@ namespace StackGenerators
         public bool IsPrimitive;
         public bool IsValueType;
         public bool IsUnmanagedType;
+        public string ContainingNamespace;
     }
 }

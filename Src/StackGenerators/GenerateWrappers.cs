@@ -23,8 +23,8 @@ namespace StackGenerators
                     throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
                 }
 
-                GenerateWrapper(in currentType, in context, in typeInfo, in builder, "Class");
-                GenerateWrapper(in currentType, in context, in typeInfo, in builder, "Struct");
+                GenerateWrapper(in currentType, in context, in typeInfo, in builder, "Class", in typeInfos);
+                GenerateWrapper(in currentType, in context, in typeInfo, in builder, "Struct", in typeInfos);
             }
         }
 
@@ -33,7 +33,8 @@ namespace StackGenerators
             in GeneratorExecutionContext context,
             in TypeInfo typeInfo,
             in StringBuilder builder,
-            in string wrapperNamespace
+            in string wrapperNamespace,
+            in Dictionary<string, TypeInfo> typeInfos
             )
         {
             builder.Clear();
@@ -43,7 +44,7 @@ namespace StackGenerators
             WrapperConstructor3(in currentType, in typeInfo, in builder);
             WrapperConstructor4(in currentType, in builder);
 
-
+            WrapperProperties(in currentType, in typeInfo, in builder, in typeInfos);
 
             WrapperDispose(in currentType, in typeInfo, in builder, in wrapperNamespace);
 

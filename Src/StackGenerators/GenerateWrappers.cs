@@ -256,18 +256,18 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             for (int i = 0; i < typeInfo.Members.Count; i++)
             {
                 var currentMember = typeInfo.Members[i];
-                if(currentMember.IsPrimitive)
+                if (currentMember.IsPrimitive)
                 {
-                    //TODO generate getters
+                    WrapperPrimitiveGet(in builder, in currentMember, in typeInfo);
                 }
                 else
                 {
                     if (!typeInfos.TryGetValue(currentMember.TypeName, out var memberTypeInfo))
                     {
-                        throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
+                        throw new Exception($"Type information not found, types filling error. Type name: {currentMember.TypeName}");
                     }
 
-                    //TODO generate getters
+                    WrapperСompositeGet(in builder, in currentMember, in memberTypeInfo);
                 }
             }
         }
@@ -278,6 +278,28 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         {
             builder.Append($@"
         public void* Ptr => _start;
+");
+        }
+
+        private void WrapperPrimitiveGet(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in TypeInfo containingType
+            )
+        {
+            builder.Append($@"
+        public {memberInfo.TypeName} {memberInfo.MemberName} => {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Value(in _start);
+");
+        }
+
+        private void WrapperСompositeGet(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in TypeInfo memberTypeInfo
+            )
+        {
+            builder.Append($@"
+        public {memberInfo.TypeName} {memberInfo.MemberName} => {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.Get{memberInfo.MemberName}Value(in _start);
 ");
         }
 

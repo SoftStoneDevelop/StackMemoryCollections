@@ -36,6 +36,8 @@ namespace StackGenerators
                     if (memberInfo.IsPrimitive)
                     {
                         GenerateGetPrimitiveValue(in builder, in memberInfo);
+                        GenerateGetPrimitiveValueRef(in builder, in memberInfo);
+                        GenerateGetPrimitiveValueOut(in builder, in memberInfo);
                         GenerateSetPrimitiveValue(in builder, in memberInfo);
                         GenerateSetPrimitiveValueFrom(in builder, in memberInfo, in currentType);
                     }
@@ -115,7 +117,32 @@ namespace {currentType.ContainingNamespace}
         {{
             return *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset});
         }}
+");
+        }
 
+        private void GenerateGetPrimitiveValueRef(
+            in StringBuilder builder,
+            in MemberInfo memberInfo
+            )
+        {
+            builder.Append($@"
+        public static void GetRef{memberInfo.MemberName}Value(in void* ptr, ref {memberInfo.TypeName} item)
+        {{
+            item = *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset});
+        }}
+");
+        }
+
+        private void GenerateGetPrimitiveValueOut(
+            in StringBuilder builder,
+            in MemberInfo memberInfo
+            )
+        {
+            builder.Append($@"
+        public static void GetOut{memberInfo.MemberName}Value(in void* ptr, out {memberInfo.TypeName} item)
+        {{
+            item = *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset});
+        }}
 ");
         }
 

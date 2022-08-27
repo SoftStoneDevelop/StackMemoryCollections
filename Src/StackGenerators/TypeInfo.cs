@@ -11,5 +11,6 @@ namespace StackGenerators
         public bool IsValueType;
         public bool IsUnmanagedType;
         public string ContainingNamespace;
+        public string TypeName;
     }
 }

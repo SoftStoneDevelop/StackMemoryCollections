@@ -134,6 +134,7 @@ namespace StackGenerators
                     info.IsPrimitive = IsPrimitive(currentType.Name);
                     info.IsUnmanagedType = currentType.IsUnmanagedType;
                     info.ContainingNamespace = currentType.ContainingNamespace.Name;
+                    info.TypeName = currentType.Name;
 
                     var offset = 0;
 

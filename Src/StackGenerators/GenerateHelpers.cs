@@ -41,7 +41,7 @@ namespace StackGenerators
                     }
                     else
                     {
-                        GenerateGetСompositeValue(in builder, in memberInfo, in typeInfos);
+                        GenerateGetСompositeValue(in builder, in memberInfo);
                         GenerateSetСompositeValueFrom(in builder, in memberInfo, in currentType);
                     }
                 }
@@ -170,17 +170,11 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateGetСompositeValue(
             in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in Dictionary<string, TypeInfo> typeInfos
+            in MemberInfo memberInfo
             )
         {
             if (memberInfo.IsValueType)
             {
-                if (!typeInfos.TryGetValue(memberInfo.TypeName, out var typeInfo))
-                {
-                    throw new Exception($"Type information not found, types filling error. Type name: {memberInfo.TypeName}");
-                }
-
                 builder.Append($@"
         [SkipLocalsInit]
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)

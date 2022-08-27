@@ -174,32 +174,6 @@ namespace {currentType.ContainingNamespace}
             in Dictionary<string, TypeInfo> typeInfos
             )
         {
-            if (memberInfo.IsValueType)
-            {
-                if (!typeInfos.TryGetValue(memberInfo.TypeName, out var typeInfo))
-                {
-                    throw new Exception($"Type information not found, types filling error. Type name: {memberInfo.TypeName}");
-                }
-
-                if (typeInfo.IsStructLayoutSequential &&
-                    typeInfo.Members.All(all => all.IsUnmanagedType) &&
-                    typeInfo.AllIsStructLayoutSequential(in typeInfos)
-                    )
-                {
-                    builder.Append($@"
-        [SkipLocalsInit]
-        public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
-        {{
-            {memberInfo.TypeName} result;
-            {memberInfo.TypeName}Helper.Copy((byte*)ptr + {memberInfo.Offset}, &result);
-            return result;
-        }}
-
-");
-                    return;
-                }
-            }
-
             builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{

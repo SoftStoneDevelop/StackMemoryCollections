@@ -267,7 +267,9 @@ namespace TestGenerator
             StackPrimitiveNotDispose(in values, in builder, in stackNamespace);
             StackPrimitiveReseize(in values, in builder, in stackNamespace, in toStr);
             StackPrimitivePush(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitivePushPtr(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveTryPush(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveTryPushPtr(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveClear(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveClearOwn(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveCopy(in values, in builder, in stackNamespace, in toStr);
@@ -280,6 +282,8 @@ namespace TestGenerator
             StackPrimitiveIndex(in values, in builder, in stackNamespace, in toStr);
             StackPrimitivePop(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveTop(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveTopRefPtr(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveTopRefValue(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveTopPtr(in values, in builder, in stackNamespace, in toStr);
 
             StackPrimitiveEnd(in builder);
@@ -295,6 +299,7 @@ namespace TestGenerator
             builder.Append($@"
 using NUnit.Framework;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Tests
 {{
@@ -456,6 +461,63 @@ namespace Tests
 ");
         }
 
+        private void StackPrimitivePushPtr<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        [SkipLocalsInit]
+        public void PushPtrTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
+                    Assert.That(stack.IsEmpty, Is.EqualTo(true));
+
+                    {typeof(T).Name} item;
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+
+                    item = {toStr(values[i])};
+                    stack.Push(&item);
+                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(stack.Size, Is.EqualTo((nuint){i + 1}));
+");
+            }
+
+            builder.Append($@"
+
+                    Assert.That(
+                        () => 
+                        {{
+                            {typeof(T).Name} temp = {toStr(values[0])};
+                            stack.Push(&temp);
+                        }},
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo(""Not enough memory to allocate stack element"")
+                        );
+                }}
+            }}
+        }}
+");
+        }
+
         private void StackPrimitiveTryPush<T>(
             in List<T> values,
             in StringBuilder builder,
@@ -490,6 +552,53 @@ namespace Tests
             {
                 builder.Append($@"
                     Assert.That(stack.TryPush({toStr(values[i])}), Is.EqualTo(false));
+");
+            }
+
+            builder.Append($@"
+                }}
+            }}
+        }}
+");
+        }
+
+        private void StackPrimitiveTryPushPtr<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        [SkipLocalsInit]
+        public void TryPushPtrTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    {typeof(T).Name} item;
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    item = {toStr(values[i])};
+                    Assert.That(stack.TryPush(&item),Is.EqualTo(true));
+");
+            }
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    item = {toStr(values[i])};
+                    Assert.That(stack.TryPush(&item), Is.EqualTo(false));
 ");
             }
 
@@ -1056,6 +1165,112 @@ namespace Tests
                 builder.Append($@"
                     stack.Push({toStr(values[i])});
                     var item{i} = stack.Top();
+                    Assert.That(item{i}, Is.EqualTo({toStr(values[i])}));
+");
+            }
+
+            builder.Append($@"
+                }}
+            }}
+        }}
+");
+
+        }
+
+        private void StackPrimitiveTopRefPtr<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        [SkipLocalsInit]
+        public void TopRefPtrTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    Assert.That(
+                        () => 
+                        {{
+                            {typeof(T).Name} temp = {toStr(values[0])};
+                            {typeof(T).Name}* tempPtr = &temp;
+                            stack.Top(ref tempPtr);
+                        }},
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo(""There are no elements on the stack"")
+                        );
+                    {typeof(T).Name} item;
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    item = {toStr(values[i])};
+                    stack.Push(in item);
+                    {typeof(T).Name} item{i};
+                    {typeof(T).Name}* itemPtr{i} = &item{i};
+                    stack.Top(ref itemPtr{i});
+                    Assert.That(item{i}, Is.EqualTo({toStr(values[i])}));
+");
+            }
+
+            builder.Append($@"
+                }}
+            }}
+        }}
+");
+
+        }
+
+        private void StackPrimitiveTopRefValue<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        [SkipLocalsInit]
+        public void TopRefValueTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    Assert.That(
+                        () => 
+                        {{
+                            {typeof(T).Name} temp = {toStr(values[0])};
+                            stack.Top(ref temp);
+                        }},
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo(""There are no elements on the stack"")
+                        );
+                    {typeof(T).Name} item;
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    item = {toStr(values[i])};
+                    stack.Push(in item);
+                    {typeof(T).Name} item{i} = {toStr(values[0])};
+                    stack.Top(ref item{i});
                     Assert.That(item{i}, Is.EqualTo({toStr(values[i])}));
 ");
             }

@@ -236,15 +236,62 @@ namespace {currentType.ContainingNamespace}.Struct
             Size = tempSize;
         }}
 
+        public void Push(in void* ptr)
+        {{
+            var tempSize = Size + 1;
+            if (tempSize > Capacity)
+            {{
+                if (_memoryOwner)
+                {{
+                    ExpandCapacity(Capacity);
+                }}
+                else
+                {{
+                    throw new Exception(""Not enough memory to allocate stack element"");
+                }}
+            }}
+
+            {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
+            Size = tempSize;
+        }}
+
         public bool TryPush(in {currentType.Name} item)
         {{
             var tempSize = Size + 1;
             if (tempSize > Capacity)
             {{
-                return false;
+                if (_memoryOwner)
+                {{
+                    ExpandCapacity(Capacity);
+                }}
+                else
+                {{
+                    return false;
+                }}
             }}
 
             {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
+            Size = tempSize;
+
+            return true;
+        }}
+
+        public bool TryPush(in void* ptr)
+        {{
+            var tempSize = Size + 1;
+            if (tempSize > Capacity)
+            {{
+                if (_memoryOwner)
+                {{
+                    ExpandCapacity(Capacity);
+                }}
+                else
+                {{
+                    return false;
+                }}
+            }}
+
+            {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
             Size = tempSize;
 
             return true;
@@ -279,6 +326,26 @@ namespace {currentType.ContainingNamespace}.Struct
             {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), ref result);
             return
                 result;
+        }}
+
+        public void Top(in void* ptr)
+        {{
+            if (Size == 0)
+            {{
+                throw new Exception(""There are no elements on the stack"");
+            }}
+
+            {currentType.Name}Helper.Copy((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), in ptr);
+        }}
+
+        public void Top(ref {currentType.Name} item)
+        {{
+            if (Size == 0)
+            {{
+                throw new Exception(""There are no elements on the stack"");
+            }}
+
+            {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), ref item);
         }}
 
         public void* TopPtr()
@@ -573,17 +640,64 @@ namespace {currentType.ContainingNamespace}.Class
             _version++;
         }}
 
+        public void Push(in void* ptr)
+        {{
+            var tempSize = Size + 1;
+            if (tempSize > Capacity)
+            {{
+                if (_memoryOwner)
+                {{
+                    ExpandCapacity(Capacity);
+                }}
+                else
+                {{
+                    throw new Exception(""Not enough memory to allocate stack element"");
+                }}
+            }}
+
+            {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
+            Size = tempSize;
+        }}
+
         public bool TryPush(in {currentType.Name} item)
         {{
             var tempSize = Size + 1;
             if (tempSize > Capacity)
             {{
-                return false;
+                if (_memoryOwner)
+                {{
+                    ExpandCapacity(Capacity);
+                }}
+                else
+                {{
+                    return false;
+                }}
             }}
 
             {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
             Size = tempSize;
             _version++;
+
+            return true;
+        }}
+
+        public bool TryPush(in void* ptr)
+        {{
+            var tempSize = Size + 1;
+            if (tempSize > Capacity)
+            {{
+                if (_memoryOwner)
+                {{
+                    ExpandCapacity(Capacity);
+                }}
+                else
+                {{
+                    return false;
+                }}
+            }}
+
+            {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
+            Size = tempSize;
 
             return true;
         }}
@@ -619,6 +733,26 @@ namespace {currentType.ContainingNamespace}.Class
             {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), ref result);
             return
                 result;
+        }}
+
+        public void Top(in void* ptr)
+        {{
+            if (Size == 0)
+            {{
+                throw new Exception(""There are no elements on the stack"");
+            }}
+
+            {currentType.Name}Helper.Copy((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), in ptr);
+        }}
+
+        public void Top(ref {currentType.Name} item)
+        {{
+            if (Size == 0)
+            {{
+                throw new Exception(""There are no elements on the stack"");
+            }}
+
+            {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), ref item);
         }}
 
         public void* TopPtr()

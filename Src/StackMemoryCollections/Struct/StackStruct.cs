@@ -221,15 +221,62 @@
             Size = tempSize;
         }
 
+        public void Push(in T* ptr)
+        {
+            var tempSize = Size + 1;
+            if (tempSize > Capacity)
+            {
+                if (_memoryOwner)
+                {
+                    ExpandCapacity(Capacity);
+                }
+                else
+                {
+                    throw new Exception("Not enough memory to allocate stack element");
+                }
+            }
+
+            *(_start + Size) = *ptr;
+            Size = tempSize;
+        }
+
         public bool TryPush(in T item)
         {
             var tempSize = Size + 1;
             if (tempSize > Capacity)
             {
-                return false;
+                if (_memoryOwner)
+                {
+                    ExpandCapacity(Capacity);
+                }
+                else
+                {
+                    return false;
+                }
             }
 
             *(_start + Size) = item;
+            Size = tempSize;
+
+            return true;
+        }
+
+        public bool TryPush(in T* ptr)
+        {
+            var tempSize = Size + 1;
+            if (tempSize > Capacity)
+            {
+                if (_memoryOwner)
+                {
+                    ExpandCapacity(Capacity);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            *(_start + Size) = *ptr;
             Size = tempSize;
 
             return true;
@@ -262,6 +309,26 @@
 
             return
                 *(_start + (Size - 1));
+        }
+
+        public void Top(ref T* ptr)
+        {
+            if (Size == 0)
+            {
+                throw new Exception("There are no elements on the stack");
+            }
+
+            *(T*)ptr  = *(_start + (Size - 1));
+        }
+
+        public void Top(ref T item)
+        {
+            if (Size == 0)
+            {
+                throw new Exception("There are no elements on the stack");
+            }
+
+            item = *(_start + (Size - 1));
         }
 
         public T* TopPtr()

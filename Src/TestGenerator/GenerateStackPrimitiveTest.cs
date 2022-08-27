@@ -267,6 +267,8 @@ namespace TestGenerator
             StackPrimitiveNotDispose(in values, in builder, in wrapperNamespace);
             StackPrimitiveReseize(in values, in builder, in wrapperNamespace, in toStr);
             StackPrimitivePush(in values, in builder, in wrapperNamespace, in toStr);
+            StackPrimitiveTryPush(in values, in builder, in wrapperNamespace, in toStr);
+            StackPrimitiveClear(in values, in builder, in wrapperNamespace, in toStr);
 
             StackPrimitiveEnd(in builder);
             
@@ -480,6 +482,48 @@ namespace Tests
             }
 
             builder.Append($@"
+                }}
+            }}
+        }}
+");
+        }
+
+        private void StackPrimitiveClear<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string wrapperNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void ClearTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    stack.Push({toStr(values[i])});
+");
+            }
+
+            builder.Append($@"
+
+                    Assert.That(stack.Size, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                    stack.Clear();
+                    Assert.That(stack.Size, Is.EqualTo((nuint)0));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
                 }}
             }}
         }}

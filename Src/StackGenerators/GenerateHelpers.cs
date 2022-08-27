@@ -174,6 +174,26 @@ namespace {currentType.ContainingNamespace}
             in Dictionary<string, TypeInfo> typeInfos
             )
         {
+            if (memberInfo.IsValueType)
+            {
+                if (!typeInfos.TryGetValue(memberInfo.TypeName, out var typeInfo))
+                {
+                    throw new Exception($"Type information not found, types filling error. Type name: {memberInfo.TypeName}");
+                }
+
+                builder.Append($@"
+        [SkipLocalsInit]
+        public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
+        {{
+            {memberInfo.TypeName} result;
+            {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {memberInfo.Offset}, ref result);
+            return result;
+        }}
+
+");
+                return;
+            }
+
             builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{

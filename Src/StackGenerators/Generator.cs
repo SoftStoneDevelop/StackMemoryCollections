@@ -170,6 +170,7 @@ namespace StackGenerators
                                 memberInfo.MemberName = propertySymbol.Name;
                                 memberInfo.Offset = offset;
                                 memberInfo.IsPrimitive = true;
+                                memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
                                 offset += memberInfo.Size;
                                 info.Members.Add(memberInfo);
                                 continue;
@@ -189,6 +190,8 @@ namespace StackGenerators
                                     memberInfo.TypeName = $"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}";
                                     memberInfo.MemberName = propertySymbol.Name;
                                     memberInfo.Offset = offset;
+                                    memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
+                                    memberInfo.IsValueType = true;
                                     offset += memberInfo.Size;
                                     info.Members.Add(memberInfo);
                                     continue;
@@ -233,6 +236,7 @@ namespace StackGenerators
                                 memberInfo.TypeName = fieldSymbol.Type.Name;
                                 memberInfo.MemberName = fieldSymbol.Name;
                                 memberInfo.Offset = offset;
+                                memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
                                 memberInfo.IsPrimitive = true;
                                 offset += memberInfo.Size;
                                 info.Members.Add(memberInfo);
@@ -253,6 +257,8 @@ namespace StackGenerators
                                     memberInfo.TypeName = $"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}";
                                     memberInfo.MemberName = fieldSymbol.Name;
                                     memberInfo.Offset = offset;
+                                    memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
+                                    memberInfo.IsValueType = true;
                                     offset += memberInfo.Size;
                                     info.Members.Add(memberInfo);
                                     continue;
@@ -280,7 +286,10 @@ namespace StackGenerators
 
                     if(!needSkip)
                     {
-                        typeInfos.Add($"{currentType.ContainingNamespace}.{currentType.Name}", info);
+                        if(!typeInfos.ContainsKey($"{currentType.ContainingNamespace}.{currentType.Name}"))
+                        {
+                            typeInfos.Add($"{currentType.ContainingNamespace}.{currentType.Name}", info);
+                        }
                         stackCurrentTypes.Pop();
                     }
                 }

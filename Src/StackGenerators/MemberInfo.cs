@@ -7,5 +7,7 @@
         public string TypeName;
         public string MemberName;
         public bool IsPrimitive;
+        public bool IsValueType;
+        public bool IsUnmanagedType;
     }
 }

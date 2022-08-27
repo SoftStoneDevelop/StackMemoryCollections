@@ -41,7 +41,7 @@ namespace StackGenerators
                     }
                     else
                     {
-                        GenerateGetСompositeValue(in builder, in memberInfo);
+                        GenerateGetСompositeValue(in builder, in memberInfo, in typeInfos);
                         GenerateSetСompositeValueFrom(in builder, in memberInfo, in currentType);
                     }
                 }
@@ -86,6 +86,7 @@ SOFTWARE.
 */
 
 using System;
+using System.Runtime.CompilerServices;
 
 namespace {currentType.ContainingNamespace}
 {{
@@ -169,9 +170,33 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateGetСompositeValue(
             in StringBuilder builder,
-            in MemberInfo memberInfo
+            in MemberInfo memberInfo,
+            in Dictionary<string, TypeInfo> typeInfos
             )
         {
+            if (memberInfo.IsValueType)
+            {
+                if (!typeInfos.TryGetValue(memberInfo.TypeName, out var typeInfo))
+                {
+                    throw new Exception($"Type information not found, types filling error. Type name: {memberInfo.TypeName}");
+                }
+
+                if (typeInfo.Members.All(all => all.IsUnmanagedType))
+                {
+                    builder.Append($@"
+        [SkipLocalsInit]
+        public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
+        {{
+            {memberInfo.TypeName} result;
+            {memberInfo.TypeName}Helper.Copy((byte*)ptr + {memberInfo.Offset}, &result);
+            return result;
+        }}
+
+");
+                    return;
+                }
+            }
+
             builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{

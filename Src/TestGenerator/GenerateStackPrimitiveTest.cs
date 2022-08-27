@@ -269,6 +269,7 @@ namespace TestGenerator
             StackPrimitivePush(in values, in builder, in wrapperNamespace, in toStr);
             StackPrimitiveTryPush(in values, in builder, in wrapperNamespace, in toStr);
             StackPrimitiveClear(in values, in builder, in wrapperNamespace, in toStr);
+            StackPrimitiveClearOwn(in values, in builder, in wrapperNamespace, in toStr);
 
             StackPrimitiveEnd(in builder);
             
@@ -524,6 +525,48 @@ namespace Tests
                     stack.Clear();
                     Assert.That(stack.Size, Is.EqualTo((nuint)0));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                }}
+            }}
+        }}
+");
+        }
+
+        private void StackPrimitiveClearOwn<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string wrapperNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void ClearTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>();
+");
+            for (int i = 0; i < 4; i++)
+            {
+                builder.Append($@"
+                    stack.Push({toStr(values[i])});
+");
+            }
+
+            builder.Append($@"
+
+                    Assert.That(stack.Size, Is.EqualTo((nuint)4));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
+                    stack.Clear();
+                    Assert.That(stack.Size, Is.EqualTo((nuint)0));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
                 }}
             }}
         }}

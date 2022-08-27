@@ -268,8 +268,8 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                         throw new Exception($"Type information not found, types filling error. Type name: {currentMember.TypeName}");
                     }
 
-                    WrapperСompositeGetSet(in builder, in currentMember, in memberTypeInfo);
-                    WrapperСompositeGetOut(in builder, in currentMember, in memberTypeInfo);
+                    WrapperСompositeGetSet(in builder, in currentMember, in memberTypeInfo, in typeInfo);
+                    WrapperСompositeGetOut(in builder, in currentMember, in memberTypeInfo, in typeInfo);
                 }
             }
         }
@@ -322,7 +322,8 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         private void WrapperСompositeGetSet(
             in StringBuilder builder,
             in MemberInfo memberInfo,
-            in TypeInfo memberTypeInfo
+            in TypeInfo memberTypeInfo,
+            in TypeInfo containingType
             )
         {
             builder.Append($@"
@@ -330,12 +331,16 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         {{
             get
             {{
-                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.Get{memberInfo.MemberName}Value(in _start);
+                var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
+                var result = new {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}();
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToValue(in ptr, ref result);
+                return result;
             }}
 
             set
             {{
-                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.Set{memberInfo.MemberName}Value(in _start, in value);
+                var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToPtr(in value, in ptr);
             }}
         }}
 ");
@@ -344,13 +349,15 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         private void WrapperСompositeGetOut(
             in StringBuilder builder,
             in MemberInfo memberInfo,
-            in TypeInfo memberTypeInfo
+            in TypeInfo memberTypeInfo,
+            in TypeInfo containingType
             )
         {
             builder.Append($@"
         public void GetOut{memberInfo.MemberName}(out {memberInfo.TypeName} item)
         {{
-            {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToValueOut{memberInfo.MemberName}Value(in _start, out item);
+            var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
+            {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToValueOut(in ptr, out item);
         }}
 ");
         }

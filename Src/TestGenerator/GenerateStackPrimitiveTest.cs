@@ -278,6 +278,7 @@ namespace TestGenerator
             StackPrimitiveSize(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveCapacity(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveIndex(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitivePop(in values, in builder, in stackNamespace, in toStr);
 
             StackPrimitiveEnd(in builder);
             
@@ -964,6 +965,62 @@ namespace Tests
             }}
         }}
 ");
+        }
+
+        private void StackPrimitivePop<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void PopTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    stack.Push({toStr(values[i])});
+");
+            }
+
+            for (int i = 0; i < values.Count - 1; i++)
+            {
+                builder.Append($@"
+                    stack.Pop();
+                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(stack.Size, Is.EqualTo((nuint){values.Count - 1 - i }));
+");
+            }
+
+            builder.Append($@"
+                    stack.Pop();
+                    Assert.That(stack.IsEmpty, Is.EqualTo(true));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(stack.Size, Is.EqualTo((nuint)0));
+                    
+                    Assert.That(() => stack.Pop(),
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo(""There are no elements on the stack"")
+                        );
+                }}
+            }}
+        }}
+");
+
         }
 
         private void StackPrimitiveEnd(

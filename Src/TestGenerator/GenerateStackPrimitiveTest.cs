@@ -274,6 +274,7 @@ namespace TestGenerator
             StackPrimitiveTrimExcess(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveTrimExcessOwn(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveExpandCapacity(in values, in builder, in stackNamespace);
+            StackPrimitiveReducingCapacity(in values, in builder, in stackNamespace);
 
             StackPrimitiveEnd(in builder);
             
@@ -790,6 +791,48 @@ namespace Tests
                 Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
                 stack.ExpandCapacity(6);
                 Assert.That(stack.Capacity, Is.EqualTo((nuint)10));
+            }}
+        }}
+");
+        }
+
+        private void StackPrimitiveReducingCapacity<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void ReducingCapacityTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                    stack.ReducingCapacity(1);
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count - 1}));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count - 1})));
+                }}
+            }}
+
+            unsafe
+            {{
+                var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>();
+                stack.ExpandCapacity(6);
+
+                Assert.That(stack.Capacity, Is.EqualTo((nuint)10));
+                stack.ReducingCapacity(1);
+                Assert.That(stack.Capacity, Is.EqualTo((nuint)9));
             }}
         }}
 ");

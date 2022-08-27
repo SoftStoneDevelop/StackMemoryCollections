@@ -280,6 +280,7 @@ namespace TestGenerator
             StackPrimitiveIndex(in values, in builder, in stackNamespace, in toStr);
             StackPrimitivePop(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveTop(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveTopPtr(in values, in builder, in stackNamespace, in toStr);
 
             StackPrimitiveEnd(in builder);
             
@@ -1056,6 +1057,49 @@ namespace Tests
                     stack.Push({toStr(values[i])});
                     var item{i} = stack.Top();
                     Assert.That(item{i}, Is.EqualTo({toStr(values[i])}));
+");
+            }
+
+            builder.Append($@"
+                }}
+            }}
+        }}
+");
+
+        }
+
+        private void StackPrimitiveTopPtr<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void TopPtrTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    Assert.That(() => stack.TopPtr(),
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo(""There are no elements on the stack"")
+                        );
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    stack.Push({toStr(values[i])});
+                    var itemPtr{i} = stack.TopPtr();
+                    Assert.That(new IntPtr(itemPtr{i}), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {i})));
 ");
             }
 

@@ -135,6 +135,14 @@ namespace StackGenerators
                     var needSkip = false;
                     foreach (var member in currentType.GetMembers())
                     {
+                        var mustBeIgnored = member.GetAttributes().Any(wh => wh.AttributeClass.Name == "GeneratorIgnoreAttribute");
+                        info.HasIgnoredMembers |= mustBeIgnored;
+
+                        if (mustBeIgnored)
+                        {
+                            continue;
+                        }
+
                         if (member is Microsoft.CodeAnalysis.IPropertySymbol propertySymbol)
                         {
                             if (!member.DeclaredAccessibility.HasFlag(Accessibility.Public))

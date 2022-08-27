@@ -130,6 +130,10 @@ namespace StackGenerators
                 {
                     var currentType = stackCurrentTypes.Peek();
                     var info = new TypeInfo();
+                    info.IsValueType = currentType.IsValueType;
+                    info.IsPrimitive = IsPrimitive(currentType.Name);
+                    info.IsUnmanagedType = currentType.IsUnmanagedType;
+
                     var offset = 0;
 
                     var needSkip = false;

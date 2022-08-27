@@ -48,6 +48,7 @@ namespace StackGenerators
 
                 GenerateCopyToPtr(in builder, in typeInfo, in currentType);
                 GenerateCopyToValue(in builder, in typeInfo, in currentType);
+                GenerateCopyToValueOut(in builder, in typeInfo, in currentType);
                 GenerateCopy(in builder, in typeInfo);
                 GenerateEnd(in builder);
 
@@ -153,21 +154,6 @@ namespace {currentType.ContainingNamespace}
             in MemberInfo memberInfo
             )
         {
-            if (memberInfo.IsValueType)
-            {
-                builder.Append($@"
-        [SkipLocalsInit]
-        public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
-        {{
-            {memberInfo.TypeName} result;
-            {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {memberInfo.Offset}, ref result);
-            return result;
-        }}
-
-");
-                return;
-            }
-
             builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
@@ -229,6 +215,30 @@ namespace {currentType.ContainingNamespace}
         public static void CopyToValue(in void* ptr, ref {currentType.Name} value)
         {{
 
+");
+            foreach (var memberInfo in typeInfo.Members)
+            {
+                builder.Append($@"
+            value.{memberInfo.MemberName} = Get{memberInfo.MemberName}Value(in ptr);
+");
+            }
+
+            builder.Append($@"
+        }}
+
+");
+        }
+
+        private void GenerateCopyToValueOut(
+            in StringBuilder builder,
+            in TypeInfo typeInfo,
+            in INamedTypeSymbol currentType
+            )
+        {
+            builder.Append($@"
+        public static void CopyToValueOut(in void* ptr, out {currentType.Name} value)
+        {{
+            value = new {currentType.Name}();
 ");
             foreach (var memberInfo in typeInfo.Members)
             {

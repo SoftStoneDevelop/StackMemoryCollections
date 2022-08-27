@@ -319,6 +319,16 @@ namespace StackMemoryCollections.Class
                 *(_start + (Size - 1));
         }
 
+        public void TopOut(out T top)
+        {
+            if (Size == 0)
+            {
+                throw new Exception("There are no elements on the stack");
+            }
+            
+            top = * (_start + (Size - 1));
+        }
+
         public void Top(ref T* ptr)
         {
             if (Size == 0)

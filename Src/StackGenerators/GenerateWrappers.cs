@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
-using System.Text;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace StackGenerators
 {
@@ -18,13 +18,48 @@ namespace StackGenerators
             for (int i = 0; i < typeWrappers.Count; i++)
             {
                 var currentType = typeWrappers[i];
-                builder.Clear();
                 if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
                 {
                     throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
                 }
 
-                builder.Append($@"
+                GenerateWrapper(in currentType, in context, in typeInfo, in builder, "Class");
+                GenerateWrapper(in currentType, in context, in typeInfo, in builder, "Struct");
+            }
+        }
+
+        private void GenerateWrapper(
+            in INamedTypeSymbol currentType,
+            in GeneratorExecutionContext context,
+            in TypeInfo typeInfo,
+            in StringBuilder builder,
+            in string wrapperNamespace
+            )
+        {
+            builder.Clear();
+            WrapperStart(in currentType, in builder, in wrapperNamespace);
+            WrapperConstructor1(in currentType, in typeInfo, in builder);
+            WrapperConstructor2(in currentType, in typeInfo, in builder);
+            WrapperConstructor3(in currentType, in typeInfo, in builder);
+            WrapperConstructor4(in currentType, in builder);
+
+
+
+            WrapperDispose(in currentType, in typeInfo, in builder, in wrapperNamespace);
+
+
+            WrapperEnd(in builder);
+
+            context.AddSource($"{currentType.Name}Wrapper{wrapperNamespace}.g.cs", builder.ToString());
+        }
+
+        private void WrapperStart(
+            in INamedTypeSymbol currentType,
+            in StringBuilder builder,
+            in string wrapperNamespace
+            )
+        {
+            builder.Append($@"
 /*
 {Resource.License}
 */
@@ -32,117 +67,41 @@ namespace StackGenerators
 using System;
 using {currentType.ContainingNamespace};
 
-namespace {currentType.ContainingNamespace}.Struct
+namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 {{
-    public unsafe struct {currentType.Name}Wrapper : IDisposable
+    public unsafe {wrapperNamespace.ToLowerInvariant()} {currentType.Name}Wrapper : IDisposable
     {{
         private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
         private readonly StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
         private readonly void* _start;
         private readonly bool _memoryOwner = false;
-
-        public {currentType.Name}Wrapper()
-        {{
-            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)});
-            _start = _stackMemoryC.Start;
-            _memoryOwner = true;
-            _stackMemoryS = null;
-        }}
-
-        public {currentType.Name}Wrapper(
-            StackMemoryCollections.Struct.StackMemory* stackMemory
-            )
-        {{
-            if (stackMemory == null)
-            {{
-                throw new ArgumentNullException(nameof(stackMemory));
-            }}
-
-            _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
-            _stackMemoryS = stackMemory;
-        }}
-
-        public {currentType.Name}Wrapper(
-            StackMemoryCollections.Class.StackMemory stackMemory
-            )
-        {{
-            if (stackMemory == null)
-            {{
-                throw new ArgumentNullException(nameof(stackMemory));
-            }}
-
-            _start = stackMemory.AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
-            _stackMemoryC = stackMemory;
-            _stackMemoryS = null;
-        }}
-
-        public {currentType.Name}Wrapper(
-            void* start
-            )
-        {{
-            if (start == null)
-            {{
-                throw new ArgumentNullException(nameof(start));
-            }}
-
-            _start = start;
-            _stackMemoryC = null;
-            _stackMemoryS = null;
-        }}
-
-        public void* Ptr => _start;
-
-        public void Dispose()
-        {{
-            if(!_memoryOwner)
-            {{
-                if(_stackMemoryC != null)
-                {{
-                    _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size)});
-                }}
-                else if (_stackMemoryS != null)
-                {{
-                    _stackMemoryS->FreeMemory({typeInfo.Members.Sum(s => s.Size)});
-                }}
-            }}
-            else
-            {{
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-                _stackMemoryC.Dispose();
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-            }}
-            
-        }}
-    }}
-}}
 ");
-                context.AddSource($"{currentType.Name}WrapperStruct.g.cs", builder.ToString());
+        }
 
-                builder.Clear();
-                builder.Append($@"
-/*
-{Resource.License}
-*/
-
-using System;
-using {currentType.ContainingNamespace};
-
-namespace {currentType.ContainingNamespace}.Class
-{{
-    public unsafe class {currentType.Name}Wrapper : IDisposable
-    {{
-        private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
-        private readonly StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
-        private readonly void* _start;
-        private readonly bool _memoryOwner = false;
-
+        private void WrapperConstructor1(
+            in INamedTypeSymbol currentType,
+            in TypeInfo typeInfo,
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
         public {currentType.Name}Wrapper()
         {{
             _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)});
             _start = _stackMemoryC.Start;
             _memoryOwner = true;
+            _stackMemoryS = null;
         }}
+");
+        }
 
+        private void WrapperConstructor2(
+            in INamedTypeSymbol currentType,
+            in TypeInfo typeInfo,
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
         public {currentType.Name}Wrapper(
             StackMemoryCollections.Struct.StackMemory* stackMemory
             )
@@ -155,7 +114,16 @@ namespace {currentType.ContainingNamespace}.Class
             _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
             _stackMemoryS = stackMemory;
         }}
+");
+        }
 
+        private void WrapperConstructor3(
+            in INamedTypeSymbol currentType,
+            in TypeInfo typeInfo,
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
         public {currentType.Name}Wrapper(
             StackMemoryCollections.Class.StackMemory stackMemory
             )
@@ -169,7 +137,15 @@ namespace {currentType.ContainingNamespace}.Class
             _stackMemoryC = stackMemory;
             _stackMemoryS = null;
         }}
+");
+        }
 
+        private void WrapperConstructor4(
+            in INamedTypeSymbol currentType,
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
         public {currentType.Name}Wrapper(
             void* start
             )
@@ -183,9 +159,19 @@ namespace {currentType.ContainingNamespace}.Class
             _stackMemoryC = null;
             _stackMemoryS = null;
         }}
+");
+        }
 
-        public void* Ptr => _start;
-
+        private void WrapperDispose(
+            in INamedTypeSymbol currentType,
+            in TypeInfo typeInfo,
+            in StringBuilder builder,
+            in string wrapperNamespace
+            )
+        {
+            if(wrapperNamespace == "Class")
+            {
+                builder.Append($@"
         #region IDisposable
 
         private bool _disposed;
@@ -228,11 +214,80 @@ namespace {currentType.ContainingNamespace}.Class
         }}
 
         #endregion
+");
+            }
+            else
+            {
+                builder.Append($@"
+        public void Dispose()
+        {{
+            if(!_memoryOwner)
+            {{
+                if(_stackMemoryC != null)
+                {{
+                    _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                }}
+                else if (_stackMemoryS != null)
+                {{
+                    _stackMemoryS->FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                }}
+            }}
+            else
+            {{
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                _stackMemoryC.Dispose();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            }}
+            
+        }}
+");
+            }
+        }
+
+        private void WrapperProperties(
+            in INamedTypeSymbol currentType,
+            in TypeInfo typeInfo,
+            in StringBuilder builder,
+            in Dictionary<string, TypeInfo> typeInfos
+            )
+        {
+            WrapperPtr(in builder);
+            for (int i = 0; i < typeInfo.Members.Count; i++)
+            {
+                var currentMember = typeInfo.Members[i];
+                if(currentMember.IsPrimitive)
+                {
+                    //TODO generate getters
+                }
+                else
+                {
+                    if (!typeInfos.TryGetValue(currentMember.TypeName, out var memberTypeInfo))
+                    {
+                        throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
+                    }
+
+                    //TODO generate getters
+                }
+            }
+        }
+
+        private void WrapperPtr(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
+        public void* Ptr => _start;
+");
+        }
+
+        private void WrapperEnd(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
     }}
 }}
 ");
-                context.AddSource($"{currentType.Name}WrapperClass.g.cs", builder.ToString());
-            }
         }
     }
 }

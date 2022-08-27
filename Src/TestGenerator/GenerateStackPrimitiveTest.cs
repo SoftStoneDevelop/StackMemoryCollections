@@ -251,7 +251,7 @@ namespace TestGenerator
             in GeneratorExecutionContext context,
             in List<T> values,
             in StringBuilder builder,
-            in string wrapperNamespace,
+            in string stackNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -261,25 +261,27 @@ namespace TestGenerator
             }
 
             builder.Clear();
-            StackPrimitiveStart<T>(in builder, in wrapperNamespace);
+            StackPrimitiveStart<T>(in builder, in stackNamespace);
 
-            StackPrimitiveDispose(in values, in builder, in wrapperNamespace);
-            StackPrimitiveNotDispose(in values, in builder, in wrapperNamespace);
-            StackPrimitiveReseize(in values, in builder, in wrapperNamespace, in toStr);
-            StackPrimitivePush(in values, in builder, in wrapperNamespace, in toStr);
-            StackPrimitiveTryPush(in values, in builder, in wrapperNamespace, in toStr);
-            StackPrimitiveClear(in values, in builder, in wrapperNamespace, in toStr);
-            StackPrimitiveClearOwn(in values, in builder, in wrapperNamespace, in toStr);
-            StackPrimitiveCopy(in values, in builder, in wrapperNamespace, in toStr);
+            StackPrimitiveDispose(in values, in builder, in stackNamespace);
+            StackPrimitiveNotDispose(in values, in builder, in stackNamespace);
+            StackPrimitiveReseize(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitivePush(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveTryPush(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveClear(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveClearOwn(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveCopy(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveTrimExcess(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveTrimExcessOwn(in values, in builder, in stackNamespace, in toStr);
 
             StackPrimitiveEnd(in builder);
             
-            context.AddSource($"Stack{wrapperNamespace}{typeof(T).Name}Fixture.g.cs", builder.ToString());
+            context.AddSource($"Stack{stackNamespace}{typeof(T).Name}Fixture.g.cs", builder.ToString());
         }
 
         private void StackPrimitiveStart<T>(
             in StringBuilder builder,
-            in string wrapperNamespace
+            in string stackNamespace
             ) where T : unmanaged
         {
             builder.Append($@"
@@ -289,7 +291,7 @@ using System;
 namespace Tests
 {{
     [TestFixture]
-    public class Stack{wrapperNamespace}{typeof(T).Name}Fixture
+    public class Stack{stackNamespace}{typeof(T).Name}Fixture
     {{
                     
 ");
@@ -298,7 +300,7 @@ namespace Tests
         private void StackPrimitiveDispose<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string wrapperNamespace
+            in string stackNamespace
             ) where T : unmanaged
         {
             if (values.Count < 5)
@@ -315,7 +317,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     {{
-                        using var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                        using var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
                     }}
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
@@ -329,7 +331,7 @@ namespace Tests
         private void StackPrimitiveNotDispose<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string wrapperNamespace
+            in string stackNamespace
             ) where T : unmanaged
         {
             if (values.Count < 5)
@@ -346,7 +348,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     {{
-                        var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                        var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
                     }}
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
@@ -360,7 +362,7 @@ namespace Tests
         private void StackPrimitiveReseize<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string wrapperNamespace,
+            in string stackNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -375,7 +377,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>();
+                var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>();
 ");
             for (int i = 0; i < 4; i++)
             {
@@ -401,7 +403,7 @@ namespace Tests
         private void StackPrimitivePush<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string wrapperNamespace,
+            in string stackNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -419,7 +421,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
-                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 ");
@@ -449,7 +451,7 @@ namespace Tests
         private void StackPrimitiveTryPush<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string wrapperNamespace,
+            in string stackNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -466,7 +468,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
@@ -493,7 +495,7 @@ namespace Tests
         private void StackPrimitiveClear<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string wrapperNamespace,
+            in string stackNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -510,7 +512,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
@@ -535,7 +537,7 @@ namespace Tests
         private void StackPrimitiveClearOwn<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string wrapperNamespace,
+            in string stackNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -550,25 +552,22 @@ namespace Tests
         {{
             unsafe
             {{
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
-                {{
-                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>();
+                var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>();
 ");
             for (int i = 0; i < 4; i++)
             {
                 builder.Append($@"
-                    stack.Push({toStr(values[i])});
+                stack.Push({toStr(values[i])});
 ");
             }
 
             builder.Append($@"
 
-                    Assert.That(stack.Size, Is.EqualTo((nuint)4));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
-                    stack.Clear();
-                    Assert.That(stack.Size, Is.EqualTo((nuint)0));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
-                }}
+                Assert.That(stack.Size, Is.EqualTo((nuint)4));
+                Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
+                stack.Clear();
+                Assert.That(stack.Size, Is.EqualTo((nuint)0));
+                Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
             }}
         }}
 ");
@@ -577,7 +576,7 @@ namespace Tests
         private void StackPrimitiveCopy<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string wrapperNamespace,
+            in string stackNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -586,7 +585,7 @@ namespace Tests
                 throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
             }
 
-            if(wrapperNamespace == "Class")
+            if(stackNamespace == "Class")
             {
                 builder.Append($@"
         [Test]
@@ -597,7 +596,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 using (var memory2 = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
 ");
                 for (int i = 0; i < values.Count; i++)
                 {
@@ -607,7 +606,7 @@ namespace Tests
                 }
 
                 builder.Append($@"
-                    var stack2 = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory2);
+                    var stack2 = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory2);
                     stack.Copy(in stack2);
 
                     Assert.That(stack.Size, Is.EqualTo(stack2.Size));
@@ -625,7 +624,7 @@ namespace Tests
         }}
 ");
             }
-            else if (wrapperNamespace == "Struct")
+            else if (stackNamespace == "Struct")
             {
                 builder.Append($@"
         [Test]
@@ -636,7 +635,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 using (var memory2 = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
 ");
                 for (int i = 0; i < values.Count; i++)
                 {
@@ -646,7 +645,7 @@ namespace Tests
                 }
 
                 builder.Append($@"
-                    var stack2 = new StackMemoryCollections.{wrapperNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory2);
+                    var stack2 = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory2);
                     stack.Copy(stack2.Start);
 
                     Assert.That(stack2.Size, Is.EqualTo((nuint)0));
@@ -666,6 +665,93 @@ namespace Tests
         }}
 ");
             }
+        }
+
+        private void StackPrimitiveTrimExcess<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void TrimExcessTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count - 2}, &memory);
+");
+            for (int i = 0; i < values.Count - 2; i++)
+            {
+                builder.Append($@"
+                    stack.Push({toStr(values[i])});
+");
+            }
+
+            builder.Append($@"
+                    stack.ExpandCapacity(2);
+                    stack.Push({toStr(values[0])});
+
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
+                    Assert.That(stack.Size, Is.EqualTo((nuint){values.Count - 1}));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                    stack.TrimExcess();
+                    Assert.That(stack.Size, Is.EqualTo((nuint){values.Count - 1}));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count - 1}));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count - 1})));
+                }}
+            }}
+        }}
+");
+        }
+
+        private void StackPrimitiveTrimExcessOwn<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void TrimExcessOwnTest()
+        {{
+            unsafe
+            {{
+                var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>();
+");
+            for (int i = 0; i < 4; i++)
+            {
+                builder.Append($@"
+                stack.Push({toStr(values[i])});
+");
+            }
+
+            builder.Append($@"
+                stack.ExpandCapacity(6);
+                stack.Push({toStr(values[0])});
+
+                Assert.That(stack.Size, Is.EqualTo((nuint)5));
+                Assert.That(stack.Capacity, Is.EqualTo((nuint)10));
+                stack.TrimExcess();
+                Assert.That(stack.Size, Is.EqualTo((nuint)5));
+                Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
+            }}
+        }}
+");
         }
 
         private void StackPrimitiveEnd(

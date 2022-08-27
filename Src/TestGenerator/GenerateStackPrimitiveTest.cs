@@ -277,6 +277,7 @@ namespace TestGenerator
             StackPrimitiveReducingCapacity(in values, in builder, in stackNamespace);
             StackPrimitiveSize(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveCapacity(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitiveIndex(in values, in builder, in stackNamespace, in toStr);
 
             StackPrimitiveEnd(in builder);
             
@@ -911,6 +912,54 @@ namespace Tests
             }
 
             builder.Append($@"
+                }}
+            }}
+        }}
+");
+        }
+
+        private void StackPrimitiveIndex<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void IndexTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    stack.Push({toStr(values[i])});
+");
+            }
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    Assert.That(new IntPtr(stack[{i}]), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count - 1 - i})));
+                    Assert.That(*stack[{i}], Is.EqualTo({toStr(values[values.Count - 1 - i])}));
+");
+            }
+
+            builder.Append($@"
+                    Assert.That(() => stack[{values.Count}],
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo(""Element outside the stack"")
+                        );
                 }}
             }}
         }}

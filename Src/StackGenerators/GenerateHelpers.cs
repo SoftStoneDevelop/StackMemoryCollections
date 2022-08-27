@@ -38,7 +38,9 @@ namespace StackGenerators
                         GenerateGetPrimitiveValue(in builder, in memberInfo);
                         GenerateGetPrimitiveValueRef(in builder, in memberInfo);
                         GenerateGetPrimitiveValueOut(in builder, in memberInfo);
+
                         GenerateSetPrimitiveValue(in builder, in memberInfo);
+                        GenerateSetPrimitiveValueFromPtr(in builder, in memberInfo);
                         GenerateSetPrimitiveValueFrom(in builder, in memberInfo, in currentType);
                     }
                     else
@@ -175,6 +177,20 @@ namespace {currentType.ContainingNamespace}
 ");
         }
 
+        private void GenerateSetPrimitiveValueFromPtr(
+            in StringBuilder builder,
+            in MemberInfo memberInfo
+            )
+        {
+            builder.Append($@"
+        public static void Set{memberInfo.MemberName}Value(in void* ptr, in {memberInfo.TypeName}* valuePtr)
+        {{
+            *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset}) = *valuePtr;
+        }}
+
+");
+        }
+
 
         private void GenerateGetСompositeValue(
             in StringBuilder builder,
@@ -188,7 +204,6 @@ namespace {currentType.ContainingNamespace}
             {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {memberInfo.Offset}, ref result);
             return result;
         }}
-
 ");
         }
 
@@ -203,7 +218,6 @@ namespace {currentType.ContainingNamespace}
         {{
             {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {memberInfo.Offset});
         }}
-
 ");
         }
 
@@ -228,7 +242,6 @@ namespace {currentType.ContainingNamespace}
             builder.Append($@"
 
         }}
-
 ");
         }
 

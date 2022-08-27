@@ -260,6 +260,8 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 {
                     WrapperPrimitiveGetSet(in builder, in currentMember, in typeInfo);
                     WrapperPrimitiveSetIn(in builder, in currentMember, in typeInfo);
+                    WrapperPrimitiveSetPtr(in builder, in currentMember, in typeInfo);
+
                     WrapperPrimitiveGetOut(in builder, in currentMember, in typeInfo);
                 }
                 else
@@ -271,6 +273,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 
                     WrapperСompositeGetSet(in builder, in currentMember, in memberTypeInfo, in typeInfo);
                     WrapperСompositeSetIn(in builder, in currentMember, in memberTypeInfo, in typeInfo);
+                    WrapperСompositeSetPtr(in builder, in currentMember, in memberTypeInfo, in typeInfo);
                     WrapperСompositeGetOut(in builder, in currentMember, in memberTypeInfo, in typeInfo);
                 }
             }
@@ -321,6 +324,20 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
         }
 
+        private void WrapperPrimitiveSetPtr(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in TypeInfo containingType
+            )
+        {
+            builder.Append($@"
+        public void Set{memberInfo.MemberName}(in {memberInfo.TypeName}* valuePtr)
+        {{
+            {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Set{memberInfo.MemberName}Value(in _start, in valuePtr);
+        }}
+");
+        }
+
         private void WrapperPrimitiveGetOut(
             in StringBuilder builder,
             in MemberInfo memberInfo,
@@ -358,6 +375,22 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
                 {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToPtr(in value, in ptr);
             }}
+        }}
+");
+        }
+
+        private void WrapperСompositeSetPtr(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in TypeInfo memberTypeInfo,
+            in TypeInfo containingType
+            )
+        {
+            builder.Append($@"
+        public void Set{memberInfo.MemberName} (in void* valuePtr)
+        {{
+            var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
+            {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.Copy(in valuePtr, in ptr);
         }}
 ");
         }

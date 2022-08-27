@@ -197,7 +197,7 @@ namespace {currentType.ContainingNamespace}
             builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
-            {memberInfo.TypeName} result = default;
+            {memberInfo.TypeName} result = new {memberInfo.TypeName}();
             {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {memberInfo.Offset}, ref result);
             return result;
         }}

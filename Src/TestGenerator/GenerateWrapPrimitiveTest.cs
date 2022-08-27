@@ -15,7 +15,7 @@ namespace TestGenerator
         {
             {
                 var Int32Values = new List<Int32> { 15, -45, 0, 34, -140 };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     Int32Values,
                     in builder,
@@ -23,7 +23,7 @@ namespace TestGenerator
                     (val) => { return val.ToString().ToLowerInvariant(); }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     Int32Values,
                     in builder,
@@ -34,7 +34,7 @@ namespace TestGenerator
 
             {
                 var UInt32Values = new List<UInt32> { 15, 45, 0, 34, 140 };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     UInt32Values,
                     in builder,
@@ -42,7 +42,7 @@ namespace TestGenerator
                     (val) => { return val.ToString().ToLowerInvariant(); }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     UInt32Values,
                     in builder,
@@ -53,7 +53,7 @@ namespace TestGenerator
 
             {
                 var Int64Values = new List<Int64> { 15, -45, 0, 34, -140 };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     Int64Values,
                     in builder,
@@ -61,7 +61,7 @@ namespace TestGenerator
                     (val) => { return val.ToString().ToLowerInvariant(); }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     Int64Values,
                     in builder,
@@ -72,7 +72,7 @@ namespace TestGenerator
 
             {
                 var UInt64Values = new List<UInt64> { 15, 45, 0, 34, 140 };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     UInt64Values,
                     in builder,
@@ -80,7 +80,7 @@ namespace TestGenerator
                     (val) => { return val.ToString().ToLowerInvariant(); }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     UInt64Values,
                     in builder,
@@ -91,7 +91,7 @@ namespace TestGenerator
 
             {
                 var SByteValues = new List<SByte> { 15, -45, 0, -120, 15 };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     SByteValues,
                     in builder,
@@ -99,7 +99,7 @@ namespace TestGenerator
                     (val) => { return val.ToString().ToLowerInvariant(); }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     SByteValues,
                     in builder,
@@ -110,7 +110,7 @@ namespace TestGenerator
 
             {
                 var ByteValues = new List<Byte> { 15, 45, 0, 255, 78 };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     ByteValues,
                     in builder,
@@ -118,7 +118,7 @@ namespace TestGenerator
                     (val) => { return val.ToString().ToLowerInvariant(); }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     ByteValues,
                     in builder,
@@ -129,7 +129,7 @@ namespace TestGenerator
 
             {
                 var Int16Values = new List<Int16> { 15, -45, 0, -255, 120 };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     Int16Values,
                     in builder,
@@ -137,7 +137,7 @@ namespace TestGenerator
                     (val) => { return val.ToString().ToLowerInvariant(); }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     Int16Values,
                     in builder,
@@ -148,7 +148,7 @@ namespace TestGenerator
 
             {
                 var UInt16Values = new List<UInt16> { 15, 45, 0, 255, 15 };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     UInt16Values,
                     in builder,
@@ -156,7 +156,7 @@ namespace TestGenerator
                     (val) => { return val.ToString().ToLowerInvariant(); }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     UInt16Values,
                     in builder,
@@ -167,7 +167,7 @@ namespace TestGenerator
 
             {
                 var CharValues = new List<Char> { 's', 'a', 'q', ' ', '1' };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     CharValues,
                     in builder,
@@ -175,7 +175,7 @@ namespace TestGenerator
                     (val) => { return "'" + val.ToString() + "'"; }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     CharValues,
                     in builder,
@@ -186,7 +186,7 @@ namespace TestGenerator
 
             {
                 var DecimalValues = new List<Decimal> { 4.5m, 0.44m, -0.5m, 0m, 0.23m };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     DecimalValues,
                     in builder,
@@ -194,7 +194,7 @@ namespace TestGenerator
                     (val) => { return val.ToString("G") + "m"; }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     DecimalValues,
                     in builder,
@@ -205,7 +205,7 @@ namespace TestGenerator
 
             {
                 var DoubleValues = new List<Double> { 4.5d, 0.44d, -0.5d, 0d, 0.23d };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     DoubleValues,
                     in builder,
@@ -213,7 +213,7 @@ namespace TestGenerator
                     (val) => { return val.ToString("G") + "d"; }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     DoubleValues,
                     in builder,
@@ -224,7 +224,7 @@ namespace TestGenerator
 
             {
                 var BooleanValues = new List<Boolean> { true, false, true, false, true };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     BooleanValues,
                     in builder,
@@ -232,7 +232,7 @@ namespace TestGenerator
                     (val) => { return val.ToString().ToLowerInvariant(); }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     BooleanValues,
                     in builder,
@@ -243,7 +243,7 @@ namespace TestGenerator
 
             {
                 var SingleValues = new List<Single> { 4.5f, 0.44f, -0.5f, 0f, 0.23f };
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     SingleValues,
                     in builder,
@@ -251,7 +251,7 @@ namespace TestGenerator
                     (val) => { return val.ToString("F", CultureInfo.InvariantCulture) + "f"; }
                     );
 
-                GenerateWrapPrimitiveTest(
+                WrapPrimitiveTest(
                     in context,
                     SingleValues,
                     in builder,
@@ -261,7 +261,7 @@ namespace TestGenerator
             }
         }
 
-        private void GenerateWrapPrimitiveTest<T>(
+        private void WrapPrimitiveTest<T>(
             in GeneratorExecutionContext context,
             in List<T> values,
             in StringBuilder builder,
@@ -275,19 +275,19 @@ namespace TestGenerator
             }
 
             builder.Clear();
-            GenerateStart<T>(in builder, in wrapperNamespace);
+            WrapPrimitiveStart<T>(in builder, in wrapperNamespace);
 
             //generate methods
-            GenerateDispose(in values, in builder, in wrapperNamespace);
-            GenerateNotDispose(in values, in builder, in wrapperNamespace);
-            GenerateValue(in values, in builder, in wrapperNamespace, in toStr);
+            WrapPrimitiveDispose(in values, in builder, in wrapperNamespace);
+            WrapPrimitiveNotDispose(in values, in builder, in wrapperNamespace);
+            WrapPrimitiveValue(in values, in builder, in wrapperNamespace, in toStr);
 
-            GenerateEnd(in builder);
+            WrapPrimitiveEnd(in builder);
             
             context.AddSource($"Wrapper{wrapperNamespace}{typeof(T).Name}Fixture.g.cs", builder.ToString());
         }
 
-        private void GenerateStart<T>(
+        private void WrapPrimitiveStart<T>(
             in StringBuilder builder,
             in string wrapperNamespace
             ) where T : unmanaged
@@ -305,7 +305,7 @@ namespace Tests
 ");
         }
 
-        private void GenerateDispose<T>(
+        private void WrapPrimitiveDispose<T>(
             in List<T> values,
             in StringBuilder builder,
             in string wrapperNamespace
@@ -340,7 +340,7 @@ namespace Tests
 ");
         }
 
-        private void GenerateNotDispose<T>(
+        private void WrapPrimitiveNotDispose<T>(
             in List<T> values,
             in StringBuilder builder,
             in string wrapperNamespace
@@ -377,7 +377,7 @@ namespace Tests
 ");
         }
 
-        private void GenerateValue<T>(
+        private void WrapPrimitiveValue<T>(
             in List<T> values,
             in StringBuilder builder,
             in string wrapperNamespace,
@@ -412,7 +412,7 @@ namespace Tests
 ");
         }
 
-        private void GenerateEnd(in StringBuilder builder)
+        private void WrapPrimitiveEnd(in StringBuilder builder)
         {
             builder.Append($@"
 

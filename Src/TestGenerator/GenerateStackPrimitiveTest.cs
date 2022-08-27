@@ -545,7 +545,7 @@ namespace Tests
 
             builder.Append($@"
         [Test]
-        public void ClearTest()
+        public void ClearOwnTest()
         {{
             unsafe
             {{

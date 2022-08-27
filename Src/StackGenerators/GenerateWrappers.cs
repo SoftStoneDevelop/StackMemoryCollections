@@ -259,6 +259,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 if (currentMember.IsPrimitive)
                 {
                     WrapperPrimitiveGetSet(in builder, in currentMember, in typeInfo);
+                    WrapperPrimitiveSetIn(in builder, in currentMember, in typeInfo);
                     WrapperPrimitiveGetOut(in builder, in currentMember, in typeInfo);
                 }
                 else
@@ -269,6 +270,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                     }
 
                     WrapperСompositeGetSet(in builder, in currentMember, in memberTypeInfo, in typeInfo);
+                    WrapperСompositeSetIn(in builder, in currentMember, in memberTypeInfo, in typeInfo);
                     WrapperСompositeGetOut(in builder, in currentMember, in memberTypeInfo, in typeInfo);
                 }
             }
@@ -301,6 +303,20 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             {{
                 {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Set{memberInfo.MemberName}Value(in _start, in value);
             }}
+        }}
+");
+        }
+
+        private void WrapperPrimitiveSetIn(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in TypeInfo containingType
+            )
+        {
+            builder.Append($@"
+        public void Set{memberInfo.MemberName}(in {memberInfo.TypeName} item)
+        {{
+            {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Set{memberInfo.MemberName}Value(in _start, in item);
         }}
 ");
         }
@@ -358,6 +374,22 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         {{
             var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
             {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToValueOut(in ptr, out item);
+        }}
+");
+        }
+
+        private void WrapperСompositeSetIn(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in TypeInfo memberTypeInfo,
+            in TypeInfo containingType
+            )
+        {
+            builder.Append($@"
+        public void Set{memberInfo.MemberName}(in {memberInfo.TypeName} item) 
+        {{
+            var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
+            {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToPtr(in item, in ptr);
         }}
 ");
         }

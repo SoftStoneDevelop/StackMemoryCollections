@@ -9,8 +9,8 @@ See [Documentation](https://github.com/SoftStoneDevelop/StackMemoryCollections/b
 
 Supported collections:
 - Stack
-- List TODO
-- Queue TODO
+- List [TODO](https://github.com/SoftStoneDevelop/StackMemoryCollections/issues/1)
+- Queue [TODO](https://github.com/SoftStoneDevelop/StackMemoryCollections/issues/2)
 
 ## Benchmarks:
 

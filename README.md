@@ -42,10 +42,31 @@ Stack elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
 |     **StackMemoryCollections** | **1000000** | **4,838,296.6 ns** |  **1.03** |       **4000007 B** |
 | System.Collections.Generic | 1000000 | 4,679,167.4 ns |  1.00 | 4000393 B |
 
-[Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/PrimitiveSimpleJob.cs)
+[Bench Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/PrimitiveSimpleJob.cs)
 ______
   
-
+|                     Method |    Size |          Mean | Ratio |   Allocated |
+|--------------------------- |-------- |--------------:|------:|------------:|
+|     **StackMemoryCollections** |     **100** |      **69.06 μs** |  **1.24** |           **400** |
+| System.Collections.Generic |     100 |      55.78 μs |  1.00 |     91200 B |
+|                            |         |               |       |             |
+|     **StackMemoryCollections** |    **1000** |     **618.52 μs** |  **1.10** |         **4001 B** |
+| System.Collections.Generic |    1000 |     545.27 μs |  1.00 |    811200 B |
+|                            |         |               |       |             |
+|     **StackMemoryCollections** |   **10000** |   **6,352.77 μs** |  **1.18** |         **40007 B** |
+| System.Collections.Generic |   10000 |   5,396.62 μs |  1.00 |   8011204 B |
+|                            |         |               |       |             |
+|     **StackMemoryCollections** |  **100000** |  **63,338.15 μs** |  **0.84** |       **400198 B** |
+| System.Collections.Generic |  100000 |  76,073.95 μs |  1.00 |  80019641 B |
+|                            |         |               |       |             |
+|     **StackMemoryCollections** |  **250000** | **158,500.56 μs** |  **0.86** |       **1000368 B** |
+| System.Collections.Generic |  250000 | 183,712.84 μs |  1.00 | 200029085 B |
+|                            |         |               |       |             |
+|     **StackMemoryCollections** |  **500000** | **311,823.57 μs** |  **0.86** |      **2005860 B** |
+| System.Collections.Generic |  500000 | 363,499.57 μs |  1.00 | 400046688 B |
+|                            |         |               |       |             |
+|     **StackMemoryCollections** | **1000000** | **625,418.21 μs** |  **0.85** |      **4003792 B** |
+| System.Collections.Generic | 1000000 | 739,717.81 μs |  1.00 | 800078544 B |
   
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Optimal/PrimitiveOptimalJob.cs)
 ______

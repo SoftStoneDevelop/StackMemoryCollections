@@ -44,7 +44,7 @@ namespace StackGenerators
             WrapperConstructor3(in currentType, in typeInfo, in builder);
             WrapperConstructor4(in currentType, in builder);
 
-            WrapperProperties(in currentType, in typeInfo, in builder, in typeInfos);
+            WrapperProperties(in typeInfo, in builder, in typeInfos);
 
             WrapperDispose(in currentType, in typeInfo, in builder, in wrapperNamespace);
 
@@ -74,7 +74,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
     {{
         private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
         private readonly StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
-        private readonly void* _start;
+        private void* _start;
         private readonly bool _memoryOwner = false;
 ");
         }
@@ -246,13 +246,14 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperProperties(
-            in INamedTypeSymbol currentType,
             in TypeInfo typeInfo,
             in StringBuilder builder,
             in Dictionary<string, TypeInfo> typeInfos
             )
         {
             WrapperPtr(in builder);
+            PrimitiveWrapperChangePtr(in builder);
+
             for (int i = 0; i < typeInfo.Members.Count; i++)
             {
                 var currentMember = typeInfo.Members[i];
@@ -423,6 +424,23 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         {{
             var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
             {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToPtr(in item, in ptr);
+        }}
+");
+        }
+
+        private void PrimitiveWrapperChangePtr(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
+        public void ChangePtr(in void* newPtr)
+        {{
+            if(_stackMemoryC != null || _stackMemoryS != null)
+            {{
+                throw new Exception(""Only an instance created via a void* constructor can change the pointer."");
+            }}
+
+            _start = newPtr;
         }}
 ");
         }

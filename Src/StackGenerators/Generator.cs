@@ -35,7 +35,10 @@ namespace StackGenerators
             FillTypeInfos(in typeHelpers, in infos);
 
             var builder = new StringBuilder();
+
             GenerateHelpers(in typeHelpers, in context, in infos, in builder);
+
+            GeneratePrimitiveWrappers(in context, in builder, c.Assembly.Name);
             GenerateWrappers(in typeWrappers, in context, in infos, in builder);
 
             GeneratePrimitiveStack(in context, in builder, c.Assembly.Name);

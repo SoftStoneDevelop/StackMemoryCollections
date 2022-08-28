@@ -266,11 +266,13 @@ namespace TestGenerator
             //generate methods
             WrapPrimitiveDispose(in values, in builder, in wrapperNamespace);
             WrapPrimitiveNotDispose(in values, in builder, in wrapperNamespace);
-            WrapPrimitiveValue(in values, in builder, in wrapperNamespace, in toStr);
+            WrapPrimitivePtr(in values, in builder, in wrapperNamespace, in toStr);
+            WrapPrimitiveValueProperty(in values, in builder, in wrapperNamespace, in toStr);
+            WrapPrimitiveChangePtr<T>(in builder, in wrapperNamespace);
 
             WrapPrimitiveEnd(in builder);
             
-            context.AddSource($"Wrapper{wrapperNamespace}{typeof(T).Name}Fixture.g.cs", builder.ToString());
+            context.AddSource($"{typeof(T).Name}Wrapper{wrapperNamespace}Fixture.g.cs", builder.ToString());
         }
 
         private void WrapPrimitiveStart<T>(
@@ -285,7 +287,7 @@ using System;
 namespace Tests
 {{
     [TestFixture]
-    public class Wrapper{wrapperNamespace}{typeof(T).Name}Fixture
+    public class {typeof(T).Name}Wrapper{wrapperNamespace}Fixture
     {{
                     
 ");
@@ -311,7 +313,7 @@ namespace Tests
             {
                 builder.Append($@"
                     {{
-                        using var {typeof(T).Name}W{i} = new StackMemoryCollections.{wrapperNamespace}.Wrapper<{typeof(T).Name}>(&memory);
+                        using var {typeof(T).Name}W{i} = new {wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
                     }}
 ");
             }
@@ -348,7 +350,7 @@ namespace Tests
                 builder.Append($@"
 
                     {{
-                        var {typeof(T).Name}W{i} = new StackMemoryCollections.{wrapperNamespace}.Wrapper<{typeof(T).Name}>(&memory);
+                        var {typeof(T).Name}W{i} = new {wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
                     }}
 ");
             }
@@ -363,7 +365,7 @@ namespace Tests
 ");
         }
 
-        private void WrapPrimitiveValue<T>(
+        private void WrapPrimitivePtr<T>(
             in List<T> values,
             in StringBuilder builder,
             in string wrapperNamespace,
@@ -373,7 +375,7 @@ namespace Tests
             builder.Append($@"
 
         [Test]
-        public void ValueTest()
+        public void PtrTest()
         {{
             unsafe
             {{
@@ -384,7 +386,7 @@ namespace Tests
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    var {typeof(T).Name}W{i} = new StackMemoryCollections.{wrapperNamespace}.Wrapper<{typeof(T).Name}>(&memory);
+                    var {typeof(T).Name}W{i} = new {wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
                     *{typeof(T).Name}W{i}.Ptr = {toStr(values[i])};
                     Assert.That(*{typeof(T).Name}W{i}.Ptr, Is.EqualTo(({typeof(T).Name})({toStr(values[i])})));
 ");
@@ -395,6 +397,69 @@ namespace Tests
             }}
         }}
 
+");
+        }
+
+        private void WrapPrimitiveValueProperty<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string wrapperNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            builder.Append($@"
+
+        [Test]
+        public void ValuePropertyTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+  
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    var {typeof(T).Name}W{i} = new {wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
+                    {typeof(T).Name}W{i}.Value = {toStr(values[i])};
+                    Assert.That({typeof(T).Name}W{i}.Value, Is.EqualTo(({typeof(T).Name})({toStr(values[i])})));
+");
+            }
+
+            builder.Append($@"
+                }}
+            }}
+        }}
+
+");
+        }
+
+        private void WrapPrimitiveChangePtr<T>(
+            in StringBuilder builder,
+            in string wrapperNamespace
+            ) where T : unmanaged
+        {
+            builder.Append($@"
+
+        [Test]
+        public void ChangePtrTest()
+        {{
+            unsafe
+            {{
+
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name})))
+                {{
+                    var {typeof(T).Name}W = new {wrapperNamespace}.{typeof(T).Name}Wrapper(({typeof(T).Name}*)memory.Start);
+                    Assert.That(new IntPtr({typeof(T).Name}W.Ptr), Is.EqualTo(new IntPtr(memory.Start)));
+                    using (var memory2 = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name})))
+                    {{
+                        {typeof(T).Name}W.ChangePtr(({typeof(T).Name}*)memory2.Start);
+                        Assert.That(new IntPtr({typeof(T).Name}W.Ptr), Is.EqualTo(new IntPtr(memory2.Start)));
+                    }}
+                }}
+            }}
+        }}
 ");
         }
 

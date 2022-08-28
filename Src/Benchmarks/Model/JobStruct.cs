@@ -1,4 +1,4 @@
-﻿using GenerateAttibutes;
+﻿using StackMemoryCollections.Attibutes;
 
 namespace Benchmark
 {

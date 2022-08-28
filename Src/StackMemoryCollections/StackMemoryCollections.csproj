@@ -5,8 +5,29 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
+	<PropertyGroup>
+		<PackageId>StackMemoryCollections</PackageId>
+		<PackageVersion>0.0.7.0</PackageVersion>
+		<Authors>Brevnov Vyacheslav Sergeevich</Authors>
+		<RepositoryUrl>https://github.com/SoftStoneDevelop/StackMemoryCollections</RepositoryUrl>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<Description>Fast unsafe collections for memory reuse by stack type. Can also be used in as classic collection with resizing or on a custom memory allocator(constructor with void*), then it's your responsibility to make sure the pointer is correct.</Description>
+		<PackageTags>collection, unsafe collection, memory, stack memory, stack, list, queue</PackageTags>
+		<NoPackageAnalysis>true</NoPackageAnalysis>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
+	<ItemGroup>
+	  <None Include="..\..\LICENSE">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\GenerateAttibutes\GenerateAttibutes.csproj" />
 		<ProjectReference Include="..\StackGenerators\StackGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0" PrivateAssets="all" />
+		<PackageReference Update="NETStandard.Library" PrivateAssets="all" />
 	</ItemGroup>
 </Project>

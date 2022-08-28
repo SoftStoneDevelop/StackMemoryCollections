@@ -71,7 +71,7 @@ namespace Benchmark
             }
         }
 
-        [Benchmark(Baseline = true, Description = "Using System.Collections.Generic.Stack<T>")]
+        [Benchmark(Baseline = true, Description = "System.Collections.Generic")]
         public void SystemCollectionsStack()
         {
             unsafe

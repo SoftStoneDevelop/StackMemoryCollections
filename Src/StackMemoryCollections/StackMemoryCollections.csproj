@@ -11,7 +11,7 @@
 		<Authors>Brevnov Vyacheslav Sergeevich</Authors>
 		<RepositoryUrl>https://github.com/SoftStoneDevelop/StackMemoryCollections</RepositoryUrl>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<Description>Fast unsafe collections for memory reuse by stack type. Can also be used in as classic collection with resizing or on a custom memory allocator(constructor with void*), then it's your responsibility to make sure the pointer is correct.</Description>
+		<Description>Fast unsafe collections for memory reuse by stack type. Adding elements without overhead when increasing Capacity. Can also be used in as classic collection with resizing or on a custom memory allocator.</Description>
 		<PackageTags>collection, unsafe collection, memory, stack memory, stack, list, queue</PackageTags>
 		<NoPackageAnalysis>true</NoPackageAnalysis>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>

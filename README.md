@@ -42,7 +42,7 @@ Stack elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
 |     **StackMemoryCollections** | **1000000** | **3,326,526.8 ns** |  **0.71** |       **4000006 B** |
 | System.Collections.Generic | 1000000 | 4,683,416.4 ns |  1.00 | 4000393 B |
 
-[Bench Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/PrimitiveSimpleJob.cs)
+[Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/PrimitiveSimpleJob.cs)
 ______
   
 |                     Method |    Size |          Mean | Ratio |   Allocated |

@@ -197,6 +197,23 @@ namespace {currentType.ContainingNamespace}
             in MemberInfo memberInfo
             )
         {
+            if (memberInfo.IsValueType)
+            {
+                builder.Append($@"
+        [SkipLocalsInit]
+        public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
+        {{
+            {memberInfo.TypeName} result;
+            Unsafe.SkipInit(out result);
+            {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {memberInfo.Offset}, ref result);
+
+            return result;
+        }}
+
+");
+                return;
+            }
+
             builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{

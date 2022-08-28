@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace StackMemoryCollections.Struct
 {
@@ -35,6 +36,22 @@ namespace StackMemoryCollections.Struct
             var start = Current;
             Current = (byte*)start + allocateBytes;
             return start;
+        }
+
+        public bool TryAllocateMemory(nuint allocateBytes, out void* ptr)
+        {
+            if (ByteCount - _offsetBytes < allocateBytes)
+            {
+                ptr = null;
+                return false;
+            }
+
+            _offsetBytes += allocateBytes;
+            var start = Current;
+            Current = (byte*)start + allocateBytes;
+            ptr = start;
+
+            return true;
         }
 
         public void FreeMemory(nuint reducingBytes)

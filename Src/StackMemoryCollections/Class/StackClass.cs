@@ -215,7 +215,30 @@ namespace StackMemoryCollections.Class
                 }
                 else
                 {
-                    throw new Exception("Not enough memory to allocate stack element");
+                    if (_stackMemoryS != null)
+                    {
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            throw new Exception("Failed to expand available memory, stack moved further");
+                        }
+
+                        _stackMemoryS->AllocateMemory((nuint)sizeof(T));
+                    }
+                    else if (_stackMemoryC != null)
+                    {
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            throw new Exception("Failed to expand available memory, stack moved further");
+                        }
+
+                        _stackMemoryC.AllocateMemory((nuint)sizeof(T));
+                    }
+                    else
+                    {
+                        throw new Exception("Not enough memory to allocate stack element");
+                    }
+
+                    Capacity++;
                 }
             }
 
@@ -224,7 +247,7 @@ namespace StackMemoryCollections.Class
             _version++;
         }
 
-        public void Push(in void* ptr)
+        public void Push(in T* ptr)
         {
             var tempSize = Size + 1;
             if (tempSize > Capacity)
@@ -235,7 +258,30 @@ namespace StackMemoryCollections.Class
                 }
                 else
                 {
-                    throw new Exception("Not enough memory to allocate stack element");
+                    if (_stackMemoryS != null)
+                    {
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            throw new Exception("Failed to expand available memory, stack moved further");
+                        }
+
+                        _stackMemoryS->AllocateMemory((nuint)sizeof(T));
+                    }
+                    else if (_stackMemoryC != null)
+                    {
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            throw new Exception("Failed to expand available memory, stack moved further");
+                        }
+
+                        _stackMemoryC.AllocateMemory((nuint)sizeof(T));
+                    }
+                    else
+                    {
+                        throw new Exception("Not enough memory to allocate stack element");
+                    }
+
+                    Capacity++;
                 }
             }
 
@@ -255,7 +301,36 @@ namespace StackMemoryCollections.Class
                 }
                 else
                 {
-                    return false;
+                    if (_stackMemoryS != null)
+                    {
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            return false;
+                        }
+
+                        if(!_stackMemoryS->TryAllocateMemory((nuint)sizeof(T), out _))
+                        {
+                            return false;
+                        }
+                    }
+                    else if (_stackMemoryC != null)
+                    {
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            return false;
+                        }
+
+                        if (!_stackMemoryC.TryAllocateMemory((nuint)sizeof(T), out _))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                    Capacity++;
                 }
             }
 
@@ -277,7 +352,36 @@ namespace StackMemoryCollections.Class
                 }
                 else
                 {
-                    return false;
+                    if (_stackMemoryS != null)
+                    {
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            return false;
+                        }
+
+                        if (!_stackMemoryS->TryAllocateMemory((nuint)sizeof(T), out _))
+                        {
+                            return false;
+                        }
+                    }
+                    else if (_stackMemoryC != null)
+                    {
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            return false;
+                        }
+
+                        if (!_stackMemoryC.TryAllocateMemory((nuint)sizeof(T), out _))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                    Capacity++;
                 }
             }
 

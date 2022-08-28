@@ -453,8 +453,8 @@ namespace Tests
             builder.Append($@"
 
                     Assert.That(() => stack.Push({toStr(values[0])}),
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""Not enough memory to allocate stack element"")
+                        Throws.Exception.TypeOf(typeof(ArgumentException))
+                        .And.Message.EqualTo(""Can't allocate memory"")
                         );
                 }}
             }}
@@ -489,12 +489,11 @@ namespace Tests
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 
                     {typeof(T).Name} item;
+                    Unsafe.SkipInit(out item);
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-
-                    item = {toStr(values[i])};
                     stack.Push(&item);
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
@@ -510,8 +509,8 @@ namespace Tests
                             {typeof(T).Name} temp = {toStr(values[0])};
                             stack.Push(&temp);
                         }},
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""Not enough memory to allocate stack element"")
+                        Throws.Exception.TypeOf(typeof(ArgumentException))
+                        .And.Message.EqualTo(""Can't allocate memory"")
                         );
                 }}
             }}

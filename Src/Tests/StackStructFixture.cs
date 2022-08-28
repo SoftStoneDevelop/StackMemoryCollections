@@ -86,8 +86,8 @@ namespace Tests
                     stack.Push(new TestStruct { Int32 = 798845, Int64 = 99999955555 });
 
                     Assert.That(() => stack.Push(new TestStruct { Int32 = 45, Int64 = 788787 }),
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo("Not enough memory to allocate stack element")
+                        Throws.Exception.TypeOf(typeof(ArgumentException))
+                        .And.Message.EqualTo("Can't allocate memory")
                         );
                 }
             }

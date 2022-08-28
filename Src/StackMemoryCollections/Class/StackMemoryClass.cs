@@ -37,6 +37,27 @@ namespace StackMemoryCollections.Class
             return start;
         }
 
+        public bool TryAllocateMemory(nuint allocateBytes, out void* ptr)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(StackMemory));
+            }
+
+            if (ByteCount - _offsetBytes < allocateBytes)
+            {
+                ptr = null;
+                return false;
+            }
+
+            _offsetBytes += allocateBytes;
+            var start = Current;
+            Current = (byte*)start + allocateBytes;
+            ptr = start;
+
+            return true;
+        }
+
         public void FreeMemory(nuint reducingBytes)
         {
             if(_disposed)
@@ -54,6 +75,26 @@ namespace StackMemoryCollections.Class
 
             _offsetBytes -= reducingBytes;
             Current = newCurrent.ToPointer();
+        }
+
+        public bool TryFreeMemory(nuint reducingBytes)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(StackMemory));
+            }
+
+            var start = new IntPtr(Start);
+            var newCurrent = new IntPtr((byte*)Current - reducingBytes);
+
+            if (newCurrent.CompareTo(start) < 0)
+            {
+                return false;
+            }
+
+            _offsetBytes -= reducingBytes;
+            Current = newCurrent.ToPointer();
+            return true;
         }
 
         #region IDisposable

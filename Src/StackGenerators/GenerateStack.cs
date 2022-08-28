@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace StackGenerators
@@ -503,8 +504,11 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                         {{
                             return false;
                         }}
-
-                        _stackMemoryS->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                        
+                        if(!_stackMemoryS->TryAllocateMemory({typeInfo.Members.Sum(s => s.Size)}, out _))
+                        {{
+                            return false;
+                        }}
                     }}
                     else if (_stackMemoryC != null)
                     {{
@@ -513,7 +517,10 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                             return false;
                         }}
 
-                        _stackMemoryC.AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                        if(!_stackMemoryC.TryAllocateMemory({typeInfo.Members.Sum(s => s.Size)}, out _))
+                        {{
+                            return false;
+                        }}
                     }}
                     else
                     {{
@@ -564,8 +571,11 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                         {{
                             return false;
                         }}
-
-                        _stackMemoryS->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                        
+                        if(!_stackMemoryS->TryAllocateMemory({typeInfo.Members.Sum(s => s.Size)}, out _))
+                        {{
+                            return false;
+                        }}
                     }}
                     else if (_stackMemoryC != null)
                     {{
@@ -574,7 +584,10 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                             return false;
                         }}
 
-                        _stackMemoryC.AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                        if(!_stackMemoryC.TryAllocateMemory({typeInfo.Members.Sum(s => s.Size)}, out _))
+                        {{
+                            return false;
+                        }}
                     }}
                     else
                     {{
@@ -684,6 +697,28 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             in TypeInfo typeInfo
             )
         {
+            if (typeInfo.IsUnmanagedType)
+            {
+                builder.Append($@"
+        [SkipLocalsInit]
+        public {typeInfo.TypeName} Top()
+        {{
+            if (Size == 0)
+            {{
+                throw new Exception(""There are no elements on the stack"");
+            }}
+
+            {typeInfo.TypeName} result;
+            Unsafe.SkipInit(out result);
+            
+            {typeInfo.TypeName}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), ref result);
+
+            return result;
+        }}
+");
+                return;
+            }
+
             builder.Append($@"
         public {currentType.Name} Top()
         {{

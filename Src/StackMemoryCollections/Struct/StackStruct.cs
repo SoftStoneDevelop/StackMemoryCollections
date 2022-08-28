@@ -304,7 +304,10 @@
                             return false;
                         }
 
-                        _stackMemoryS->AllocateMemory((nuint)sizeof(T));
+                        if (!_stackMemoryS->TryAllocateMemory((nuint)sizeof(T), out _))
+                        {
+                            return false;
+                        }
                     }
                     else if (_stackMemoryC != null)
                     {
@@ -313,7 +316,10 @@
                             return false;
                         }
 
-                        _stackMemoryC.AllocateMemory((nuint)sizeof(T));
+                        if (!_stackMemoryC.TryAllocateMemory((nuint)sizeof(T), out _))
+                        {
+                            return false;
+                        }
                     }
                     else
                     {
@@ -348,7 +354,10 @@
                             return false;
                         }
 
-                        _stackMemoryS->AllocateMemory((nuint)sizeof(T));
+                        if (!_stackMemoryS->TryAllocateMemory((nuint)sizeof(T), out _))
+                        {
+                            return false;
+                        }
                     }
                     else if (_stackMemoryC != null)
                     {
@@ -357,7 +366,10 @@
                             return false;
                         }
 
-                        _stackMemoryC.AllocateMemory((nuint)sizeof(T));
+                        if (!_stackMemoryC.TryAllocateMemory((nuint)sizeof(T), out _))
+                        {
+                            return false;
+                        }
                     }
                     else
                     {

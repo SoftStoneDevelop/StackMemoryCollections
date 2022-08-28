@@ -292,6 +292,17 @@
             Size--;
         }
 
+        public bool TryPop()
+        {
+            if (Size <= 0)
+            {
+                return false;
+            }
+
+            Size--;
+            return true;
+        }
+
         public void Clear()
         {
             if(Size != 0)

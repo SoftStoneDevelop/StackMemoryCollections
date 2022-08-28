@@ -24,9 +24,8 @@ namespace Benchmark
                         stack.Push(in i);
                     }
 
-                    while (!stack.IsEmpty)
+                    while (stack.TryPop())
                     {
-                        stack.Pop();
                     }
                 }
             }

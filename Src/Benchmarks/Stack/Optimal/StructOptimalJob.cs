@@ -38,9 +38,8 @@ namespace Benchmark
                             }
                             else
                             {
-                                while (!stack.IsEmpty)
+                                while (stack.TryPop())
                                 {
-                                    stack.Pop();
                                 }
                             }
                         }
@@ -61,9 +60,8 @@ namespace Benchmark
                         }
                         else
                         {
-                            while (!stack2.IsEmpty)
+                            while (stack2.TryPop())
                             {
-                                stack2.Pop();
                             }
                         }
                     }

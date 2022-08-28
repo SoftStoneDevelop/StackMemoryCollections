@@ -54,6 +54,7 @@ namespace StackGenerators
             StackTryPushIn(in builder, in currentType, in typeInfo, in stackNamespace);
             StackTryPushInPtr(in builder, in currentType, in typeInfo, in stackNamespace);
             StackPop(in builder, in stackNamespace);
+            StackTryPop(in builder, in stackNamespace);
             StackClear(in builder, in stackNamespace);
             StackTop(in builder, in currentType, in typeInfo);
             StackTopInPtr(in builder, in currentType, in typeInfo);
@@ -532,6 +533,35 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
         }}
 ");
         }
+
+        private void StackTryPop(
+            in StringBuilder builder,
+            in string stackNamespace
+            )
+        {
+            builder.Append($@"
+        public bool TryPop()
+        {{
+            if (Size <= 0)
+            {{
+                return false;
+            }}
+
+            Size--;
+");
+            if (stackNamespace == "Class")
+            {
+                builder.Append($@"
+            _version++;
+");
+            }
+            builder.Append($@"
+
+            return true;
+        }}
+");
+        }
+
         private void StackClear(
             in StringBuilder builder,
             in string stackNamespace

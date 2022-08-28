@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace StackGenerators
+namespace StackMemoryCollections
 {
     internal class TypeInfo
     {

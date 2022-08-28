@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace StackGenerators
+namespace StackMemoryCollections
 {
     public partial class Generator
     {

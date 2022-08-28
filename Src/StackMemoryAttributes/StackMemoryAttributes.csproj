@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+	<PropertyGroup>
+		<PackageId>StackMemoryCollections.Attributes</PackageId>
+		<PackageVersion>0.7.0.0</PackageVersion>
+		<Authors>Brevnov Vyacheslav Sergeevich</Authors>
+		<RepositoryUrl>https://github.com/SoftStoneDevelop/StackMemoryCollections</RepositoryUrl>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<Description>Attributes for Stack Memory Collection</Description>
+		<PackageTags>Stack Memory Collection, attributes</PackageTags>
+		<NoPackageAnalysis>true</NoPackageAnalysis>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+</Project>

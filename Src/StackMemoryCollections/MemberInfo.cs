@@ -1,4 +1,4 @@
-﻿namespace StackGenerators
+﻿namespace StackMemoryCollections
 {
     internal class MemberInfo
     {

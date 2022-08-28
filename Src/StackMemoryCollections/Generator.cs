@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace StackGenerators
+namespace StackMemoryCollections
 {
     [Generator]
     public partial class Generator : ISourceGenerator
@@ -27,7 +27,8 @@ namespace StackGenerators
                 in typeGeneratedList,
                 in typeGeneratedQueue,
                 in typeGeneratedDictionary,
-                c.Assembly.GlobalNamespace
+                c.Assembly.GlobalNamespace,
+                out var containCollections
                 );
             // Build up the source code
 
@@ -35,16 +36,15 @@ namespace StackGenerators
             FillTypeInfos(in typeHelpers, in infos);
 
             var builder = new StringBuilder();
-
-            GenerateHelpers(in typeHelpers, in context, in infos, in builder);
-            GenerateWrappers(in typeWrappers, in context, in infos, in builder);
-
-            if(c.AssemblyName == "StackMemoryCollections")
+            if (!containCollections)
             {
                 GeneratePrimitiveWrappers(in context, in builder);
                 GeneratePrimitiveStack(in context, in builder);
+                GenerateMemory(in context, in builder);
             }
 
+            GenerateHelpers(in typeHelpers, in context, in infos, in builder);
+            GenerateWrappers(in typeWrappers, in context, in infos, in builder);
             GenerateStack(in typeGeneratedStack, in context, in infos, in builder);
         }
 
@@ -60,9 +60,11 @@ namespace StackGenerators
             in List<INamedTypeSymbol> typesGeneratedList,
             in List<INamedTypeSymbol> typesGeneratedQueue,
             in List<INamedTypeSymbol> typesGeneratedDictionary,
-            INamespaceOrTypeSymbol symbol
+            INamespaceOrTypeSymbol symbol,
+            out bool containCollections
             )
         {
+            containCollections = false;
             var queue = new Queue<INamespaceOrTypeSymbol>();
             queue.Enqueue(symbol);
 
@@ -111,6 +113,13 @@ namespace StackGenerators
                         {
                             typesWrappers.Add(type);
                         }
+                    }
+                }
+                else if(current is INamespaceSymbol namespaceSymbol)
+                {
+                    if (!containCollections && namespaceSymbol.Name == "StackMemoryCollections")
+                    {
+                        containCollections = true;
                     }
                 }
 

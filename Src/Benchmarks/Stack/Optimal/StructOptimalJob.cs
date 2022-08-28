@@ -5,12 +5,13 @@ namespace Benchmark
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
+    [HideColumns("Error", "StdDev", "Median", "Gen0", "Gen1", "Gen2", "Alloc Ratio", "RatioSD")]
     public class StructOptimalJob
     {
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
 
-        [Benchmark(Description = $"Using StackOfJobStruct: memory = (Size * 12) + Allocated column")]
+        [Benchmark(Description = $"StackOfJobStruct")]
         public void StackMemory()
         {
             unsafe
@@ -26,6 +27,8 @@ namespace Benchmark
                             {
                                 item.Int32 = i;
                                 item.Int64 = i * 2;
+                                item.JobStruct2.Int32 = 15;
+                                item.JobStruct2.Int64 = 36;
                                 stack.Push(in item);
                             }
 
@@ -47,6 +50,8 @@ namespace Benchmark
                         {
                             item.Int32 = i;
                             item.Int64 = i * 2;
+                            item.JobStruct2.Int32 = 15;
+                            item.JobStruct2.Int64 = 36;
                             stack2.Push(in item);
                         }
 
@@ -80,6 +85,8 @@ namespace Benchmark
                         {
                             item.Int32 = i;
                             item.Int64 = i * 2;
+                            item.JobStruct2.Int32 = 15;
+                            item.JobStruct2.Int64 = 36;
                             stack.Push(item);
                         }
 
@@ -100,6 +107,8 @@ namespace Benchmark
                     {
                         item.Int32 = i;
                         item.Int64 = i * 2;
+                        item.JobStruct2.Int32 = 15;
+                        item.JobStruct2.Int64 = 36;
                         stack2.Push(item);
                     }
 

@@ -5,12 +5,13 @@ namespace Benchmark
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
+    [HideColumns("Error", "StdDev", "Median", "Gen0", "Gen1", "Gen2", "Alloc Ratio", "RatioSD")]
     public class ClassSimpleJob
     {
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
 
-        [Benchmark(Description = $"Using StackOfJobClass: memory = (Size * 12) + Allocated column")]
+        [Benchmark(Description = $"StackMemoryCollections")]
         public void StackMemory()
         {
             unsafe
@@ -34,7 +35,7 @@ namespace Benchmark
             }
         }
 
-        [Benchmark(Baseline = true, Description = "Using System.Collections.Generic.Stack<T>")]
+        [Benchmark(Baseline = true, Description = "System.Collections.Generic")]
         public void SystemCollectionsStack()
         {
             unsafe

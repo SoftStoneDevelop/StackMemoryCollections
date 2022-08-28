@@ -313,7 +313,7 @@ namespace Tests
             {
                 builder.Append($@"
                     {{
-                        using var {typeof(T).Name}W{i} = new {wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
+                        using var {typeof(T).Name}W{i} = new StackMemoryCollections.{wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
                     }}
 ");
             }
@@ -350,7 +350,7 @@ namespace Tests
                 builder.Append($@"
 
                     {{
-                        var {typeof(T).Name}W{i} = new {wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
+                        var {typeof(T).Name}W{i} = new StackMemoryCollections.{wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
                     }}
 ");
             }
@@ -386,7 +386,7 @@ namespace Tests
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    var {typeof(T).Name}W{i} = new {wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
+                    var {typeof(T).Name}W{i} = new StackMemoryCollections.{wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
                     *{typeof(T).Name}W{i}.Ptr = {toStr(values[i])};
                     Assert.That(*{typeof(T).Name}W{i}.Ptr, Is.EqualTo(({typeof(T).Name})({toStr(values[i])})));
 ");
@@ -421,7 +421,7 @@ namespace Tests
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    var {typeof(T).Name}W{i} = new {wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
+                    var {typeof(T).Name}W{i} = new StackMemoryCollections.{wrapperNamespace}.{typeof(T).Name}Wrapper(&memory);
                     {typeof(T).Name}W{i}.Value = {toStr(values[i])};
                     Assert.That({typeof(T).Name}W{i}.Value, Is.EqualTo(({typeof(T).Name})({toStr(values[i])})));
 ");
@@ -450,7 +450,7 @@ namespace Tests
 
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name})))
                 {{
-                    var {typeof(T).Name}W = new {wrapperNamespace}.{typeof(T).Name}Wrapper(({typeof(T).Name}*)memory.Start);
+                    var {typeof(T).Name}W = new StackMemoryCollections.{wrapperNamespace}.{typeof(T).Name}Wrapper(({typeof(T).Name}*)memory.Start);
                     Assert.That(new IntPtr({typeof(T).Name}W.Ptr), Is.EqualTo(new IntPtr(memory.Start)));
                     using (var memory2 = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name})))
                     {{

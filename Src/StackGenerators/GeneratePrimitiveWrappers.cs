@@ -8,60 +8,59 @@ namespace StackGenerators
     {
         private void GeneratePrimitiveWrappers(
             in GeneratorExecutionContext context,
-            in StringBuilder builder,
-            in string namespaceAssembly
+            in StringBuilder builder
             )
         {
-            GeneratePrimitiveWrapper<Int32>(in context, in builder, "Class", 4, in namespaceAssembly);
-            GeneratePrimitiveWrapper<Int32>(in context, in builder, "Struct", 4, in namespaceAssembly);
+            GeneratePrimitiveWrapper<Int32>(in context, in builder, "Class", 4);
+            GeneratePrimitiveWrapper<Int32>(in context, in builder, "Struct", 4);
 
-            GeneratePrimitiveWrapper<UInt32>(in context, in builder, "Class", 4, in namespaceAssembly);
-            GeneratePrimitiveWrapper<UInt32>(in context, in builder, "Struct", 4, in namespaceAssembly);
+            GeneratePrimitiveWrapper<UInt32>(in context, in builder, "Class", 4);
+            GeneratePrimitiveWrapper<UInt32>(in context, in builder, "Struct", 4);
 
-            GeneratePrimitiveWrapper<Int64>(in context, in builder, "Class", 8, in namespaceAssembly);
-            GeneratePrimitiveWrapper<Int64>(in context, in builder, "Struct", 8, in namespaceAssembly);
+            GeneratePrimitiveWrapper<Int64>(in context, in builder, "Class", 8);
+            GeneratePrimitiveWrapper<Int64>(in context, in builder, "Struct", 8);
 
-            GeneratePrimitiveWrapper<UInt64>(in context, in builder, "Class", 8, in namespaceAssembly);
-            GeneratePrimitiveWrapper<UInt64>(in context, in builder, "Struct", 8, in namespaceAssembly);
+            GeneratePrimitiveWrapper<UInt64>(in context, in builder, "Class", 8);
+            GeneratePrimitiveWrapper<UInt64>(in context, in builder, "Struct", 8);
 
-            GeneratePrimitiveWrapper<SByte>(in context, in builder, "Class", 1, in namespaceAssembly);
-            GeneratePrimitiveWrapper<SByte>(in context, in builder, "Struct", 1, in namespaceAssembly);
+            GeneratePrimitiveWrapper<SByte>(in context, in builder, "Class", 1);
+            GeneratePrimitiveWrapper<SByte>(in context, in builder, "Struct", 1);
 
-            GeneratePrimitiveWrapper<Byte>(in context, in builder, "Class", 1, in namespaceAssembly);
-            GeneratePrimitiveWrapper<Byte>(in context, in builder, "Struct", 1, in namespaceAssembly);
+            GeneratePrimitiveWrapper<Byte>(in context, in builder, "Class", 1);
+            GeneratePrimitiveWrapper<Byte>(in context, in builder, "Struct", 1);
 
-            GeneratePrimitiveWrapper<Int16>(in context, in builder, "Class", 2, in namespaceAssembly);
-            GeneratePrimitiveWrapper<Int16>(in context, in builder, "Struct", 2, in namespaceAssembly);
+            GeneratePrimitiveWrapper<Int16>(in context, in builder, "Class", 2);
+            GeneratePrimitiveWrapper<Int16>(in context, in builder, "Struct", 2);
 
-            GeneratePrimitiveWrapper<UInt16>(in context, in builder, "Class", 2, in namespaceAssembly);
-            GeneratePrimitiveWrapper<UInt16>(in context, in builder, "Struct", 2, in namespaceAssembly);
+            GeneratePrimitiveWrapper<UInt16>(in context, in builder, "Class", 2);
+            GeneratePrimitiveWrapper<UInt16>(in context, in builder, "Struct", 2);
 
-            GeneratePrimitiveWrapper<Char>(in context, in builder, "Class", 2, in namespaceAssembly);
-            GeneratePrimitiveWrapper<Char>(in context, in builder, "Struct", 2, in namespaceAssembly);
+            GeneratePrimitiveWrapper<Char>(in context, in builder, "Class", 2);
+            GeneratePrimitiveWrapper<Char>(in context, in builder, "Struct", 2);
 
-            GeneratePrimitiveWrapper<Decimal>(in context, in builder, "Class", 16, in namespaceAssembly);
-            GeneratePrimitiveWrapper<Decimal>(in context, in builder, "Struct", 16, in namespaceAssembly);
+            GeneratePrimitiveWrapper<Decimal>(in context, in builder, "Class", 16);
+            GeneratePrimitiveWrapper<Decimal>(in context, in builder, "Struct", 16);
 
-            GeneratePrimitiveWrapper<Double>(in context, in builder, "Class", 8, in namespaceAssembly);
-            GeneratePrimitiveWrapper<Double>(in context, in builder, "Struct", 8, in namespaceAssembly);
+            GeneratePrimitiveWrapper<Double>(in context, in builder, "Class", 8);
+            GeneratePrimitiveWrapper<Double>(in context, in builder, "Struct", 8);
 
-            GeneratePrimitiveWrapper<Boolean>(in context, in builder, "Class", 1, in namespaceAssembly);//1 byte is not optimal
-            GeneratePrimitiveWrapper<Boolean>(in context, in builder, "Struct", 1, in namespaceAssembly);//1 byte is not optimal
+            GeneratePrimitiveWrapper<Boolean>(in context, in builder, "Class", 1);//1 byte is not optimal
+            GeneratePrimitiveWrapper<Boolean>(in context, in builder, "Struct", 1);//1 byte is not optimal
 
-            GeneratePrimitiveWrapper<Single>(in context, in builder, "Class", 4, in namespaceAssembly);
-            GeneratePrimitiveWrapper<Single>(in context, in builder, "Struct", 4, in namespaceAssembly);
+            GeneratePrimitiveWrapper<Single>(in context, in builder, "Class", 4);
+            GeneratePrimitiveWrapper<Single>(in context, in builder, "Struct", 4);
         }
 
         private void GeneratePrimitiveWrapper<T>(
             in GeneratorExecutionContext context,
             in StringBuilder builder,
             in string wrapperNamespace,
-            in int sizeOf,
-            in string namespaceAssembly
+            in int sizeOf
             ) where T : unmanaged
         {
             builder.Clear();
-            PrimitiveWrapperStart<T>(in builder, in wrapperNamespace, in namespaceAssembly);
+
+            PrimitiveWrapperStart<T>(in builder, in wrapperNamespace);
             PrimitiveWrapperConstructor1<T>(in sizeOf, in builder);
             PrimitiveWrapperConstructor2<T>(in sizeOf, in builder);
             PrimitiveWrapperConstructor3<T>(in sizeOf, in builder);
@@ -78,8 +77,7 @@ namespace StackGenerators
 
         private void PrimitiveWrapperStart<T>(
             in StringBuilder builder,
-            in string wrapperNamespace,
-            in string namespaceAssembly
+            in string wrapperNamespace
             ) where T : unmanaged
         {
             builder.Append($@"
@@ -89,7 +87,7 @@ namespace StackGenerators
 
 using System;
 
-namespace {namespaceAssembly}.{wrapperNamespace}
+namespace StackMemoryCollections.{wrapperNamespace}
 {{
     public unsafe {wrapperNamespace.ToLowerInvariant()} {typeof(T).Name}Wrapper : IDisposable
     {{

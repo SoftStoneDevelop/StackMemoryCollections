@@ -21,7 +21,7 @@ namespace Benchmark
                     for (int j = 0; j < 100; j++)
                     {
                         {
-                            using var stack = new Benchmark.Struct.StackOfInt32((nuint)Size, &memory);
+                            using var stack = new StackMemoryCollections.Struct.StackOfInt32((nuint)Size, &memory);
                             for (int i = 0; i < Size; i++)
                             {
                                 stack.Push(in i);
@@ -39,7 +39,7 @@ namespace Benchmark
                             }
                         }
 
-                        using var stack2 = new Benchmark.Struct.StackOfInt32((nuint)Size, &memory);
+                        using var stack2 = new StackMemoryCollections.Struct.StackOfInt32((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
                             stack2.Push(in i);

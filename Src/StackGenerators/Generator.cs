@@ -37,11 +37,14 @@ namespace StackGenerators
             var builder = new StringBuilder();
 
             GenerateHelpers(in typeHelpers, in context, in infos, in builder);
-
-            GeneratePrimitiveWrappers(in context, in builder, c.Assembly.Name);
             GenerateWrappers(in typeWrappers, in context, in infos, in builder);
 
-            GeneratePrimitiveStack(in context, in builder, c.Assembly.Name);
+            if(c.AssemblyName == "StackMemoryCollections")
+            {
+                GeneratePrimitiveWrappers(in context, in builder);
+                GeneratePrimitiveStack(in context, in builder);
+            }
+
             GenerateStack(in typeGeneratedStack, in context, in infos, in builder);
         }
 

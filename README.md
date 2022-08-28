@@ -18,13 +18,36 @@ Supported collections:
 
 ### Primitive types:
 Stack elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
+  
+|                     Method |    Size |           Mean | Ratio | Allocated |
+|--------------------------- |-------- |---------------:|------:|----------:|
+|     **StackMemoryCollections** |     **100** |       **508.6 ns** |  **1.45** |         **400 B** |
+| System.Collections.Generic |     100 |       349.8 ns |  1.00 |     456 B |
+|                            |         |                |       |           |
+|     **StackMemoryCollections** |    **1000** |     **4,156.1 ns** |  **1.22** |         **4000 B** |
+| System.Collections.Generic |    1000 |     3,397.4 ns |  1.00 |    4056 B |
+|                            |         |                |       |           |
+|     **StackMemoryCollections** |   **10000** |    **41,159.0 ns** |  **1.18** |         **40000 B** |
+| System.Collections.Generic |   10000 |    34,840.5 ns |  1.00 |   40056 B |
+|                            |         |                |       |           |
+|     **StackMemoryCollections** |  **100000** |   **426,671.1 ns** |  **0.91** |       **400002 B** |
+| System.Collections.Generic |  100000 |   470,070.8 ns |  1.00 |  400098 B |
+|                            |         |                |       |           |
+|     **StackMemoryCollections** |  **250000** | **1,075,245.9 ns** |  **0.92** |       **1000008 B** |
+| System.Collections.Generic |  250000 | 1,171,422.0 ns |  1.00 | 1000140 B |
+|                            |         |                |       |           |
+|     **StackMemoryCollections** |  **500000** | **2,399,918.5 ns** |  **1.03** |       **2000003 B** |
+| System.Collections.Generic |  500000 | 2,343,048.8 ns |  1.00 | 2000225 B |
+|                            |         |                |       |           |
+|     **StackMemoryCollections** | **1000000** | **4,838,296.6 ns** |  **1.03** |       **4000007 B** |
+| System.Collections.Generic | 1000000 | 4,679,167.4 ns |  1.00 | 4000393 B |
 
-[PrimitiveSimpleJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.PrimitiveSimpleJob-report-github.md):
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/PrimitiveSimpleJob.cs)
+______
+  
 
-[PrimitiveOptimalJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.PrimitiveOptimalJob-report-github.md):
+  
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Optimal/PrimitiveOptimalJob.cs)
-
 ______
 ### Class:
 Stack elements are classes.

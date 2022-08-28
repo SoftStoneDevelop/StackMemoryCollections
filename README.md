@@ -1,3 +1,6 @@
+[![Nuget](https://img.shields.io/nuget/v/StackMemoryCollections.Attributes?logo=StackMemoryCollections.Attributes)](https://www.nuget.org/packages/StackMemoryCollections.Attributes/)
+[![Nuget](https://img.shields.io/nuget/v/StackMemoryCollections?logo=StackMemoryCollections)](https://www.nuget.org/packages/StackMemoryCollections/)
+
 # Readme:
 Fast unsafe collections for memory reuse by stack type. Adding elements without overhead when increasing Capacity. Can also be used in as classic collection with resizing or on a custom memory allocator.
 

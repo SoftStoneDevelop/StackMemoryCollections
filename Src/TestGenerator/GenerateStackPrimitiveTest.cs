@@ -289,7 +289,7 @@ namespace TestGenerator
 
             StackPrimitiveEnd(in builder);
             
-            context.AddSource($"Stack{stackNamespace}{typeof(T).Name}Fixture.g.cs", builder.ToString());
+            context.AddSource($"StackOf{typeof(T).Name}{stackNamespace}Fixture.g.cs", builder.ToString());
         }
 
         private void StackPrimitiveStart<T>(
@@ -305,7 +305,7 @@ using System.Runtime.CompilerServices;
 namespace Tests
 {{
     [TestFixture]
-    public class Stack{stackNamespace}{typeof(T).Name}Fixture
+    public class StackOf{typeof(T).Name}{stackNamespace}Fixture
     {{
                     
 ");
@@ -331,7 +331,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     {{
-                        using var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                        using var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     }}
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
@@ -362,7 +362,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     {{
-                        var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                        var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     }}
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
@@ -391,7 +391,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>();
+                var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
@@ -435,7 +435,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 ");
@@ -484,7 +484,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 
@@ -538,7 +538,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
@@ -583,7 +583,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     {typeof(T).Name} item;
 ");
             for (int i = 0; i < values.Count; i++)
@@ -629,7 +629,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
@@ -669,7 +669,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>();
+                var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
@@ -713,7 +713,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 using (var memory2 = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
 ");
                 for (int i = 0; i < values.Count; i++)
                 {
@@ -723,7 +723,7 @@ namespace Tests
                 }
 
                 builder.Append($@"
-                    var stack2 = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory2);
+                    var stack2 = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory2);
                     stack.Copy(in stack2);
 
                     Assert.That(stack.Size, Is.EqualTo(stack2.Size));
@@ -752,7 +752,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 using (var memory2 = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
 ");
                 for (int i = 0; i < values.Count; i++)
                 {
@@ -762,7 +762,7 @@ namespace Tests
                 }
 
                 builder.Append($@"
-                    var stack2 = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory2);
+                    var stack2 = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory2);
                     stack.Copy(stack2.Start);
 
                     Assert.That(stack2.Size, Is.EqualTo((nuint)0));
@@ -804,7 +804,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count - 2}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count - 2}, &memory);
 ");
             for (int i = 0; i < values.Count - 2; i++)
             {
@@ -848,7 +848,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>();
+                var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
@@ -890,7 +890,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count + 3}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
@@ -902,7 +902,7 @@ namespace Tests
 
             unsafe
             {{
-                var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>();
+                var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}();
                 Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
                 stack.ExpandCapacity(6);
                 Assert.That(stack.Capacity, Is.EqualTo((nuint)10));
@@ -930,7 +930,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
@@ -942,7 +942,7 @@ namespace Tests
 
             unsafe
             {{
-                var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>();
+                var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}();
                 stack.ExpandCapacity(6);
 
                 Assert.That(stack.Capacity, Is.EqualTo((nuint)10));
@@ -973,7 +973,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
@@ -1010,7 +1010,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
@@ -1050,7 +1050,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
@@ -1098,7 +1098,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
@@ -1154,7 +1154,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(() => stack.Top(),
                         Throws.Exception.TypeOf(typeof(Exception))
                         .And.Message.EqualTo(""There are no elements on the stack"")
@@ -1198,7 +1198,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(() => stack.TopOut(out _),
                         Throws.Exception.TypeOf(typeof(Exception))
                         .And.Message.EqualTo(""There are no elements on the stack"")
@@ -1243,13 +1243,13 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(
                         () => 
                         {{
                             {typeof(T).Name} temp = {toStr(values[0])};
                             {typeof(T).Name}* tempPtr = &temp;
-                            stack.Top(ref tempPtr);
+                            stack.Top(in tempPtr);
                         }},
                         Throws.Exception.TypeOf(typeof(Exception))
                         .And.Message.EqualTo(""There are no elements on the stack"")
@@ -1263,7 +1263,7 @@ namespace Tests
                     stack.Push(in item);
                     {typeof(T).Name} item{i};
                     {typeof(T).Name}* itemPtr{i} = &item{i};
-                    stack.Top(ref itemPtr{i});
+                    stack.Top(in itemPtr{i});
                     Assert.That(item{i}, Is.EqualTo({toStr(values[i])}));
 ");
             }
@@ -1297,7 +1297,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(
                         () => 
                         {{
@@ -1348,7 +1348,7 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.Stack<{typeof(T).Name}>({values.Count}, &memory);
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(() => stack.TopPtr(),
                         Throws.Exception.TypeOf(typeof(Exception))
                         .And.Message.EqualTo(""There are no elements on the stack"")

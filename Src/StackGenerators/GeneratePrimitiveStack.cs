@@ -8,22 +8,60 @@ namespace StackGenerators
     {
         private void GeneratePrimitiveStack(
             in GeneratorExecutionContext context,
-            in StringBuilder builder
+            in StringBuilder builder,
+            in string namespaceAssembly
             )
         {
-            GeneratePrimitiveStack<Int32>(in context, in builder, "Class", 4);
-            GeneratePrimitiveStack<Int32>(in context, in builder, "Struct", 4);
+            GeneratePrimitiveStack<Int32>(in context, in builder, "Class", 4, in namespaceAssembly);
+            GeneratePrimitiveStack<Int32>(in context, in builder, "Struct", 4, in namespaceAssembly);
+
+            GeneratePrimitiveStack<UInt32>(in context, in builder, "Class", 4, in namespaceAssembly);
+            GeneratePrimitiveStack<UInt32>(in context, in builder, "Struct", 4, in namespaceAssembly);
+
+            GeneratePrimitiveStack<Int64>(in context, in builder, "Class", 8, in namespaceAssembly);
+            GeneratePrimitiveStack<Int64>(in context, in builder, "Struct", 8, in namespaceAssembly);
+
+            GeneratePrimitiveStack<UInt64>(in context, in builder, "Class", 8, in namespaceAssembly);
+            GeneratePrimitiveStack<UInt64>(in context, in builder, "Struct", 8, in namespaceAssembly);
+
+            GeneratePrimitiveStack<SByte>(in context, in builder, "Class", 1, in namespaceAssembly);
+            GeneratePrimitiveStack<SByte>(in context, in builder, "Struct", 1, in namespaceAssembly);
+
+            GeneratePrimitiveStack<Byte>(in context, in builder, "Class", 1, in namespaceAssembly);
+            GeneratePrimitiveStack<Byte>(in context, in builder, "Struct", 1, in namespaceAssembly);
+
+            GeneratePrimitiveStack<Int16>(in context, in builder, "Class", 2, in namespaceAssembly);
+            GeneratePrimitiveStack<Int16>(in context, in builder, "Struct", 2, in namespaceAssembly);
+
+            GeneratePrimitiveStack<UInt16>(in context, in builder, "Class", 2, in namespaceAssembly);
+            GeneratePrimitiveStack<UInt16>(in context, in builder, "Struct", 2, in namespaceAssembly);
+
+            GeneratePrimitiveStack<Char>(in context, in builder, "Class", 2, in namespaceAssembly);
+            GeneratePrimitiveStack<Char>(in context, in builder, "Struct", 2, in namespaceAssembly);
+
+            GeneratePrimitiveStack<Decimal>(in context, in builder, "Class", 16, in namespaceAssembly);
+            GeneratePrimitiveStack<Decimal>(in context, in builder, "Struct", 16, in namespaceAssembly);
+
+            GeneratePrimitiveStack<Double>(in context, in builder, "Class", 8, in namespaceAssembly);
+            GeneratePrimitiveStack<Double>(in context, in builder, "Struct", 8, in namespaceAssembly);
+
+            GeneratePrimitiveStack<Boolean>(in context, in builder, "Class", 1, in namespaceAssembly);//1 byte is not optimal
+            GeneratePrimitiveStack<Boolean>(in context, in builder, "Struct", 1, in namespaceAssembly);//1 byte is not optimal
+
+            GeneratePrimitiveStack<Single>(in context, in builder, "Class", 4, in namespaceAssembly);
+            GeneratePrimitiveStack<Single>(in context, in builder, "Struct", 4, in namespaceAssembly);
         }
 
         private void GeneratePrimitiveStack<T>(
             in GeneratorExecutionContext context,
             in StringBuilder builder,
             in string stackNamespace,
-            in int sizeOf
+            in int sizeOf,
+            in string namespaceAssembly
             ) where T : unmanaged
         {
             builder.Clear();
-            StackPrimitiveStart<T>(in builder, in stackNamespace);
+            StackPrimitiveStart<T>(in builder, in stackNamespace, in namespaceAssembly);
 
             StackPrimitiveConstructor1<T>(in builder, in sizeOf);
             StackPrimitiveConstructor2<T>(in builder, in sizeOf);
@@ -64,7 +102,8 @@ namespace StackGenerators
 
         private void StackPrimitiveStart<T>(
             in StringBuilder builder,
-            in string stackNamespace
+            in string stackNamespace,
+            in string namespaceAssembly
             ) where T : unmanaged
         {
             string implements;
@@ -86,7 +125,7 @@ using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 
-namespace StackMemoryCollections.{stackNamespace}
+namespace {namespaceAssembly}.{stackNamespace}
 {{
     public unsafe {stackNamespace.ToLowerInvariant()} StackOf{typeof(T).Name} : {implements}
     {{

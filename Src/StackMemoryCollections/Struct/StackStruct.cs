@@ -213,7 +213,30 @@
                 }
                 else
                 {
-                    throw new Exception("Not enough memory to allocate stack element");
+                    if (_stackMemoryS != null)
+                    {
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            throw new Exception("Failed to expand available memory, stack moved further");
+                        }
+
+                        _stackMemoryS->AllocateMemory((nuint)sizeof(T));
+                    }
+                    else if (_stackMemoryC != null)
+                    {
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            throw new Exception("Failed to expand available memory, stack moved further");
+                        }
+
+                        _stackMemoryC.AllocateMemory((nuint)sizeof(T));
+                    }
+                    else
+                    {
+                        throw new Exception("Not enough memory to allocate stack element");
+                    }
+
+                    Capacity++;
                 }
             }
 
@@ -232,7 +255,30 @@
                 }
                 else
                 {
-                    throw new Exception("Not enough memory to allocate stack element");
+                    if (_stackMemoryS != null)
+                    {
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            throw new Exception("Failed to expand available memory, stack moved further");
+                        }
+
+                        _stackMemoryS->AllocateMemory((nuint)sizeof(T));
+                    }
+                    else if (_stackMemoryC != null)
+                    {
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            throw new Exception("Failed to expand available memory, stack moved further");
+                        }
+
+                        _stackMemoryC.AllocateMemory((nuint)sizeof(T));
+                    }
+                    else
+                    {
+                        throw new Exception("Not enough memory to allocate stack element");
+                    }
+
+                    Capacity++;
                 }
             }
 
@@ -251,7 +297,30 @@
                 }
                 else
                 {
-                    return false;
+                    if (_stackMemoryS != null)
+                    {
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            return false;
+                        }
+
+                        _stackMemoryS->AllocateMemory((nuint)sizeof(T));
+                    }
+                    else if (_stackMemoryC != null)
+                    {
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            return false;
+                        }
+
+                        _stackMemoryC.AllocateMemory((nuint)sizeof(T));
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                    Capacity++;
                 }
             }
 
@@ -272,7 +341,30 @@
                 }
                 else
                 {
-                    return false;
+                    if (_stackMemoryS != null)
+                    {
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            return false;
+                        }
+
+                        _stackMemoryS->AllocateMemory((nuint)sizeof(T));
+                    }
+                    else if (_stackMemoryC != null)
+                    {
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * (nuint)sizeof(T))))
+                        {
+                            return false;
+                        }
+
+                        _stackMemoryC.AllocateMemory((nuint)sizeof(T));
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                    Capacity++;
                 }
             }
 

@@ -377,7 +377,30 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 }}
                 else
                 {{
-                    throw new Exception(""Not enough memory to allocate stack element"");
+                    if(_stackMemoryS != null)
+                    {{
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        {{
+                            throw new Exception(""Failed to expand available memory, stack moved further"");
+                        }}
+
+                        _stackMemoryS->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                    }}
+                    else if (_stackMemoryC != null)
+                    {{
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        {{
+                            throw new Exception(""Failed to expand available memory, stack moved further"");
+                        }}
+
+                        _stackMemoryC.AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                    }}
+                    else
+                    {{
+                        throw new Exception(""Not enough memory to allocate stack element"");
+                    }}
+                    
+                    Capacity++;
                 }}
             }}
 
@@ -414,7 +437,30 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 }}
                 else
                 {{
-                    throw new Exception(""Not enough memory to allocate stack element"");
+                    if(_stackMemoryS != null)
+                    {{
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        {{
+                            throw new Exception(""Failed to expand available memory, stack moved further"");
+                        }}
+
+                        _stackMemoryS->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                    }}
+                    else if (_stackMemoryC != null)
+                    {{
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        {{
+                            throw new Exception(""Failed to expand available memory, stack moved further"");
+                        }}
+
+                        _stackMemoryC.AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                    }}
+                    else
+                    {{
+                        throw new Exception(""Not enough memory to allocate stack element"");
+                    }}
+                    
+                    Capacity++;
                 }}
             }}
 
@@ -451,7 +497,30 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 }}
                 else
                 {{
-                    return false;
+                    if(_stackMemoryS != null)
+                    {{
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        {{
+                            return false;
+                        }}
+
+                        _stackMemoryS->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                    }}
+                    else if (_stackMemoryC != null)
+                    {{
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        {{
+                            return false;
+                        }}
+
+                        _stackMemoryC.AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                    }}
+                    else
+                    {{
+                        return false;
+                    }}
+                    
+                    Capacity++;
                 }}
             }}
 
@@ -489,7 +558,30 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 }}
                 else
                 {{
-                    return false;
+                    if(_stackMemoryS != null)
+                    {{
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        {{
+                            return false;
+                        }}
+
+                        _stackMemoryS->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                    }}
+                    else if (_stackMemoryC != null)
+                    {{
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        {{
+                            return false;
+                        }}
+
+                        _stackMemoryC.AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                    }}
+                    else
+                    {{
+                        return false;
+                    }}
+                    
+                    Capacity++;
                 }}
             }}
 

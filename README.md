@@ -127,10 +127,55 @@ ______
 ### Struct:
 Stack elements are structures.
 
-[StructSimpleJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.StructSimpleJob-report-github.md):
-[Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/StructSimpleJob.cs)
+|                     Method |    Size |            Mean | Ratio |  Allocated |
+|--------------------------- |-------- |----------------:|------:|-----------:|
+|     **StackMemoryCollections** |     **100** |        **382.2 ns** |  **0.32** |          **2400 B** |
+| System.Collections.Generic |     100 |      1,211.4 ns |  1.00 |     3256 B |
+|                            |         |                 |       |            |
+|     **StackMemoryCollections** |    **1000** |      **3,027.9 ns** |  **0.26** |          **24000 B** |
+| System.Collections.Generic |    1000 |     11,642.1 ns |  1.00 |    32056 B |
+|                            |         |                 |       |            |
+|     **StackMemoryCollections** |   **10000** |     **40,006.6 ns** |  **0.19** |          **240000 B** |
+| System.Collections.Generic |   10000 |    196,321.3 ns |  1.00 |   320090 B |
+|                            |         |                 |       |            |
+|     **StackMemoryCollections** |  **100000** |  **1,146,513.5 ns** |  **0.59** |        **2400001 B** |
+| System.Collections.Generic |  100000 |  1,951,901.3 ns |  1.00 |  3200393 B |
+|                            |         |                 |       |            |
+|     **StackMemoryCollections** |  **250000** |  **1,637,260.1 ns** |  **0.40** |        **6000002 B** |
+| System.Collections.Generic |  250000 |  4,074,210.6 ns |  1.00 |  8000145 B |
+|                            |         |                 |       |            |
+|     **StackMemoryCollections** |  **500000** |  **5,012,586.1 ns** |  **0.44** |        **12000002 B** |
+| System.Collections.Generic |  500000 |  7,874,999.4 ns |  1.00 | 16000146 B |
+|                            |         |                 |       |            |
+|     **StackMemoryCollections** | **1000000** |  **9,319,620.8 ns** |  **0.40** |        **24000004 B** |
+| System.Collections.Generic | 1000000 | 20,326,649.0 ns |  1.00 | 32000396 B |
 
-[StructOptimalJob result](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/BenchmarkResults/Benchmark.StructOptimalJob-report-github.md):
+[Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/StructSimpleJob.cs)
+______
+
+|                                      Method |    Size |            Mean | Ratio |    Allocated |
+|-------------------------------------------- |-------- |----------------:|------:|-------------:|
+|                            **StackMemoryCollections** |     **100** |        **55.16 μs** |  **0.26** |            **2400** |
+| System.Collections.Generic |     100 |       211.41 μs |  1.00 |     651200 B |
+|                                             |         |                 |       |              |
+|                            **StackMemoryCollections** |    **1000** |       **527.06 μs** |  **0.27** |            **24000** |
+| System.Collections.Generic |    1000 |     1,927.75 μs |  1.00 |    6411201 B |
+|                                             |         |                 |       |              |
+|                            **StackMemoryCollections** |   **10000** |     **5,309.36 μs** |  **0.14** |          **240004 B** |
+| System.Collections.Generic |   10000 |    37,493.16 μs |  1.00 |   64017930 B |
+|                                             |         |                 |       |              |
+|                            **StackMemoryCollections** |  **100000** |    **55,019.00 μs** |  **0.16** |         **2400048 B** |
+| System.Collections.Generic |  100000 |   369,772.82 μs |  1.00 |  640078544 B |
+|                                             |         |                 |       |              |
+|                            **StackMemoryCollections** |  **250000** |   **138,282.65 μs** |  **0.18** |        **6000120 B** |
+| System.Collections.Generic |  250000 |   766,002.48 μs |  1.00 | 1600031616 B |
+|                                             |         |                 |       |              |
+|                            **StackMemoryCollections** |  **500000** |   **269,763.81 μs** |  **0.18** |        **12000240 B** |
+| System.Collections.Generic |  500000 | 1,469,995.16 μs |  1.00 | 3200033080 B |
+|                                             |         |                 |       |              |
+|                            **StackMemoryCollections** | **1000000** |   **565,381.05 μs** |  **0.15** |       **24003568 B** |
+| System.Collections.Generic | 1000000 | 3,895,843.83 μs |  1.00 | 6400081632 B |
+
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Optimal/StructOptimalJob.cs)
 
 ______

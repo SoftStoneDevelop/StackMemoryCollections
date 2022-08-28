@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
+using System.Reflection;
 using System.Text;
 
 namespace StackGenerators
@@ -86,7 +87,8 @@ namespace StackGenerators
             StackPrimitiveTopPtr<T>(in builder);
             StackPrimitiveDispose<T>(in builder, in stackNamespace, in sizeOf);
             StackPrimitiveIndexator<T>(in builder);
-            StackPrimitiveCopy<T>(in builder, in sizeOf);
+            StackPrimitiveCopyCount(in builder, in sizeOf);
+            StackPrimitiveCopy(in builder, in sizeOf);
             StackPrimitiveTopOutValue<T>(in builder);
             StackPrimitiveCopyInStack<T>(in builder, in sizeOf);
 
@@ -982,10 +984,28 @@ namespace {namespaceAssembly}.{stackNamespace}
 ");
         }
 
-        private void StackPrimitiveCopy<T>(
+        private void StackPrimitiveCopy(
             in StringBuilder builder,
             in int sizeOf
-            ) where T : unmanaged
+            )
+        {
+            builder.Append($@"
+        public void Copy(in void* ptrDest, in int count)
+        {{
+            Buffer.MemoryCopy(
+                _start,
+                ptrDest,
+                count * {sizeOf},
+                count * {sizeOf}
+                );
+        }}
+");
+        }
+
+        private void StackPrimitiveCopyCount(
+            in StringBuilder builder,
+            in int sizeOf
+            )
         {
             builder.Append($@"
         public void Copy(in void* ptrDest)

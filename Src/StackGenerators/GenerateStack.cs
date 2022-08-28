@@ -63,6 +63,7 @@ namespace StackGenerators
             StackDispose(in builder, in typeInfo, in currentType, in stackNamespace);
             StackIndexator(in builder, in typeInfo);
             StackCopy(in builder, in typeInfo);
+            StackCopyCount(in builder, in typeInfo);
             StackTopOutValue(in builder, in currentType, in typeInfo);
             StackCopyInStack(in builder, in currentType, in typeInfo);
 
@@ -1024,6 +1025,24 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 ptrDest,
                 Capacity * {typeInfo.Members.Sum(s => s.Size)},
                 Capacity * {typeInfo.Members.Sum(s => s.Size)}
+                );
+        }}
+");
+        }
+
+        private void StackCopyCount(
+            in StringBuilder builder,
+            in TypeInfo typeInfo
+            )
+        {
+            builder.Append($@"
+        public void Copy(in void* ptrDest, in int count)
+        {{
+            Buffer.MemoryCopy(
+                _start,
+                ptrDest,
+                count * {typeInfo.Members.Sum(s => s.Size)},
+                count * {typeInfo.Members.Sum(s => s.Size)}
                 );
         }}
 ");

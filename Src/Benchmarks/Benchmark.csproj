@@ -6,9 +6,9 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
-		<PackageReference Include="StackMemoryCollections.Attributes" Version="0.7.0" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\StackMemoryAttributes\StackMemoryAttributes.csproj" />
 		<ProjectReference Include="..\StackMemoryCollections\StackMemoryCollections.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
 	</ItemGroup>
 </Project>

@@ -10,7 +10,6 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Description>Attributes for Stack Memory Collection</Description>
 		<PackageTags>Stack Memory Collection, attributes</PackageTags>
-		<NoPackageAnalysis>true</NoPackageAnalysis>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	</PropertyGroup>
 	<ItemGroup>

@@ -207,46 +207,51 @@ namespace StackMemoryCollections
                                 continue;
                             }
 
-                            if (propertySymbol.Type.IsReferenceType)
+                            if (propertySymbol.Type.IsAbstract)
                             {
-                                throw new Exception($"Nested reference properties are not supported, property name: '{member.Name}'");
+                                throw new Exception($"Abstract type are not supported, property name: '{member.Name}'");
                             }
 
-                            if (propertySymbol.Type.IsValueType)
+                            if (propertySymbol.Type.IsRecord)
                             {
-                                if(typeInfos.TryGetValue($"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}", out var tInfo))
-                                {
-                                    var memberInfo = new MemberInfo();
-                                    memberInfo.Size = tInfo.Members.Sum(s => s.Size);
-                                    memberInfo.TypeName = $"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}";
-                                    memberInfo.MemberName = propertySymbol.Name;
-                                    memberInfo.Offset = offset;
-                                    memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
-                                    memberInfo.IsValueType = true;
-                                    offset += memberInfo.Size;
-                                    info.Members.Add(memberInfo);
-                                    continue;
-                                }
-                                else
-                                {
-                                    var attributes = propertySymbol.Type.GetAttributes();
-                                    var hasHelper = attributes.Any(wh => wh.AttributeClass.Name == "GenerateHelperAttribute");
-                                    if (!hasHelper)
-                                    {
-                                        throw new Exception($"A type '{propertySymbol.Type.Name}' nested in a type '{currentType.Name}' is not marked with an attribute 'GenerateHelperAttribute'");
-                                    }
-
-                                    if(!(propertySymbol.Type is INamedTypeSymbol namedTypeSymbol))
-                                    {
-                                        throw new Exception($"A type '{propertySymbol.Type.Name}' nested in a type '{currentType.Name}' is not 'INamedTypeSymbol'");
-                                    }
-                                    stackCurrentTypes.Push(namedTypeSymbol);
-                                    needSkip = true;
-                                    break;
-                                }
+                                throw new Exception($"Record type are not supported, property name: '{member.Name}'");
                             }
 
-                            throw new Exception($"The property must be a struct or unmanaged type, property name: '{member.Name}'");
+                            if (typeInfos.TryGetValue($"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}", out var tInfo))
+                            {
+                                var memberInfo = new MemberInfo();
+                                memberInfo.Size = tInfo.Members.Sum(s => s.Size);
+                                memberInfo.TypeName = $"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}";
+                                memberInfo.MemberName = propertySymbol.Name;
+                                memberInfo.Offset = offset;
+                                memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
+                                memberInfo.IsValueType = true;
+                                offset += memberInfo.Size;
+                                info.Members.Add(memberInfo);
+                                continue;
+                            }
+                            else
+                            {
+                                var attributes = propertySymbol.Type.GetAttributes();
+                                if (!HelperMustGenerated(attributes))
+                                {
+                                    throw new Exception($"A type '{propertySymbol.Type.Name}' nested in a type '{currentType.Name}' is not marked with an generate attribute");
+                                }
+
+                                if (!(propertySymbol.Type is INamedTypeSymbol namedTypeSymbol))
+                                {
+                                    throw new Exception($"A type '{propertySymbol.Type.Name}' nested in a type '{currentType.Name}' is not 'INamedTypeSymbol'");
+                                }
+
+                                if (stackCurrentTypes.Contains(namedTypeSymbol, SymbolEqualityComparer.Default))
+                                {
+                                    throw new Exception($"Cyclic dependency detected: type '{propertySymbol.Type.Name}'; property '{propertySymbol.Name}'");
+                                }
+
+                                stackCurrentTypes.Push(namedTypeSymbol);
+                                needSkip = true;
+                                break;
+                            }
                         }
                         else
                         if (member is Microsoft.CodeAnalysis.IFieldSymbol fieldSymbol)
@@ -274,43 +279,50 @@ namespace StackMemoryCollections
                                 continue;
                             }
 
-                            if (fieldSymbol.Type.IsReferenceType)
+                            if (fieldSymbol.Type.IsAbstract)
                             {
-                                throw new Exception($"Nested reference field are not supported, field name: '{member.Name}'");
+                                throw new Exception($"Abstract type are not supported, field name: '{member.Name}'");
                             }
 
-                            if (fieldSymbol.Type.IsValueType)
+                            if (fieldSymbol.Type.IsRecord)
                             {
-                                if (typeInfos.TryGetValue($"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}", out var tInfo))
-                                {
-                                    var memberInfo = new MemberInfo();
-                                    memberInfo.Size = tInfo.Members.Sum(s => s.Size);
-                                    memberInfo.TypeName = $"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}";
-                                    memberInfo.MemberName = fieldSymbol.Name;
-                                    memberInfo.Offset = offset;
-                                    memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
-                                    memberInfo.IsValueType = true;
-                                    offset += memberInfo.Size;
-                                    info.Members.Add(memberInfo);
-                                    continue;
-                                }
-                                else
-                                {
-                                    var attributes = fieldSymbol.Type.GetAttributes();
-                                    var hasHelper = attributes.Any(wh => wh.AttributeClass.Name == "GenerateHelperAttribute");
-                                    if (!hasHelper)
-                                    {
-                                        throw new Exception($"A type '{fieldSymbol.Type.Name}' nested in a type '{currentType.Name}' is not marked with an attribute 'GenerateHelperAttribute'");
-                                    }
+                                throw new Exception($"Record type are not supported, field name: '{member.Name}'");
+                            }
 
-                                    if (!(fieldSymbol.Type is INamedTypeSymbol namedTypeSymbol))
-                                    {
-                                        throw new Exception($"A type '{fieldSymbol.Type.Name}' nested in a type '{currentType.Name}' is not 'INamedTypeSymbol'");
-                                    }
-                                    stackCurrentTypes.Push(namedTypeSymbol);
-                                    needSkip = true;
-                                    break;
+                            if (typeInfos.TryGetValue($"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}", out var tInfo))
+                            {
+                                var memberInfo = new MemberInfo();
+                                memberInfo.Size = tInfo.Members.Sum(s => s.Size);
+                                memberInfo.TypeName = $"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}";
+                                memberInfo.MemberName = fieldSymbol.Name;
+                                memberInfo.Offset = offset;
+                                memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
+                                memberInfo.IsValueType = true;
+                                offset += memberInfo.Size;
+                                info.Members.Add(memberInfo);
+                                continue;
+                            }
+                            else
+                            {
+                                var attributes = fieldSymbol.Type.GetAttributes();
+                                if (!HelperMustGenerated(attributes))
+                                {
+                                    throw new Exception($"A type '{fieldSymbol.Type.Name}' nested in a type '{currentType.Name}' is not marked with an generate attribute");
                                 }
+
+                                if (!(fieldSymbol.Type is INamedTypeSymbol namedTypeSymbol))
+                                {
+                                    throw new Exception($"A type '{fieldSymbol.Type.Name}' nested in a type '{currentType.Name}' is not 'INamedTypeSymbol'");
+                                }
+
+                                if(stackCurrentTypes.Contains(namedTypeSymbol, SymbolEqualityComparer.Default))
+                                {
+                                    throw new Exception($"Cyclic dependency detected: type '{fieldSymbol.Type.Name}'; field '{fieldSymbol.Name}'");
+                                }
+
+                                stackCurrentTypes.Push(namedTypeSymbol);
+                                needSkip = true;
+                                break;
                             }
                         }
                     }
@@ -325,6 +337,19 @@ namespace StackMemoryCollections
                     }
                 }
             }
+        }
+
+        private bool HelperMustGenerated(in System.Collections.Immutable.ImmutableArray<AttributeData> attributes)
+        {
+            return 
+                attributes.Any(wh => 
+                wh.AttributeClass.Name == "GenerateHelperAttribute" ||
+                wh.AttributeClass.Name == "GenerateStackAttribute" ||
+                wh.AttributeClass.Name == "GenerateQueueAttribute" ||
+                wh.AttributeClass.Name == "GenerateListAttribute" ||
+                wh.AttributeClass.Name == "GenerateDictionaryAttribute" ||
+                wh.AttributeClass.Name == "GenerateWrapperAttribute"
+                );
         }
 
         private int TypeToSize(string typeName)

@@ -201,6 +201,7 @@ namespace StackMemoryCollections
                                 memberInfo.MemberName = propertySymbol.Name;
                                 memberInfo.Offset = offset;
                                 memberInfo.IsPrimitive = true;
+                                memberInfo.IsValueType = true;
                                 memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
                                 offset += memberInfo.Size;
                                 info.Members.Add(memberInfo);
@@ -225,7 +226,7 @@ namespace StackMemoryCollections
                                 memberInfo.MemberName = propertySymbol.Name;
                                 memberInfo.Offset = offset;
                                 memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
-                                memberInfo.IsValueType = true;
+                                memberInfo.IsValueType = propertySymbol.Type.IsValueType;
                                 offset += memberInfo.Size;
                                 info.Members.Add(memberInfo);
                                 continue;
@@ -274,6 +275,7 @@ namespace StackMemoryCollections
                                 memberInfo.Offset = offset;
                                 memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
                                 memberInfo.IsPrimitive = true;
+                                memberInfo.IsValueType = true;
                                 offset += memberInfo.Size;
                                 info.Members.Add(memberInfo);
                                 continue;
@@ -297,7 +299,7 @@ namespace StackMemoryCollections
                                 memberInfo.MemberName = fieldSymbol.Name;
                                 memberInfo.Offset = offset;
                                 memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
-                                memberInfo.IsValueType = true;
+                                memberInfo.IsValueType = fieldSymbol.Type.IsValueType;
                                 offset += memberInfo.Size;
                                 info.Members.Add(memberInfo);
                                 continue;

@@ -16,9 +16,9 @@ namespace Benchmark
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(JobClassHelper.GetSize() * (nuint)Size))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(JobClassHelper.GetSize() + (JobClassHelper.GetSize() * (nuint)Size)))
                 {
-                    var item = new JobClass(0, 0);
+                    var item = new Benchmark.Struct.JobClassWrapper(&memory);
                     for (int j = 0; j < 100; j++)
                     {
                         {
@@ -27,7 +27,10 @@ namespace Benchmark
                             {
                                 item.Int32 = i;
                                 item.Int64 = i * 2;
-                                stack.Push(in item);
+                                var jc2 = Benchmark.JobClassHelper.GetJobClass2Ptr(item.Ptr);
+                                Benchmark.JobClass2Helper.SetInt32Value(in jc2, i + 3);
+                                Benchmark.JobClass2Helper.SetInt64Value(in jc2, i * 3);
+                                stack.Push(item.Ptr);
                             }
 
                             if(j > 50)
@@ -47,7 +50,10 @@ namespace Benchmark
                         {
                             item.Int32 = i;
                             item.Int64 = i * 2;
-                            stack2.Push(in item);
+                            var jc2 = Benchmark.JobClassHelper.GetJobClass2Ptr(item.Ptr);
+                            Benchmark.JobClass2Helper.SetInt32Value(in jc2, i + 3);
+                            Benchmark.JobClass2Helper.SetInt64Value(in jc2, i * 3);
+                            stack2.Push(item.Ptr);
                         }
 
                         if (j > 50)
@@ -76,7 +82,12 @@ namespace Benchmark
                         var stack = new System.Collections.Generic.Stack<JobClass>(Size);
                         for (int i = 0; i < Size; i++)
                         {
-                            stack.Push(new JobClass(i, i * 2));
+                            stack.Push(
+                                new JobClass(i, i * 2)
+                                {
+                                    JobClass2 = new JobClass2(i + 3, i * 3)
+                                }
+                                );
                         }
 
                         if (j > 50)
@@ -94,7 +105,12 @@ namespace Benchmark
                     var stack2 = new System.Collections.Generic.Stack<JobClass>(Size);
                     for (int i = 0; i < Size; i++)
                     {
-                        stack2.Push(new JobClass(i, i * 2));
+                        stack2.Push(
+                            new JobClass(i, i * 2)
+                            {
+                                JobClass2 = new JobClass2(i + 3, i * 3)
+                            }
+                            );
                     }
 
                     if (j > 50)

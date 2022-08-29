@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackMemoryCollections", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestGenerator", "Src\TestGenerator\TestGenerator.csproj", "{2AA1600C-C16E-4F1D-A9CB-BC56B7403D91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackMemoryAttributes", "Src\StackMemoryAttributes\StackMemoryAttributes.csproj", "{FB275C38-45A6-42E4-93D7-76D2000E9BA6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{2AA1600C-C16E-4F1D-A9CB-BC56B7403D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AA1600C-C16E-4F1D-A9CB-BC56B7403D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AA1600C-C16E-4F1D-A9CB-BC56B7403D91}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FB275C38-45A6-42E4-93D7-76D2000E9BA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB275C38-45A6-42E4-93D7-76D2000E9BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB275C38-45A6-42E4-93D7-76D2000E9BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB275C38-45A6-42E4-93D7-76D2000E9BA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

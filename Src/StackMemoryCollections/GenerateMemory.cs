@@ -10,31 +10,80 @@ namespace StackMemoryCollections
             in StringBuilder builder
             )
         {
-            builder.Clear();
+            GenerateMemory(in context, in builder, "Class");
+            GenerateMemory(in context, in builder, "Struct");
+        }
 
+        private void GenerateMemory(
+            in GeneratorExecutionContext context,
+            in StringBuilder builder,
+            in string memoryNamespace
+            )
+        {
+            builder.Clear();
+            MemoryStart(in builder, in memoryNamespace);
+
+            MemoryConstructor1(in builder);
+            MemoryProperties(in builder);
+            MemoryAllocateMemory(in builder);
+            MemoryTryAllocateMemory(in builder);
+            MemoryFreeMemory(in builder);
+            MemoryTryFreeMemory(in builder);
+            MemoryDispose(in builder, in memoryNamespace);
+
+            MemoryEnd(in builder);
+            context.AddSource($"StackMemory{memoryNamespace}.g.cs", builder.ToString());
+        }
+
+        private void MemoryStart(
+            in StringBuilder builder,
+            in string memoryNamespace
+            )
+        {
             builder.Append($@"
 using System;
 using System.Runtime.InteropServices;
 
-namespace StackMemoryCollections.Class
+namespace StackMemoryCollections.{memoryNamespace}
 {{
-    public unsafe class StackMemory : IDisposable
+    public unsafe {memoryNamespace.ToLowerInvariant()} StackMemory : IDisposable
     {{
-        private nuint _offsetBytes;
+");
+        }
 
+        private void MemoryConstructor1(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
         public StackMemory(nuint byteCount)
         {{
             Start = NativeMemory.Alloc(byteCount);
             Current = Start;
             ByteCount = byteCount;
-            _offsetBytes = 0;
+            FreeByteCount = byteCount;
+            _disposed = false;
         }}
+");
+        }
 
+        private void MemoryProperties(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
         public void* Start {{ get; init; }}
         public void* Current {{ get; private set; }}
         public nuint ByteCount {{ get; init; }}
-        public nuint FreeByteCount => ByteCount - _offsetBytes;
+        public nuint FreeByteCount {{ get; private set; }}
+");
+        }
 
+        private void MemoryAllocateMemory(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
         public void* AllocateMemory(nuint allocateBytes)
         {{
             if (_disposed)
@@ -42,17 +91,24 @@ namespace StackMemoryCollections.Class
                 throw new ObjectDisposedException(nameof(StackMemory));
             }}
 
-            if (ByteCount - _offsetBytes < allocateBytes)
+            if (FreeByteCount < allocateBytes)
             {{
                 throw new ArgumentException(""Can't allocate memory"");
             }}
 
-            _offsetBytes += allocateBytes;
+            FreeByteCount -= allocateBytes;
             var start = Current;
             Current = (byte*)start + allocateBytes;
             return start;
         }}
+");
+        }
 
+        private void MemoryTryAllocateMemory(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
         public bool TryAllocateMemory(nuint allocateBytes, out void* ptr)
         {{
             if (_disposed)
@@ -60,20 +116,27 @@ namespace StackMemoryCollections.Class
                 throw new ObjectDisposedException(nameof(StackMemory));
             }}
 
-            if (ByteCount - _offsetBytes < allocateBytes)
+            if (FreeByteCount < allocateBytes)
             {{
                 ptr = null;
                 return false;
             }}
 
-            _offsetBytes += allocateBytes;
+            FreeByteCount -= allocateBytes;
             var start = Current;
             Current = (byte*)start + allocateBytes;
             ptr = start;
 
             return true;
         }}
+");
+        }
 
+        private void MemoryFreeMemory(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
         public void FreeMemory(nuint reducingBytes)
         {{
             if(_disposed)
@@ -81,18 +144,22 @@ namespace StackMemoryCollections.Class
                 throw new ObjectDisposedException(nameof(StackMemory));
             }}
 
-            var start = new IntPtr(Start);
-            var newCurrent = new IntPtr((byte*)Current - reducingBytes);
-
-            if (newCurrent.CompareTo(start) < 0)
+            if (ByteCount - FreeByteCount < reducingBytes)
             {{
                 throw new Exception(""Unable to free memory, it is out of available memory"");
             }}
 
-            _offsetBytes -= reducingBytes;
-            Current = newCurrent.ToPointer();
+            FreeByteCount += reducingBytes;
+            Current = (byte*)Current - reducingBytes;
         }}
+");
+        }
 
+        private void MemoryTryFreeMemory(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
         public bool TryFreeMemory(nuint reducingBytes)
         {{
             if (_disposed)
@@ -100,19 +167,26 @@ namespace StackMemoryCollections.Class
                 throw new ObjectDisposedException(nameof(StackMemory));
             }}
 
-            var start = new IntPtr(Start);
-            var newCurrent = new IntPtr((byte*)Current - reducingBytes);
-
-            if (newCurrent.CompareTo(start) < 0)
+            if (ByteCount - FreeByteCount < reducingBytes)
             {{
                 return false;
             }}
 
-            _offsetBytes -= reducingBytes;
-            Current = newCurrent.ToPointer();
+            FreeByteCount += reducingBytes;
+            Current = (byte*)Current - reducingBytes;
             return true;
         }}
+");
+        }
 
+        private void MemoryDispose(
+            in StringBuilder builder,
+            in string memoryNamespace
+            )
+        {
+            if(memoryNamespace == "Class")
+            {
+                builder.Append($@"
         #region IDisposable
 
         private bool _disposed;
@@ -129,109 +203,43 @@ namespace StackMemoryCollections.Class
         {{
             if (!_disposed)
             {{
-                if (disposing)
-                {{
-                    
-                }}
-
                 NativeMemory.Free(Start);
                 _disposed = true;
             }}
         }}
 
         #endregion
-    }}
-}}
-
 ");
-            context.AddSource($"StackMemoryClass.g.cs", builder.ToString());
-
-            builder.Clear();
-            builder.Append($@"
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System;
-
-namespace StackMemoryCollections.Struct
-{{
-    public unsafe struct StackMemory : IDisposable
-    {{
-        private nuint _offsetBytes;
-
-        public StackMemory()
-        {{
-            throw new ArgumentException(""Default constructor not supported"");
-        }}
-
-        public StackMemory(nuint byteCount)
-        {{
-            Start = NativeMemory.Alloc(byteCount);
-            Current = Start;
-            ByteCount = byteCount;
-            _offsetBytes = 0;
-        }}
-
-        public void* Start {{ get; init; }}
-        public void* Current {{ get; private set; }}
-        public nuint ByteCount {{ get; init; }}
-        public nuint FreeByteCount => ByteCount - _offsetBytes;
-
-        public void* AllocateMemory(nuint allocateBytes)
-        {{
-            if (ByteCount - _offsetBytes < allocateBytes)
-            {{
-                throw new ArgumentException(""Can't allocate memory"");
-            }}
-
-            _offsetBytes += allocateBytes;
-            var start = Current;
-            Current = (byte*)start + allocateBytes;
-            return start;
-        }}
-
-        public bool TryAllocateMemory(nuint allocateBytes, out void* ptr)
-        {{
-            if (ByteCount - _offsetBytes < allocateBytes)
-            {{
-                ptr = null;
-                return false;
-            }}
-
-            _offsetBytes += allocateBytes;
-            var start = Current;
-            Current = (byte*)start + allocateBytes;
-            ptr = start;
-
-            return true;
-        }}
-
-        public void FreeMemory(nuint reducingBytes)
-        {{
-            var start = new IntPtr(Start);
-            var newCurrent = new IntPtr((byte*)Current - reducingBytes);
-
-            if (newCurrent.CompareTo(start) < 0)
-            {{
-                throw new Exception(""Unable to free memory, it is out of available memory"");
-            }}
-
-            _offsetBytes -= reducingBytes;
-            Current = newCurrent.ToPointer();
-        }}
-
+            }
+            else
+            {
+                builder.Append($@"
         #region IDisposable
+
+        private bool _disposed;
 
         public void Dispose()
         {{
-            NativeMemory.Free(Start);
+            if(!_disposed)
+            {{
+                NativeMemory.Free(Start);
+                _disposed = true;
+            }}
         }}
 
         #endregion
+");
+            }
+        }
+
+        private void MemoryEnd(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
     }}
 }}
-
 ");
-            context.AddSource($"StackMemoryStruct.g.cs", builder.ToString());
         }
     }
 }

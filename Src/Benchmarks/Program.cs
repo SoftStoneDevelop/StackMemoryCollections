@@ -1,6 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using System.Collections.Generic;
-using System;
 
 namespace Benchmark
 {
@@ -10,11 +8,11 @@ namespace Benchmark
         {
             BenchmarkRunner.Run<PrimitiveSimpleJob>();// 4 byte * Size
             BenchmarkRunner.Run<StructSimpleJob>();// 24 byte * Size
-            BenchmarkRunner.Run<ClassSimpleJob>();// 12 byte * Size
+            BenchmarkRunner.Run<ClassSimpleJob>();// 24 byte * Size
 
             BenchmarkRunner.Run<PrimitiveOptimalJob>();// 4 byte * Size
             BenchmarkRunner.Run<StructOptimalJob>();// 24 byte * Size
-            BenchmarkRunner.Run<ClassOptimalJob>();// 12 byte * Size
+            BenchmarkRunner.Run<ClassOptimalJob>();// 24 byte * Size
         }
     }
 }

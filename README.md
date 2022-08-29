@@ -74,54 +74,54 @@ ______
 ______
 ### Class:
 Stack elements are classes.
-|                     Method |    Size |            Mean | Ratio |  Allocated |
-|--------------------------- |-------- |----------------:|------:|-----------:|
-|     **StackMemoryCollections** |     **100** |        **291.6 ns** |  **0.30** |       **1232 B** |
-| System.Collections.Generic |     100 |        965.2 ns |  1.00 |     4056 B |
-|                            |         |                 |       |            |
-|     **StackMemoryCollections** |    **1000** |      **2,223.5 ns** |  **0.24** |       **12032 B** |
-| System.Collections.Generic |    1000 |      9,333.2 ns |  1.00 |    40056 B |
-|                            |         |                 |       |            |
-|     **StackMemoryCollections** |   **10000** |     **21,648.9 ns** |  **0.23** |       **120032 B** |
-| System.Collections.Generic |   10000 |     94,883.7 ns |  1.00 |   400056 B |
-|                            |         |                 |       |            |
-|     **StackMemoryCollections** |  **100000** |    **607,289.0 ns** |  **0.33** |       **1200032 B** |
-| System.Collections.Generic |  100000 |  1,877,933.5 ns |  1.00 |  4000158 B |
-|                            |         |                 |       |            |
-|     **StackMemoryCollections** |  **250000** |  **1,003,259.6 ns** |  **0.10** |       **3000033 B** |
-| System.Collections.Generic |  250000 | 10,510,118.3 ns |  1.00 | 10000279 B |
-|                            |         |                 |       |            |
-|     **StackMemoryCollections** |  **500000** |  **2,834,058.1 ns** |  **0.12** |       **6000034 B** |
-| System.Collections.Generic |  500000 | 26,277,167.7 ns |  1.00 | 20000648 B |
-|                            |         |                 |       |            |
-|     **StackMemoryCollections** | **1000000** |  **5,659,929.6 ns** |  **0.12** |       **12000036 B** |
-| System.Collections.Generic | 1000000 | 53,257,801.4 ns |  1.00 | 40000425 B |
+|                     Method |    Size |             Mean | Ratio |  Allocated |
+|--------------------------- |-------- |-----------------:|------:|-----------:|
+|     **StackMemoryCollections** |     **100** |         **757.4 ns** |  **0.55** |          **2424 B** |
+| System.Collections.Generic |     100 |       1,378.3 ns |  1.00 |     8056 B |
+|                            |         |                  |       |            |
+|     **StackMemoryCollections** |    **1000** |       **7,004.2 ns** |  **0.51** |          **24024 B** |
+| System.Collections.Generic |    1000 |      13,713.2 ns |  1.00 |    80056 B |
+|                            |         |                  |       |            |
+|     **StackMemoryCollections** |   **10000** |      **84,682.6 ns** |  **0.58** |          **240024 B** |
+| System.Collections.Generic |   10000 |     146,452.7 ns |  1.00 |   800056 B |
+|                            |         |                  |       |            |
+|     **StackMemoryCollections** |  **100000** |   **1,436,862.3 ns** |  **0.34** |        **2400025 B** |
+| System.Collections.Generic |  100000 |   4,409,689.9 ns |  1.00 |  8000222 B |
+|                            |         |                  |       |            |
+|     **StackMemoryCollections** |  **250000** |   **3,647,072.0 ns** |  **0.18** |        **6000028 B** |
+| System.Collections.Generic |  250000 |  20,485,464.3 ns |  1.00 | 20000287 B |
+|                            |         |                  |       |            |
+|     **StackMemoryCollections** |  **500000** |   **6,939,238.0 ns** |  **0.14** |        **12000028 B** |
+| System.Collections.Generic |  500000 |  50,628,540.0 ns |  1.00 | 40000420 B |
+|                            |         |                  |       |            |
+|     **StackMemoryCollections** | **1000000** |  **13,830,743.4 ns** |  **0.11** |        **24000032 B** |
+| System.Collections.Generic | 1000000 | 129,356,360.0 ns |  1.00 | 80000790 B |
 
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Simple/ClassSimpleJob.cs)
 ______
 
-|                     Method |    Size |            Mean | Ratio |    Allocated |
-|--------------------------- |-------- |----------------:|------:|-------------:|
-|     **StackMemoryCollections** |     **100** |        **35.49 μs** |  **0.23** |         **1232 B** |
-| System.Collections.Generic |     100 |       155.84 μs |  1.00 |     811200 B |
-|                            |         |                 |       |              |
-|     **StackMemoryCollections** |    **1000** |       **332.97 μs** |  **0.22** |         **12032 B** |
-| System.Collections.Generic |    1000 |     1,521.58 μs |  1.00 |    8011201 B |
-|                            |         |                 |       |              |
-|     **StackMemoryCollections** |   **10000** |     **3,348.83 μs** |  **0.23** |         **120034 B** |
-| System.Collections.Generic |   10000 |    14,740.49 μs |  1.00 |   80011215 B |
-|                            |         |                 |       |              |
-|     **StackMemoryCollections** |  **100000** |    **37,512.58 μs** |  **0.11** |         **1200066 B** |
-| System.Collections.Generic |  100000 |   340,913.42 μs |  1.00 |  800044536 B |
-|                            |         |                 |       |              |
-|     **StackMemoryCollections** |  **250000** |    **91,972.42 μs** |  **0.04** |        **3000112 B** |
-| System.Collections.Generic |  250000 | 2,222,325.18 μs |  1.00 | 2000068912 B |
-|                            |         |                 |       |              |
-|     **StackMemoryCollections** |  **500000** |   **180,948.87 μs** |  **0.03** |        **6000192 B** |
-| System.Collections.Generic |  500000 | 5,608,830.92 μs |  1.00 | 4000092016 B |
-|                            |         |                 |       |              |
-|     **StackMemoryCollections** | **1000000** |   **335,629.28 μs** |  **0.04** |       **12002256 B** |
-| System.Collections.Generic | 1000000 | 9,305,081.77 μs |  1.00 | 8000081312 B |
+|                     Method |    Size |            Mean | Ratio |     Allocated |
+|--------------------------- |-------- |----------------:|------:|--------------:|
+|     **StackMemoryCollections** |     **100** |        **137.7 μs** |  **0.56** |             **2424 B** |
+| System.Collections.Generic |     100 |        246.0 μs |  1.00 |     1611200 B |
+|                            |         |                 |       |               |
+|     **StackMemoryCollections** |    **1000** |      **1,338.0 μs** |  **0.57** |           **24025 B** |
+| System.Collections.Generic |    1000 |      2,356.5 μs |  1.00 |    16011202 B |
+|                            |         |                 |       |               |
+|     **StackMemoryCollections** |   **10000** |     **14,030.9 μs** |  **0.55** |           **240032 B** |
+| System.Collections.Generic |   10000 |     25,265.6 μs |  1.00 |   160011220 B |
+|                            |         |                 |       |               |
+|     **StackMemoryCollections** |  **100000** |    **135,796.6 μs** |  **0.18** |         **2400358 B** |
+| System.Collections.Generic |  100000 |    708,012.4 μs |  1.00 |  1600044272 B |
+|                            |         |                 |       |               |
+|     **StackMemoryCollections** |  **250000** |    **336,080.1 μs** |  **0.09** |        **6001112 B** |
+| System.Collections.Generic |  250000 |  3,987,479.2 μs |  1.00 |  4000059496 B |
+|                            |         |                 |       |               |
+|     **StackMemoryCollections** |  **500000** |    **688,559.2 μs** |  **0.06** |         **12000504 B** |
+| System.Collections.Generic |  500000 | 11,788,582.6 μs |  1.00 |  8000116584 B |
+|                            |         |                 |       |               |
+|     **StackMemoryCollections** | **1000000** |  **2,288,730.2 μs** |  **0.07** |         **24000504 B** |
+| System.Collections.Generic | 1000000 | 32,844,409.8 μs |  1.00 | 16000122016 B |
 
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Optimal/ClassOptimalJob.cs)
 ______

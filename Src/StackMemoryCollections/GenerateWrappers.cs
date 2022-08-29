@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace StackMemoryCollections
@@ -67,6 +68,7 @@ namespace StackMemoryCollections
 
 using System;
 using {currentType.ContainingNamespace};
+using System.Runtime.CompilerServices;
 
 namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 {{
@@ -253,6 +255,8 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         {
             WrapperPtr(in builder);
             PrimitiveWrapperChangePtr(in builder);
+            WrapperGetValue(in typeInfo, in builder);
+            WrapperFillValue(in typeInfo, in builder);
 
             for (int i = 0; i < typeInfo.Members.Count; i++)
             {
@@ -287,6 +291,53 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             builder.Append($@"
         public void* Ptr => _start;
 ");
+        }
+
+        private void WrapperGetValue(
+            in TypeInfo typeInfo,
+            in StringBuilder builder
+            )
+        {
+            if(typeInfo.IsValueType)
+            {
+                builder.Append($@"
+        [SkipLocalsInit]
+        public {typeInfo.TypeName} GetValue()
+        {{
+            {typeInfo.ContainingNamespace}.{typeInfo.TypeName} result;
+            Unsafe.SkipInit(out result);
+            {typeInfo.ContainingNamespace}.{typeInfo.TypeName}Helper.CopyToValue(in _start, ref result);
+
+            return result;
+        }}
+
+            ");
+            }
+            else
+            {
+                builder.Append($@"
+        public {typeInfo.TypeName} GetValue()
+        {{
+            {typeInfo.ContainingNamespace}.{typeInfo.TypeName} result = new {typeInfo.TypeName}();
+            {typeInfo.ContainingNamespace}.{typeInfo.TypeName}Helper.CopyToValue(in _start, ref result);
+            return result;
+        }}
+            ");
+            }
+        }
+
+        private void WrapperFillValue(
+            in TypeInfo typeInfo,
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
+        public void Fill(in {typeInfo.TypeName} value)
+        {{
+            {typeInfo.TypeName}Helper.CopyToPtr(in value, in _start);
+        }}
+
+            ");
         }
 
         private void WrapperPrimitiveGetSet(

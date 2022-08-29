@@ -213,8 +213,9 @@ namespace {currentType.ContainingNamespace}
 ");
                 return;
             }
-
-            builder.Append($@"
+            else
+            {
+                builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
             {memberInfo.TypeName} result = new {memberInfo.TypeName}();
@@ -222,6 +223,7 @@ namespace {currentType.ContainingNamespace}
             return result;
         }}
 ");
+            }
         }
 
         private void GenerateSetСompositeValueFrom(
@@ -292,22 +294,43 @@ namespace {currentType.ContainingNamespace}
             in INamedTypeSymbol currentType
             )
         {
-            builder.Append($@"
+            if (typeInfo.IsValueType)
+            {
+                builder.Append($@"
+        [SkipLocalsInit]
+        public static void CopyToValueOut(in void* ptr, out {currentType.Name} value)
+        {{
+            Unsafe.SkipInit(out value);
+");
+                foreach (var memberInfo in typeInfo.Members)
+                {
+                    builder.Append($@"
+            value.{memberInfo.MemberName} = Get{memberInfo.MemberName}Value(in ptr);
+");
+                }
+
+                builder.Append($@"
+        }}
+");
+            }
+            else
+            {
+                builder.Append($@"
         public static void CopyToValueOut(in void* ptr, out {currentType.Name} value)
         {{
             value = new {currentType.Name}();
 ");
-            foreach (var memberInfo in typeInfo.Members)
-            {
-                builder.Append($@"
+                foreach (var memberInfo in typeInfo.Members)
+                {
+                    builder.Append($@"
             value.{memberInfo.MemberName} = Get{memberInfo.MemberName}Value(in ptr);
 ");
-            }
+                }
 
-            builder.Append($@"
+                builder.Append($@"
         }}
-
 ");
+            }
         }
 
         private void GenerateCopy(

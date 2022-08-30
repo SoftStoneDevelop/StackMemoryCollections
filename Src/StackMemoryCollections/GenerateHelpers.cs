@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -45,7 +46,7 @@ namespace StackMemoryCollections
                     }
                     else
                     {
-                        GenerateGetСompositeValue(in builder, in memberInfo);
+                        GenerateGetСompositeValue(in builder, in memberInfo, in currentType);
                         GenerateSetСompositeValueFrom(in builder, in memberInfo, in currentType);
                     }
                 }
@@ -89,7 +90,7 @@ namespace {currentType.ContainingNamespace}
             builder.Append($@"
         public static nuint GetSize()
         {{
-            return {typeInfo.Members.Sum(s => s.Size)};
+            return {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)};
         }}
 
 ");
@@ -194,7 +195,8 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateGetСompositeValue(
             in StringBuilder builder,
-            in MemberInfo memberInfo
+            in MemberInfo memberInfo,
+            in INamedTypeSymbol currentType
             )
         {
             if (memberInfo.IsValueType)
@@ -203,6 +205,18 @@ namespace {currentType.ContainingNamespace}
         [SkipLocalsInit]
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
+");
+                if(!currentType.IsValueType)
+                {
+                    builder.Append($@"
+            if(*((byte*)ptr) == 0)
+            {{
+                throw new NullReferenceException(""ptr is null value"");
+            }}
+");
+                }
+
+                builder.Append($@"
             {memberInfo.TypeName} result;
             Unsafe.SkipInit(out result);
             {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {memberInfo.Offset}, ref result);
@@ -211,13 +225,29 @@ namespace {currentType.ContainingNamespace}
         }}
 
 ");
-                return;
             }
             else
             {
                 builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
+");
+                if (!currentType.IsValueType)
+                {
+                    builder.Append($@"
+            if(*((byte*)ptr) == 0)
+            {{
+                throw new NullReferenceException(""ptr is null value"");
+            }}
+");
+                }
+
+                builder.Append($@"
+            if(*((byte*)ptr + {memberInfo.Offset}) == 0)
+            {{
+                return null;
+            }}
+            
             {memberInfo.TypeName} result = new {memberInfo.TypeName}();
             {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {memberInfo.Offset}, ref result);
             return result;
@@ -232,12 +262,54 @@ namespace {currentType.ContainingNamespace}
             in INamedTypeSymbol currentType
             )
         {
-            builder.Append($@"
+            if(memberInfo.IsValueType)
+            {
+                builder.Append($@"
         public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
         {{
+");
+                if (!currentType.IsValueType)
+                {
+                    builder.Append($@"
+            if(*((byte*)ptr) == 0)
+            {{
+                throw new NullReferenceException(""ptr is null value"");
+            }}
+");
+                }
+
+                builder.Append($@"
             {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {memberInfo.Offset});
         }}
 ");
+            }
+            else
+            {
+                builder.Append($@"
+        public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
+        {{
+");
+                if (!currentType.IsValueType)
+                {
+                    builder.Append($@"
+            if(*((byte*)ptr) == 0)
+            {{
+                throw new NullReferenceException(""ptr is null value"");
+            }}
+");
+                }
+
+                builder.Append($@"
+            if(value.{memberInfo.MemberName} == null)
+            {{
+                *((byte*)ptr + {memberInfo.Offset}) = 0;
+                return;
+            }}
+            
+            {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {memberInfo.Offset});
+        }}
+");
+            }
         }
 
         private void GenerateCopyToPtr(
@@ -249,8 +321,22 @@ namespace {currentType.ContainingNamespace}
             builder.Append($@"
         public static void CopyToPtr(in {currentType.Name} value, in void* ptr)
         {{
-
 ");
+            if(!currentType.IsValueType)
+            {
+                builder.Append($@"
+            if(value == null)
+            {{
+                *((byte*)ptr) = 0;
+                return;
+            }}
+            else
+            {{
+                *((byte*)ptr) = 1;
+            }}
+");
+            }
+
             foreach (var memberInfo in typeInfo.Members)
             {
                 builder.Append($@"
@@ -259,7 +345,6 @@ namespace {currentType.ContainingNamespace}
             }
 
             builder.Append($@"
-
         }}
 ");
         }
@@ -273,8 +358,18 @@ namespace {currentType.ContainingNamespace}
             builder.Append($@"
         public static void CopyToValue(in void* ptr, ref {currentType.Name} value)
         {{
-
 ");
+            if (!currentType.IsValueType)
+            {
+                builder.Append($@"
+            if(*((byte*)ptr) == 0)
+            {{
+                value = null;
+                return;
+            }}
+");
+            }
+
             foreach (var memberInfo in typeInfo.Members)
             {
                 builder.Append($@"
@@ -318,8 +413,22 @@ namespace {currentType.ContainingNamespace}
                 builder.Append($@"
         public static void CopyToValueOut(in void* ptr, out {currentType.Name} value)
         {{
+");
+                if (!currentType.IsValueType)
+                {
+                    builder.Append($@"
+            if(*((byte*)ptr) == 0)
+            {{
+                value = null;
+                return;
+            }}
+");
+                }
+
+                builder.Append($@"
             value = new {currentType.Name}();
 ");
+
                 foreach (var memberInfo in typeInfo.Members)
                 {
                     builder.Append($@"
@@ -338,17 +447,40 @@ namespace {currentType.ContainingNamespace}
             in TypeInfo typeInfo
             )
         {
-            builder.Append($@"
+            if (typeInfo.IsValueType)
+            {
+                builder.Append($@"
         public static void Copy(in void* ptrSource, in void* ptrDest)
         {{
             Buffer.MemoryCopy(
                 ptrSource,
                 ptrDest,
-                {typeInfo.Members.Sum(s => s.Size)},
-                {typeInfo.Members.Sum(s => s.Size)}
+                {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)},
+                {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}
                 );
         }}
 ");
+            }
+            else
+            {
+                builder.Append($@"
+        public static void Copy(in void* ptrSource, in void* ptrDest)
+        {{
+            if(*((byte*)ptrSource) == 0)
+            {{
+                *((byte*)ptrDest) = 0;
+                return;
+            }}
+
+            Buffer.MemoryCopy(
+                ptrSource,
+                ptrDest,
+                {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)},
+                {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}
+                );
+        }}
+");
+            }
         }
 
         private void GenerateEnd(in StringBuilder builder)

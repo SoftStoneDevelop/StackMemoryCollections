@@ -153,7 +153,7 @@ namespace StackMemoryCollections
                     info.ContainingNamespace = currentType.ContainingNamespace.Name;
                     info.TypeName = currentType.Name;
 
-                    var offset = 0;
+                    var offset = currentType.IsValueType ? 0 : 1;
 
                     var needSkip = false;
                     foreach (var member in currentType.GetMembers())
@@ -222,6 +222,10 @@ namespace StackMemoryCollections
                             {
                                 var memberInfo = new MemberInfo();
                                 memberInfo.Size = tInfo.Members.Sum(s => s.Size);
+                                if(!propertySymbol.Type.IsValueType)
+                                {
+                                    memberInfo.Size++;
+                                }
                                 memberInfo.TypeName = $"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}";
                                 memberInfo.MemberName = propertySymbol.Name;
                                 memberInfo.Offset = offset;
@@ -295,6 +299,10 @@ namespace StackMemoryCollections
                             {
                                 var memberInfo = new MemberInfo();
                                 memberInfo.Size = tInfo.Members.Sum(s => s.Size);
+                                if (!fieldSymbol.Type.IsValueType)
+                                {
+                                    memberInfo.Size++;
+                                }
                                 memberInfo.TypeName = $"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}";
                                 memberInfo.MemberName = fieldSymbol.Name;
                                 memberInfo.Offset = offset;

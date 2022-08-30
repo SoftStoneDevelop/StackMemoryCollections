@@ -154,7 +154,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size)} * count);
+            _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)} * count);
             _stackMemoryS = stackMemory;
             Capacity = count;
         }}
@@ -178,7 +178,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory.AllocateMemory({typeInfo.Members.Sum(s => s.Size)} * count);
+            _start = stackMemory.AllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)} * count);
             _stackMemoryC = stackMemory;
             _stackMemoryS = null;
             Capacity = count;
@@ -244,13 +244,13 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
 
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)} * (Capacity - reducingCount));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)} * (Capacity - reducingCount));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 Buffer.MemoryCopy(
                     _stackMemoryC.Start,
                     newMemory.Start,
                     newMemory.ByteCount,
-                    {typeInfo.Members.Sum(s => s.Size)} * (Capacity - reducingCount)
+                    {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)} * (Capacity - reducingCount)
                     );
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
@@ -261,21 +261,21 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             {{
                 if(_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                     {{
                         throw new Exception(""Failed to reduce available memory, stack moved further"");
                     }}
 
-                    _stackMemoryS->FreeMemory(reducingCount * {typeInfo.Members.Sum(s => s.Size)});
+                    _stackMemoryS->FreeMemory(reducingCount * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                     {{
                         throw new Exception(""Failed to reduce available memory, stack moved further"");
                     }}
 
-                    _stackMemoryC.FreeMemory(reducingCount * {typeInfo.Members.Sum(s => s.Size)});
+                    _stackMemoryC.FreeMemory(reducingCount * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                 }}
             }}
 
@@ -295,7 +295,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
 
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)} * (Capacity + expandCount));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)} * (Capacity + expandCount));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 Buffer.MemoryCopy(
                     _stackMemoryC.Start,
@@ -312,21 +312,21 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             {{
                 if(_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                     {{
                         throw new Exception(""Failed to expand available memory, stack moved further"");
                     }}
 
-                    _stackMemoryS->AllocateMemory(expandCount * {typeInfo.Members.Sum(s => s.Size)});
+                    _stackMemoryS->AllocateMemory(expandCount * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                     {{
                         throw new Exception(""Failed to expand available memory, stack moved further"");
                     }}
 
-                    _stackMemoryC.AllocateMemory(expandCount * {typeInfo.Members.Sum(s => s.Size)});
+                    _stackMemoryC.AllocateMemory(expandCount * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                 }}
             }}
 
@@ -380,21 +380,21 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 {{
                     if(_stackMemoryS != null)
                     {{
-                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                         {{
                             throw new Exception(""Failed to expand available memory, stack moved further"");
                         }}
 
-                        _stackMemoryS->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                        _stackMemoryS->AllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                     }}
                     else if (_stackMemoryC != null)
                     {{
-                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                         {{
                             throw new Exception(""Failed to expand available memory, stack moved further"");
                         }}
 
-                        _stackMemoryC.AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                        _stackMemoryC.AllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                     }}
                     else
                     {{
@@ -405,7 +405,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 }}
             }}
 
-            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
+            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}));
             Size = tempSize;
 ");
             if(stackNamespace == "Class")
@@ -440,21 +440,21 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 {{
                     if(_stackMemoryS != null)
                     {{
-                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                         {{
                             throw new Exception(""Failed to expand available memory, stack moved further"");
                         }}
 
-                        _stackMemoryS->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                        _stackMemoryS->AllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                     }}
                     else if (_stackMemoryC != null)
                     {{
-                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                         {{
                             throw new Exception(""Failed to expand available memory, stack moved further"");
                         }}
 
-                        _stackMemoryC.AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+                        _stackMemoryC.AllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                     }}
                     else
                     {{
@@ -465,7 +465,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 }}
             }}
 
-            {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
+            {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}));
             Size = tempSize;
 ");
             if (stackNamespace == "Class")
@@ -500,24 +500,24 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 {{
                     if(_stackMemoryS != null)
                     {{
-                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                         {{
                             return false;
                         }}
                         
-                        if(!_stackMemoryS->TryAllocateMemory({typeInfo.Members.Sum(s => s.Size)}, out _))
+                        if(!_stackMemoryS->TryAllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}, out _))
                         {{
                             return false;
                         }}
                     }}
                     else if (_stackMemoryC != null)
                     {{
-                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                         {{
                             return false;
                         }}
 
-                        if(!_stackMemoryC.TryAllocateMemory({typeInfo.Members.Sum(s => s.Size)}, out _))
+                        if(!_stackMemoryC.TryAllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}, out _))
                         {{
                             return false;
                         }}
@@ -531,7 +531,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 }}
             }}
 
-            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
+            {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}));
             Size = tempSize;
 ");
             if (stackNamespace == "Class")
@@ -567,24 +567,24 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 {{
                     if(_stackMemoryS != null)
                     {{
-                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                         {{
                             return false;
                         }}
                         
-                        if(!_stackMemoryS->TryAllocateMemory({typeInfo.Members.Sum(s => s.Size)}, out _))
+                        if(!_stackMemoryS->TryAllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}, out _))
                         {{
                             return false;
                         }}
                     }}
                     else if (_stackMemoryC != null)
                     {{
-                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size)})))
+                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)})))
                         {{
                             return false;
                         }}
 
-                        if(!_stackMemoryC.TryAllocateMemory({typeInfo.Members.Sum(s => s.Size)}, out _))
+                        if(!_stackMemoryC.TryAllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}, out _))
                         {{
                             return false;
                         }}
@@ -598,7 +598,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 }}
             }}
 
-            {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size)}));
+            {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}));
             Size = tempSize;
 ");
             if (stackNamespace == "Class")
@@ -711,7 +711,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             {typeInfo.TypeName} result;
             Unsafe.SkipInit(out result);
             
-            {typeInfo.TypeName}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), ref result);
+            {typeInfo.TypeName}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}), ref result);
 
             return result;
         }}
@@ -728,7 +728,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             }}
 
             {currentType.Name} result = new {currentType.Name}();
-            {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), ref result);
+            {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}), ref result);
             return
                 result;
         }}
@@ -749,7 +749,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 throw new Exception(""There are no elements on the stack"");
             }}
 
-            {currentType.Name}Helper.Copy((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), in ptr);
+            {currentType.Name}Helper.Copy((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}), in ptr);
         }}
 ");
         }
@@ -768,7 +768,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 throw new Exception(""There are no elements on the stack"");
             }}
 
-            {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), ref item);
+            {currentType.Name}Helper.CopyToValue((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}), ref item);
         }}
 ");
         }
@@ -787,7 +787,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 throw new Exception(""There are no elements on the stack"");
             }}
 
-            {currentType.Name}Helper.CopyToValueOut((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)}), out item);
+            {currentType.Name}Helper.CopyToValueOut((byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}), out item);
         }}
 ");
         }
@@ -805,7 +805,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 throw new Exception(""There are no elements on the stack"");
             }}
 
-            return (byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size)});
+            return (byte*)_start + ((Size - 1) * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
         }}
 ");
         }
@@ -842,11 +842,11 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                     {{
                         if(_stackMemoryS != null)
                         {{
-                            _stackMemoryS->FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size)});
+                            _stackMemoryS->FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                         }}
                         else if (_stackMemoryC != null)
                         {{
-                            _stackMemoryC.FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size)});
+                            _stackMemoryC.FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                         }}
                     }}
                 }}
@@ -873,11 +873,11 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             {{
                 if(_stackMemoryS != null)
                 {{
-                    _stackMemoryS->FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size)});
+                    _stackMemoryS->FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    _stackMemoryC.FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size)});
+                    _stackMemoryC.FreeMemory(Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                 }}
             }}
             else
@@ -958,7 +958,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 if (_currentIndex == -2)
                 {{
                     _currentIndex = (int)_stack.Size - 1;
-                    _current = (byte*)_stack._start + (_currentIndex * {typeInfo.Members.Sum(s => s.Size)});
+                    _current = (byte*)_stack._start + (_currentIndex * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                     return true;
                 }}
 
@@ -970,7 +970,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 --_currentIndex;
                 if (_currentIndex >= 0)
                 {{
-                    _current = (byte*)_stack._start + (_currentIndex * {typeInfo.Members.Sum(s => s.Size)});
+                    _current = (byte*)_stack._start + (_currentIndex * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                     return true;
                 }}
                 else
@@ -1006,7 +1006,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 }}
 
                 return
-                    (byte*)_start + ((Size - 1 - index) * {typeInfo.Members.Sum(s => s.Size)});
+                    (byte*)_start + ((Size - 1 - index) * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
             }}
         }}
 ");
@@ -1023,8 +1023,8 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,
-                Capacity * {typeInfo.Members.Sum(s => s.Size)},
-                Capacity * {typeInfo.Members.Sum(s => s.Size)}
+                Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)},
+                Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}
                 );
         }}
 ");
@@ -1041,8 +1041,8 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,
-                count * {typeInfo.Members.Sum(s => s.Size)},
-                count * {typeInfo.Members.Sum(s => s.Size)}
+                count * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)},
+                count * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}
                 );
         }}
 ");
@@ -1065,8 +1065,8 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             Buffer.MemoryCopy(
                 _start,
                 destStack.Start,
-                destStack.Capacity * {typeInfo.Members.Sum(s => s.Size)},
-                Capacity * {typeInfo.Members.Sum(s => s.Size)}
+                destStack.Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)},
+                Capacity * {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}
                 );
 
             destStack.Size = Size;

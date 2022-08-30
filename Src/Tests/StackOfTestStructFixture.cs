@@ -125,10 +125,10 @@ namespace Tests
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.GetSize())));
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 
-
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint)1));
                     stack.Push(new TestStruct(45, 23, null));
                     Assert.That(stack.IsEmpty, Is.EqualTo(false));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint)1));
                     Assert.That(stack.Size, Is.EqualTo((nuint)1));
                 }
             }

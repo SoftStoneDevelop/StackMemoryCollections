@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace StackMemoryCollections
@@ -90,10 +89,19 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             builder.Append($@"
         public {currentType.Name}Wrapper()
         {{
-            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size)});
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
             _start = _stackMemoryC.Start;
             _memoryOwner = true;
             _stackMemoryS = null;
+");
+            if (!currentType.IsValueType)
+            {
+                builder.Append($@"
+            *((byte*)_start) = 1;
+");
+            }
+
+            builder.Append($@"
         }}
 ");
         }
@@ -114,8 +122,17 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+            _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType? 0 : 1)});
             _stackMemoryS = stackMemory;
+");
+            if (!currentType.IsValueType)
+            {
+                builder.Append($@"
+            *((byte*)_start) = 1;
+");
+            }
+
+            builder.Append($@"
         }}
 ");
         }
@@ -136,9 +153,18 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory.AllocateMemory({typeInfo.Members.Sum(s => s.Size)});
+            _start = stackMemory.AllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
             _stackMemoryC = stackMemory;
             _stackMemoryS = null;
+");
+            if (!currentType.IsValueType)
+            {
+                builder.Append($@"
+            *((byte*)_start) = 1;
+");
+            }
+
+            builder.Append($@"
         }}
 ");
         }
@@ -161,6 +187,15 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             _start = start;
             _stackMemoryC = null;
             _stackMemoryS = null;
+");
+            if (!currentType.IsValueType)
+            {
+                builder.Append($@"
+            *((byte*)_start) = 1;
+");
+            }
+
+            builder.Append($@"
         }}
 ");
         }
@@ -197,11 +232,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                     {{
                         if(_stackMemoryC != null)
                         {{
-                            _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                            _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                         }}
                         else if (_stackMemoryS != null)
                         {{
-                            _stackMemoryS->FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                            _stackMemoryS->FreeMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                         }}
                     }}
                 }}
@@ -228,11 +263,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             {{
                 if(_stackMemoryC != null)
                 {{
-                    _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                    _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                 }}
                 else if (_stackMemoryS != null)
                 {{
-                    _stackMemoryS->FreeMemory({typeInfo.Members.Sum(s => s.Size)});
+                    _stackMemoryS->FreeMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
                 }}
             }}
             else

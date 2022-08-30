@@ -214,7 +214,8 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         {
             builder.Append($@"
         public {currentType.Name}Wrapper(
-            void* start
+            void* start,
+            bool createInstance
             )
         {{
             if (start == null)
@@ -226,6 +227,12 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             _stackMemoryC = null;
             _stackMemoryS = null;
 ");
+            builder.Append($@"
+            if(createInstance)
+            {{
+            
+");
+
             if (!currentType.IsValueType)
             {
                 builder.Append($@"
@@ -246,6 +253,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             }
 
             builder.Append($@"
+            }}
         }}
 ");
         }

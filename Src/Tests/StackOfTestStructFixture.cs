@@ -307,8 +307,8 @@ namespace Tests
                     stack2.Size = stack.Size;
                     Assert.That(stack.Size, Is.EqualTo(stack2.Size));
 
-                    using var wrap = new Tests.Struct.TestStructWrapper(stack[0]);
-                    using var wrap2 = new Tests.Struct.TestStructWrapper(stack2[0]);
+                    using var wrap = new Tests.Struct.TestStructWrapper(stack[0], false);
+                    using var wrap2 = new Tests.Struct.TestStructWrapper(stack2[0], false);
                     Assert.That(wrap.Int32, Is.EqualTo(wrap2.Int32));
                     Assert.That(wrap.Int64, Is.EqualTo(wrap2.Int64));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(wrap2.TestClass.Int32));
@@ -539,7 +539,7 @@ namespace Tests
                     stack.Push(item3);
 
                     Assert.That(new IntPtr(stack[0]), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.GetSize() * 2))));
-                    using var wrap = new Tests.Struct.TestStructWrapper(stack[0]);
+                    using var wrap = new Tests.Struct.TestStructWrapper(stack[0], false);
                     Assert.That(wrap.Int32, Is.EqualTo(7));
                     Assert.That(wrap.Int64, Is.EqualTo(21));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(6));

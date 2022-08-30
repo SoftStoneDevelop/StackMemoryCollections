@@ -2,8 +2,9 @@
 {
     internal class MemberInfo
     {
+        public bool IsRuntimeOffsetCalculated;
         public int Offset;
-        public int Size;
+        public string OffsetStr;
 
         /// <summary>
         /// If is primitive then TypeName = TypeName otherwise TypeName = ContainingNamspace.TypeName
@@ -14,5 +15,6 @@
         public bool IsPrimitive;
         public bool IsValueType;
         public bool IsUnmanagedType;
+        public bool AsPointer;
     }
 }

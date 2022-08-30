@@ -149,12 +149,10 @@ namespace StackMemoryCollections
                     var currentType = stackCurrentTypes.Peek();
                     var info = new TypeInfo();
                     info.IsValueType = currentType.IsValueType;
-                    info.IsPrimitive = IsPrimitive(currentType.Name);
+                    info.IsPrimitive = TypeInfoHelper.IsPrimitive(currentType.Name);
                     info.IsUnmanagedType = currentType.IsUnmanagedType;
                     info.ContainingNamespace = currentType.ContainingNamespace.Name;
                     info.TypeName = currentType.Name;
-
-                    var offset = currentType.IsValueType ? 0 : 1;
 
                     var needSkip = false;
                     foreach (var member in currentType.GetMembers())
@@ -194,17 +192,17 @@ namespace StackMemoryCollections
                                 throw new Exception($"SetMethod must be public. Property name: '{member.Name}'");
                             }
 
-                            if (IsPrimitive(propertySymbol.Type.Name))
+                            if (TypeInfoHelper.IsPrimitive(propertySymbol.Type.Name))
                             {
                                 var memberInfo = new MemberInfo();
-                                memberInfo.Size = TypeToSize(propertySymbol.Type.Name);
                                 memberInfo.TypeName = propertySymbol.Type.Name;
                                 memberInfo.MemberName = propertySymbol.Name;
-                                memberInfo.Offset = offset;
                                 memberInfo.IsPrimitive = true;
                                 memberInfo.IsValueType = true;
                                 memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
-                                offset += memberInfo.Size;
+                                memberInfo.AsPointer = false;
+                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
                                 info.Members.Add(memberInfo);
                                 continue;
                             }
@@ -218,21 +216,36 @@ namespace StackMemoryCollections
                             {
                                 throw new Exception($"Record type are not supported, property name: '{member.Name}'");
                             }
+                            
+                            var asPointer =
+                                    !propertySymbol.Type.IsValueType &&
+                                    propertySymbol.GetAttributes().Any(wh => wh.AttributeClass.Name == "AsPointerAttribute")
+                                    ;
 
+                            if(asPointer)
+                            {
+                                var memberInfo = new MemberInfo();
+                                memberInfo.TypeName = $"IntPtr";
+                                memberInfo.MemberName = propertySymbol.Name;
+                                memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
+                                memberInfo.IsValueType = propertySymbol.Type.IsValueType;
+                                memberInfo.AsPointer = asPointer;
+                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
+                                info.Members.Add(memberInfo);
+                                continue;
+                            }
+                            else
                             if (typeInfos.TryGetValue($"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}", out var tInfo))
                             {
                                 var memberInfo = new MemberInfo();
-                                memberInfo.Size = tInfo.Members.Sum(s => s.Size);
-                                if(!propertySymbol.Type.IsValueType)
-                                {
-                                    memberInfo.Size++;
-                                }
                                 memberInfo.TypeName = $"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}";
                                 memberInfo.MemberName = propertySymbol.Name;
-                                memberInfo.Offset = offset;
                                 memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
                                 memberInfo.IsValueType = propertySymbol.Type.IsValueType;
-                                offset += memberInfo.Size;
+                                memberInfo.AsPointer = asPointer;
+                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
                                 info.Members.Add(memberInfo);
                                 continue;
                             }
@@ -271,17 +284,17 @@ namespace StackMemoryCollections
                                 continue;
                             }
 
-                            if (IsPrimitive(fieldSymbol.Type.Name))
+                            if (TypeInfoHelper.IsPrimitive(fieldSymbol.Type.Name))
                             {
                                 var memberInfo = new MemberInfo();
-                                memberInfo.Size = TypeToSize(fieldSymbol.Type.Name);
                                 memberInfo.TypeName = fieldSymbol.Type.Name;
                                 memberInfo.MemberName = fieldSymbol.Name;
-                                memberInfo.Offset = offset;
                                 memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
                                 memberInfo.IsPrimitive = true;
                                 memberInfo.IsValueType = true;
-                                offset += memberInfo.Size;
+                                memberInfo.AsPointer = false;
+                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
                                 info.Members.Add(memberInfo);
                                 continue;
                             }
@@ -296,20 +309,35 @@ namespace StackMemoryCollections
                                 throw new Exception($"Record type are not supported, field name: '{member.Name}'");
                             }
 
+                            var asPointer =
+                                    !fieldSymbol.Type.IsValueType &&
+                                    fieldSymbol.GetAttributes().Any(wh => wh.AttributeClass.Name == "AsPointerAttribute")
+                                    ;
+                            
+                            if (asPointer)
+                            {
+                                var memberInfo = new MemberInfo();
+                                memberInfo.TypeName = $"IntPtr";
+                                memberInfo.MemberName = fieldSymbol.Name;
+                                memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
+                                memberInfo.IsValueType = fieldSymbol.Type.IsValueType;
+                                memberInfo.AsPointer = asPointer;
+                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
+                                info.Members.Add(memberInfo);
+                                continue;
+                            }
+                            else
                             if (typeInfos.TryGetValue($"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}", out var tInfo))
                             {
                                 var memberInfo = new MemberInfo();
-                                memberInfo.Size = tInfo.Members.Sum(s => s.Size);
-                                if (!fieldSymbol.Type.IsValueType)
-                                {
-                                    memberInfo.Size++;
-                                }
                                 memberInfo.TypeName = $"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}";
                                 memberInfo.MemberName = fieldSymbol.Name;
-                                memberInfo.Offset = offset;
                                 memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
                                 memberInfo.IsValueType = fieldSymbol.Type.IsValueType;
-                                offset += memberInfo.Size;
+                                memberInfo.AsPointer = asPointer;
+                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
                                 info.Members.Add(memberInfo);
                                 continue;
                             }
@@ -340,7 +368,8 @@ namespace StackMemoryCollections
 
                     if(!needSkip)
                     {
-                        if(!typeInfos.ContainsKey($"{currentType.ContainingNamespace}.{currentType.Name}"))
+                        TypeInfoHelper.CalculateSize(info, in typeInfos);
+                        if (!typeInfos.ContainsKey($"{currentType.ContainingNamespace}.{currentType.Name}"))
                         {
                             typeInfos.Add($"{currentType.ContainingNamespace}.{currentType.Name}", info);
                         }
@@ -361,158 +390,6 @@ namespace StackMemoryCollections
                 wh.AttributeClass.Name == "GenerateDictionaryAttribute" ||
                 wh.AttributeClass.Name == "GenerateWrapperAttribute"
                 );
-        }
-
-        private int TypeToSize(string typeName)
-        {
-            switch(typeName)
-            {
-                case "Int32":
-                {
-                    return sizeof(Int32);
-                }
-
-                case "UInt32":
-                {
-                    return sizeof(UInt32);
-                }
-
-                case "Int64":
-                {
-                    return sizeof(Int64);
-                }
-
-                case "UInt64":
-                {
-                    return sizeof(UInt64);
-                }
-
-                case "SByte":
-                {
-                    return sizeof(SByte);
-                }
-
-                case "Byte":
-                {
-                    return sizeof(Byte);
-                }
-
-                case "Int16":
-                {
-                    return sizeof(Int16);
-                }
-
-                case "UInt16":
-                {
-                    return sizeof(UInt16);
-                }
-
-                case "Char":
-                {
-                    return sizeof(Char);
-                }
-
-                case "Decimal":
-                {
-                    return sizeof(Decimal);
-                }
-
-                case "Double":
-                {
-                    return sizeof(Double);
-                }
-
-                case "Boolean":
-                {
-                    return sizeof(Boolean);
-                }
-
-                case "Single":
-                {
-                    return sizeof(Single);
-                }
-
-                default:
-                {
-                    throw new Exception($"TypeToSize: unknown type {typeName}");
-                }
-            }
-        }
-
-        private bool IsPrimitive(string typeName)
-        {
-            switch (typeName)
-            {
-                case "Int32":
-                {
-                    return true;
-                }
-
-                case "UInt32":
-                {
-                    return true;
-                }
-
-                case "Int64":
-                {
-                    return true;
-                }
-
-                case "UInt64":
-                {
-                    return true;
-                }
-
-                case "SByte":
-                {
-                    return true;
-                }
-
-                case "Byte":
-                {
-                    return true;
-                }
-
-                case "Int16":
-                {
-                    return true;
-                }
-
-                case "UInt16":
-                {
-                    return true;
-                }
-
-                case "Char":
-                {
-                    return true;
-                }
-
-                case "Decimal":
-                {
-                    return true;
-                }
-
-                case "Double":
-                {
-                    return true;
-                }
-
-                case "Boolean":
-                {
-                    return true;
-                }
-
-                case "Single":
-                {
-                    return true;
-                }
-
-                default:
-                {
-                    return false;
-                }
-            }
         }
     }
 }

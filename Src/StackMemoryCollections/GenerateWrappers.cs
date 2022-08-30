@@ -1,8 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace StackMemoryCollections
@@ -39,15 +37,16 @@ namespace StackMemoryCollections
             )
         {
             builder.Clear();
+            var sizeOfStr = typeInfo.IsRuntimeCalculatedSize ? $"{currentType.Name}Helper.SizeOf" : $"{typeInfo.Size}";
             WrapperStart(in currentType, in builder, in wrapperNamespace);
-            WrapperConstructor1(in currentType, in typeInfo, in builder);
-            WrapperConstructor2(in currentType, in typeInfo, in builder);
-            WrapperConstructor3(in currentType, in typeInfo, in builder);
+            WrapperConstructor1(in currentType, in typeInfo, in builder, in sizeOfStr);
+            WrapperConstructor2(in currentType, in typeInfo, in builder, in sizeOfStr);
+            WrapperConstructor3(in currentType, in typeInfo, in builder, in sizeOfStr);
             WrapperConstructor4(in currentType, in typeInfo, in builder);
 
             WrapperProperties(in typeInfo, in builder, in typeInfos);
 
-            WrapperDispose(in currentType, in typeInfo, in builder, in wrapperNamespace);
+            WrapperDispose(in currentType, in builder, in wrapperNamespace, in sizeOfStr);
 
 
             WrapperEnd(in builder);
@@ -84,13 +83,14 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         private void WrapperConstructor1(
             in INamedTypeSymbol currentType,
             in TypeInfo typeInfo,
-            in StringBuilder builder
+            in StringBuilder builder,
+            in string sizeOfStr
             )
         {
             builder.Append($@"
         public {currentType.Name}Wrapper()
         {{
-            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({sizeOfStr});
             _start = _stackMemoryC.Start;
             _memoryOwner = true;
             _stackMemoryS = null;
@@ -109,7 +109,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 {
                     builder.Append($@"
             //set null marker {currentMember.MemberName}
-            *((byte*)_start + {currentMember.Offset}) = 0;
+            *((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = 0;
 ");
                 }
             }
@@ -122,7 +122,8 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         private void WrapperConstructor2(
             in INamedTypeSymbol currentType,
             in TypeInfo typeInfo,
-            in StringBuilder builder
+            in StringBuilder builder,
+            in string sizeOfStr
             )
         {
             builder.Append($@"
@@ -135,7 +136,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory->AllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType? 0 : 1)});
+            _start = stackMemory->AllocateMemory({sizeOfStr});
             _stackMemoryS = stackMemory;
 ");
             if (!currentType.IsValueType)
@@ -152,7 +153,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 {
                     builder.Append($@"
             //set null marker {currentMember.MemberName}
-            *((byte*)_start + {currentMember.Offset}) = 0;
+            *((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = 0;
 ");
                 }
             }
@@ -165,7 +166,8 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         private void WrapperConstructor3(
             in INamedTypeSymbol currentType,
             in TypeInfo typeInfo,
-            in StringBuilder builder
+            in StringBuilder builder,
+            in string sizeOfStr
             )
         {
             builder.Append($@"
@@ -178,7 +180,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory.AllocateMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
+            _start = stackMemory.AllocateMemory({sizeOfStr});
             _stackMemoryC = stackMemory;
             _stackMemoryS = null;
 ");
@@ -196,7 +198,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 {
                     builder.Append($@"
             //set null marker {currentMember.MemberName}
-            *((byte*)_start + {currentMember.Offset}) = 0;
+            *((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = 0;
 ");
                 }
             }
@@ -247,7 +249,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 {
                     builder.Append($@"
             //set null marker {currentMember.MemberName}
-            *((byte*)_start + {currentMember.Offset}) = 0;
+            *((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = 0;
 ");
                 }
             }
@@ -260,9 +262,9 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 
         private void WrapperDispose(
             in INamedTypeSymbol currentType,
-            in TypeInfo typeInfo,
             in StringBuilder builder,
-            in string wrapperNamespace
+            in string wrapperNamespace,
+            in string sizeOfStr
             )
         {
             if(wrapperNamespace == "Class")
@@ -290,11 +292,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                     {{
                         if(_stackMemoryC != null)
                         {{
-                            _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
+                            _stackMemoryC?.FreeMemory({sizeOfStr});
                         }}
                         else if (_stackMemoryS != null)
                         {{
-                            _stackMemoryS->FreeMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
+                            _stackMemoryS->FreeMemory({sizeOfStr});
                         }}
                     }}
                 }}
@@ -321,11 +323,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             {{
                 if(_stackMemoryC != null)
                 {{
-                    _stackMemoryC?.FreeMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
+                    _stackMemoryC?.FreeMemory({sizeOfStr});
                 }}
                 else if (_stackMemoryS != null)
                 {{
-                    _stackMemoryS->FreeMemory({typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)});
+                    _stackMemoryS->FreeMemory({sizeOfStr});
                 }}
             }}
             else

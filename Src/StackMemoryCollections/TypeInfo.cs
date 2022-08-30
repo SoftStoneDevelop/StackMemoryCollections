@@ -12,5 +12,10 @@ namespace StackMemoryCollections
         public bool IsUnmanagedType;
         public string ContainingNamespace;
         public string TypeName;
+
+        public string SizeOf;
+        public int Size;
+        public int AllPointersCount;
+        public bool IsRuntimeCalculatedSize => AllPointersCount > 0;
     }
 }

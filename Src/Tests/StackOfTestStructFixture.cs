@@ -12,7 +12,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     {
                         using var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
@@ -28,13 +28,13 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     {
                         var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
                     }
 
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start +(TestStructHelper.GetSize() * 5))));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start +(TestStructHelper.SizeOf * 5))));
                 }
             }
         }
@@ -67,11 +67,11 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.GetSize() * 5))));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 5))));
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 
 
@@ -118,11 +118,11 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize()))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf))
                 {
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
                     var stack = new Tests.Struct.StackOfTestStruct(1, &memory);
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.GetSize())));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.SizeOf)));
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)1));
@@ -140,11 +140,11 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.GetSize() * 5))));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 5))));
                     Assert.That(stack.IsEmpty, Is.EqualTo(true));
 
                     using var item = new Tests.Struct.TestStructWrapper();
@@ -195,7 +195,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
 
@@ -220,7 +220,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
                     using var item = new Tests.Struct.TestStructWrapper();
@@ -245,7 +245,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
 
@@ -289,8 +289,8 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
-                using (var memory2 = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
+                using (var memory2 = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
 
@@ -351,7 +351,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(3, &memory);
 
@@ -362,13 +362,13 @@ namespace Tests
                     stack.ExpandCapacity(2);
                     stack.Push(new TestStruct(45, 27, new TestClass(123, 5776)));
 
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.GetSize() * 5))));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 5))));
                     Assert.That(stack.Size, Is.EqualTo((nuint)4));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
                     stack.TrimExcess();
                     Assert.That(stack.Size, Is.EqualTo((nuint)4));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.GetSize() * 4))));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 4))));
                 }
             }
         }
@@ -401,15 +401,15 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 8))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 8))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
 
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.GetSize() * 5))));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 5))));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
                     stack.ExpandCapacity(3);
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)8));
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.GetSize() * 8))));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 8))));
                 }
             }
 
@@ -427,15 +427,15 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
 
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.GetSize() * 5))));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 5))));
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
                     stack.ReducingCapacity(1);
                     Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
-                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.GetSize() * 4))));
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 4))));
                 }
             }
 
@@ -455,7 +455,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
 
@@ -483,7 +483,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
 
@@ -526,7 +526,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 3))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 3))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(3, &memory);
                     var item1 = new TestStruct(78, 11, new TestClass(1, 5776));
@@ -538,14 +538,14 @@ namespace Tests
                     var item3 = new TestStruct(7, 21, new TestClass(6, 543));
                     stack.Push(item3);
 
-                    Assert.That(new IntPtr(stack[0]), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.GetSize() * 2))));
+                    Assert.That(new IntPtr(stack[0]), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 2))));
                     using var wrap = new Tests.Struct.TestStructWrapper(stack[0], false);
                     Assert.That(wrap.Int32, Is.EqualTo(7));
                     Assert.That(wrap.Int64, Is.EqualTo(21));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(6));
                     Assert.That(wrap.TestClass.Int64, Is.EqualTo(543));
 
-                    Assert.That(new IntPtr(stack[1]), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.GetSize())));
+                    Assert.That(new IntPtr(stack[1]), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.SizeOf)));
                     wrap.ChangePtr(stack[1]);
                     Assert.That(wrap.Int32, Is.EqualTo(26));
                     Assert.That(wrap.Int64, Is.EqualTo(28));
@@ -572,7 +572,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
 
@@ -620,7 +620,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 2))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 2))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(2, &memory);
                     Assert.That(() => stack.Top(),
@@ -650,7 +650,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize()))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(1, &memory);
                     stack.Push(new TestStruct(78, 11, null));
@@ -668,7 +668,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 2))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 2))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(2, &memory);
                     Assert.That(() => stack.TopOut(out _),
@@ -702,7 +702,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 2))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 2))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(2, &memory);
                     Assert.That(
@@ -747,7 +747,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 2))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 2))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(2, &memory);
                     Assert.That(
@@ -784,7 +784,7 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.GetSize() * 2))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 2))
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(2, &memory);
                     Assert.That(() => stack.TopPtr(),
@@ -798,7 +798,7 @@ namespace Tests
 
                     stack.Push(new TestStruct(2, 1, new TestClass(1, 7)));
                     var itemPtr1 = stack.TopPtr();
-                    Assert.That(new IntPtr(itemPtr1), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.GetSize())));
+                    Assert.That(new IntPtr(itemPtr1), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.SizeOf)));
 
                 }
             }

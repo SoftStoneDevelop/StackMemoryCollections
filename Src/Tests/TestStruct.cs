@@ -1,4 +1,5 @@
 ﻿using StackMemoryCollections.Attibutes;
+using System;
 
 namespace Tests
 {
@@ -16,11 +17,20 @@ namespace Tests
             Int32 = int32;
             Int64 = int64;
             TestClass = testClass;
+            TestClass2 = null;
         }
 
         public long Int64;
         public int Int32;
         public TestClass TestClass;
+
+        [AsPointer]
+        public TestClass TestClass2;
+    }
+
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public class AsPointerAttribute : Attribute
+    {
     }
 
     [GenerateHelper]

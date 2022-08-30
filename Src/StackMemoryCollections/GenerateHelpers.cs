@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace StackMemoryCollections
@@ -26,36 +25,39 @@ namespace StackMemoryCollections
                 }
 
                 GenerateStart(in builder, in currentType);
-                GenerateSize(in builder, in typeInfo);
+                GenerateOffsetsAndSize(in builder, in typeInfo);
                 GenerateIsNullable(in builder, in typeInfo);
-
 
                 for (int j = 0; j < typeInfo.Members.Count; j++)
                 {
                     MemberInfo memberInfo = typeInfo.Members[j];
-                    GenerateGetPtr(in builder, in memberInfo);
+                    var offsetStr = memberInfo.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{memberInfo.MemberName}Offset" : $"{memberInfo.Offset}";
+                    GenerateGetPtr(in builder, in memberInfo, in offsetStr);
                     
                     if (memberInfo.IsPrimitive)
                     {
-                        GenerateGetPrimitiveValue(in builder, in memberInfo);
-                        GenerateGetPrimitiveValueRef(in builder, in memberInfo);
-                        GenerateGetPrimitiveValueOut(in builder, in memberInfo);
+                        GenerateGetPrimitiveValue(in builder, in memberInfo, in offsetStr);
+                        GenerateGetPrimitiveValueRef(in builder, in memberInfo, in offsetStr);
+                        GenerateGetPrimitiveValueOut(in builder, in memberInfo, in offsetStr);
 
-                        GenerateSetPrimitiveValue(in builder, in memberInfo);
-                        GenerateSetPrimitiveValueFromPtr(in builder, in memberInfo);
-                        GenerateSetPrimitiveValueFrom(in builder, in memberInfo, in currentType);
+                        GenerateSetPrimitiveValue(in builder, in memberInfo, in offsetStr);
+                        GenerateSetPrimitiveValueFromPtr(in builder, in memberInfo, in offsetStr);
+                        GenerateSetPrimitiveValueFrom(in builder, in memberInfo, in currentType, in offsetStr);
                     }
                     else
                     {
-                        GenerateGetСompositeValue(in builder, in memberInfo, in currentType);
-                        GenerateSetСompositeValueFrom(in builder, in memberInfo, in currentType);
+                        GenerateGetСompositeValue(in builder, in memberInfo, in currentType, in offsetStr);
+                        GenerateSetСompositeValueFrom(in builder, in memberInfo, in currentType, in offsetStr);
                     }
                 }
 
                 GenerateCopyToPtr(in builder, in typeInfo, in currentType);
                 GenerateCopyToValue(in builder, in typeInfo, in currentType);
                 GenerateCopyToValueOut(in builder, in typeInfo, in currentType);
-                GenerateCopy(in builder, in typeInfo);
+
+                var sizeOfStr = typeInfo.IsRuntimeCalculatedSize ? $"{currentType.Name}Helper.SizeOf" : $"{typeInfo.Size}";
+                GenerateCopy(in builder, in typeInfo, in sizeOfStr);
+
                 GenerateEnd(in builder);
 
                 context.AddSource($"{currentType.Name}Helper.g.cs", builder.ToString());
@@ -83,18 +85,24 @@ namespace {currentType.ContainingNamespace}
 ");
         }
 
-        private void GenerateSize(
+        private void GenerateOffsetsAndSize(
             in StringBuilder builder,
             in TypeInfo typeInfo
             )
         {
             builder.Append($@"
-        public static nuint GetSize()
-        {{
-            return {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)};
-        }}
-
+        public static readonly nuint SizeOf = {typeInfo.SizeOf};
 ");
+
+            foreach (var memberInfo in typeInfo.Members)
+            {
+                if(memberInfo.IsRuntimeOffsetCalculated)
+                {
+                    builder.Append($@"
+        public static readonly nuint {memberInfo.MemberName}Offset = {memberInfo.OffsetStr};
+");
+                }
+            }
         }
 
         private void GenerateIsNullable(
@@ -113,13 +121,14 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateGetPtr(
             in StringBuilder builder,
-            in MemberInfo memberInfo
+            in MemberInfo memberInfo,
+            in string offsetStr
             )
         {
             builder.Append($@"
         public static void* Get{memberInfo.MemberName}Ptr(in void* ptr)
         {{
-            return (byte*)ptr + {memberInfo.Offset};
+            return (byte*)ptr + {offsetStr};
         }}
 
 ");
@@ -127,52 +136,56 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateGetPrimitiveValue(
             in StringBuilder builder,
-            in MemberInfo memberInfo
+            in MemberInfo memberInfo,
+            in string offsetStr
             )
         {
             builder.Append($@"
         public static {memberInfo.TypeName} Get{memberInfo.MemberName}Value(in void* ptr)
         {{
-            return *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset});
+            return *({memberInfo.TypeName}*)((byte*)ptr + {offsetStr});
         }}
 ");
         }
 
         private void GenerateGetPrimitiveValueRef(
             in StringBuilder builder,
-            in MemberInfo memberInfo
+            in MemberInfo memberInfo,
+            in string offsetStr
             )
         {
             builder.Append($@"
         public static void GetRef{memberInfo.MemberName}Value(in void* ptr, ref {memberInfo.TypeName} item)
         {{
-            item = *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset});
+            item = *({memberInfo.TypeName}*)((byte*)ptr + {offsetStr});
         }}
 ");
         }
 
         private void GenerateGetPrimitiveValueOut(
             in StringBuilder builder,
-            in MemberInfo memberInfo
+            in MemberInfo memberInfo,
+            in string offsetStr
             )
         {
             builder.Append($@"
         public static void GetOut{memberInfo.MemberName}Value(in void* ptr, out {memberInfo.TypeName} item)
         {{
-            item = *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset});
+            item = *({memberInfo.TypeName}*)((byte*)ptr + {offsetStr});
         }}
 ");
         }
 
         private void GenerateSetPrimitiveValue(
             in StringBuilder builder,
-            in MemberInfo memberInfo
+            in MemberInfo memberInfo,
+            in string offsetStr
             )
         {
             builder.Append($@"
         public static void Set{memberInfo.MemberName}Value(in void* ptr, in {memberInfo.TypeName} value)
         {{
-            *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset}) = value;
+            *({memberInfo.TypeName}*)((byte*)ptr + {offsetStr}) = value;
         }}
 
 ");
@@ -181,13 +194,14 @@ namespace {currentType.ContainingNamespace}
         private void GenerateSetPrimitiveValueFrom(
             in StringBuilder builder,
             in MemberInfo memberInfo,
-            in INamedTypeSymbol currentType
+            in INamedTypeSymbol currentType,
+            in string offsetStr
             )
         {
             builder.Append($@"
         public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
         {{
-            *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset}) = value.{memberInfo.MemberName};
+            *({memberInfo.TypeName}*)((byte*)ptr + {offsetStr}) = value.{memberInfo.MemberName};
         }}
 
 ");
@@ -195,13 +209,14 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateSetPrimitiveValueFromPtr(
             in StringBuilder builder,
-            in MemberInfo memberInfo
+            in MemberInfo memberInfo,
+            in string offsetStr
             )
         {
             builder.Append($@"
         public static void Set{memberInfo.MemberName}Value(in void* ptr, in {memberInfo.TypeName}* valuePtr)
         {{
-            *({memberInfo.TypeName}*)((byte*)ptr + {memberInfo.Offset}) = *valuePtr;
+            *({memberInfo.TypeName}*)((byte*)ptr + {offsetStr}) = *valuePtr;
         }}
 
 ");
@@ -211,7 +226,8 @@ namespace {currentType.ContainingNamespace}
         private void GenerateGetСompositeValue(
             in StringBuilder builder,
             in MemberInfo memberInfo,
-            in INamedTypeSymbol currentType
+            in INamedTypeSymbol currentType,
+            in string offsetStr
             )
         {
             if (memberInfo.IsValueType)
@@ -234,7 +250,7 @@ namespace {currentType.ContainingNamespace}
                 builder.Append($@"
             {memberInfo.TypeName} result;
             Unsafe.SkipInit(out result);
-            {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {memberInfo.Offset}, ref result);
+            {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {offsetStr}, ref result);
 
             return result;
         }}
@@ -258,13 +274,13 @@ namespace {currentType.ContainingNamespace}
                 }
 
                 builder.Append($@"
-            if(*((byte*)ptr + {memberInfo.Offset}) == 0)
+            if(*((byte*)ptr + {offsetStr}) == 0)
             {{
                 return null;
             }}
             
             {memberInfo.TypeName} result = new {memberInfo.TypeName}();
-            {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {memberInfo.Offset}, ref result);
+            {memberInfo.TypeName}Helper.CopyToValue((byte*)ptr + {offsetStr}, ref result);
             return result;
         }}
 ");
@@ -274,7 +290,8 @@ namespace {currentType.ContainingNamespace}
         private void GenerateSetСompositeValueFrom(
             in StringBuilder builder,
             in MemberInfo memberInfo,
-            in INamedTypeSymbol currentType
+            in INamedTypeSymbol currentType,
+            in string offsetStr
             )
         {
             if(memberInfo.IsValueType)
@@ -294,7 +311,7 @@ namespace {currentType.ContainingNamespace}
                 }
 
                 builder.Append($@"
-            {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {memberInfo.Offset});
+            {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {offsetStr});
         }}
 ");
             }
@@ -317,11 +334,11 @@ namespace {currentType.ContainingNamespace}
                 builder.Append($@"
             if(value.{memberInfo.MemberName} == null)
             {{
-                *((byte*)ptr + {memberInfo.Offset}) = 0;
+                *((byte*)ptr + {currentType.Name}Helper.{memberInfo.MemberName}) = 0;
                 return;
             }}
             
-            {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {memberInfo.Offset});
+            {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {offsetStr});
         }}
 ");
             }
@@ -459,7 +476,8 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateCopy(
             in StringBuilder builder,
-            in TypeInfo typeInfo
+            in TypeInfo typeInfo,
+            in string sizeOfStr
             )
         {
             if (typeInfo.IsValueType)
@@ -470,8 +488,8 @@ namespace {currentType.ContainingNamespace}
             Buffer.MemoryCopy(
                 ptrSource,
                 ptrDest,
-                {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)},
-                {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}
+                {sizeOfStr},
+                {sizeOfStr}
                 );
         }}
 ");
@@ -490,8 +508,8 @@ namespace {currentType.ContainingNamespace}
             Buffer.MemoryCopy(
                 ptrSource,
                 ptrDest,
-                {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)},
-                {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)}
+                {sizeOfStr},
+                {sizeOfStr}
                 );
         }}
 ");

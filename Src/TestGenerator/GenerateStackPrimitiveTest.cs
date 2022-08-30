@@ -731,7 +731,7 @@ namespace Tests
                 for (int i = 0; i < values.Count; i++)
                 {
                     builder.Append($@"
-                    Assert.That(*stack[{i}], Is.EqualTo(*stack[{i}]));
+                    Assert.That(*stack[{i}], Is.EqualTo(*stack2[{i}]));
 ");
                 }
                 

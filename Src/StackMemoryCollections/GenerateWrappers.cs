@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace StackMemoryCollections
@@ -42,7 +43,7 @@ namespace StackMemoryCollections
             WrapperConstructor1(in currentType, in typeInfo, in builder);
             WrapperConstructor2(in currentType, in typeInfo, in builder);
             WrapperConstructor3(in currentType, in typeInfo, in builder);
-            WrapperConstructor4(in currentType, in builder);
+            WrapperConstructor4(in currentType, in typeInfo, in builder);
 
             WrapperProperties(in typeInfo, in builder, in typeInfos);
 
@@ -101,6 +102,18 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             }
 
+            for (int i = 0; i < typeInfo.Members.Count; i++)
+            {
+                var currentMember = typeInfo.Members[i];
+                if (!currentMember.IsValueType)
+                {
+                    builder.Append($@"
+            //set null marker {currentMember.MemberName}
+            *((byte*)_start + {currentMember.Offset}) = 0;
+");
+                }
+            }
+
             builder.Append($@"
         }}
 ");
@@ -130,6 +143,18 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 builder.Append($@"
             *((byte*)_start) = 1;
 ");
+            }
+
+            for (int i = 0; i < typeInfo.Members.Count; i++)
+            {
+                var currentMember = typeInfo.Members[i];
+                if (!currentMember.IsValueType)
+                {
+                    builder.Append($@"
+            //set null marker {currentMember.MemberName}
+            *((byte*)_start + {currentMember.Offset}) = 0;
+");
+                }
             }
 
             builder.Append($@"
@@ -164,6 +189,18 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             }
 
+            for (int i = 0; i < typeInfo.Members.Count; i++)
+            {
+                var currentMember = typeInfo.Members[i];
+                if (!currentMember.IsValueType)
+                {
+                    builder.Append($@"
+            //set null marker {currentMember.MemberName}
+            *((byte*)_start + {currentMember.Offset}) = 0;
+");
+                }
+            }
+
             builder.Append($@"
         }}
 ");
@@ -171,6 +208,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 
         private void WrapperConstructor4(
             in INamedTypeSymbol currentType,
+            in TypeInfo typeInfo,
             in StringBuilder builder
             )
         {
@@ -193,6 +231,18 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 builder.Append($@"
             *((byte*)_start) = 1;
 ");
+            }
+
+            for (int i = 0; i < typeInfo.Members.Count; i++)
+            {
+                var currentMember = typeInfo.Members[i];
+                if (!currentMember.IsValueType)
+                {
+                    builder.Append($@"
+            //set null marker {currentMember.MemberName}
+            *((byte*)_start + {currentMember.Offset}) = 0;
+");
+                }
             }
 
             builder.Append($@"

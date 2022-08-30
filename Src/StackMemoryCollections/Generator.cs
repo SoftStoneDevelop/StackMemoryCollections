@@ -43,6 +43,7 @@ namespace StackMemoryCollections
                 GenerateMemory(in context, in builder);
             }
 
+            GenerateCommonHelpers(in typeHelpers, in context, in builder);
             GenerateHelpers(in typeHelpers, in context, in infos, in builder);
             GenerateWrappers(in typeWrappers, in context, in infos, in builder);
             GenerateStack(in typeGeneratedStack, in context, in infos, in builder);

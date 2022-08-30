@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -28,7 +27,9 @@ namespace StackMemoryCollections
 
                 GenerateStart(in builder, in currentType);
                 GenerateSize(in builder, in typeInfo);
-                
+                GenerateIsNullable(in builder, in typeInfo);
+
+
                 for (int j = 0; j < typeInfo.Members.Count; j++)
                 {
                     MemberInfo memberInfo = typeInfo.Members[j];
@@ -91,6 +92,20 @@ namespace {currentType.ContainingNamespace}
         public static nuint GetSize()
         {{
             return {typeInfo.Members.Sum(s => s.Size) + (typeInfo.IsValueType ? 0 : 1)};
+        }}
+
+");
+        }
+
+        private void GenerateIsNullable(
+            in StringBuilder builder,
+            in TypeInfo typeInfo
+            )
+        {
+            builder.Append($@"
+        public static bool IsNullable()
+        {{
+            return {(!typeInfo.IsValueType).ToString().ToLowerInvariant()};
         }}
 
 ");

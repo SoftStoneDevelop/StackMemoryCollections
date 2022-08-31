@@ -56,6 +56,7 @@ namespace StackMemoryCollections
                     else
                     {
                         GenerateGetСompositeValue(in builder, in memberInfo, in currentType, in offsetStr);
+                        GenerateSetСompositeValueFromRoot(in builder, in memberInfo, in currentType, in offsetStr);
                         GenerateSetСompositeValueFrom(in builder, in memberInfo, in currentType, in offsetStr);
                     }
                 }
@@ -108,7 +109,7 @@ namespace {currentType.ContainingNamespace}
                 if(memberInfo.IsRuntimeOffsetCalculated)
                 {
                     builder.Append($@"
-        public static readonly nuint {memberInfo.MemberName}Offset = {memberInfo.OffsetStr};
+        public static readonly nuint {memberInfo.MemberName}Offset = (nuint){memberInfo.OffsetStr};
 ");
                 }
             }
@@ -291,6 +292,44 @@ namespace {currentType.ContainingNamespace}
             }
         }
 
+        private void GenerateSetСompositeValueFromRoot(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in INamedTypeSymbol currentType,
+            in string offsetStr
+            )
+        {
+            builder.Append($@"
+        public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
+        {{
+");
+            if (!currentType.IsValueType)
+            {
+                builder.Append($@"
+            if(*((byte*)ptr) == 0)
+            {{
+                throw new NullReferenceException(""ptr is null value"");
+            }}
+");
+            }
+
+            if (!memberInfo.IsValueType)
+            {
+                builder.Append($@"
+            if(value.{memberInfo.MemberName} == null)
+            {{
+                *((byte*)ptr + {offsetStr}) = 0;
+                return;
+            }}
+");
+            }
+
+            builder.Append($@"           
+            {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {offsetStr});
+        }}
+");
+        }
+
         private void GenerateSetСompositeValueFrom(
             in StringBuilder builder,
             in MemberInfo memberInfo,
@@ -298,54 +337,35 @@ namespace {currentType.ContainingNamespace}
             in string offsetStr
             )
         {
-            if(memberInfo.IsValueType)
-            {
-                builder.Append($@"
-        public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
+            builder.Append($@"
+        public static void Set{memberInfo.MemberName}Value(in void* ptr, in {memberInfo.MemberName} value)
         {{
 ");
-                if (!currentType.IsValueType)
-                {
-                    builder.Append($@"
+            if (!currentType.IsValueType)
+            {
+                builder.Append($@"
             if(*((byte*)ptr) == 0)
             {{
                 throw new NullReferenceException(""ptr is null value"");
             }}
-");
-                }
-
-                builder.Append($@"
-            {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {offsetStr});
-        }}
 ");
             }
-            else
+
+            if (!memberInfo.IsValueType)
             {
                 builder.Append($@"
-        public static void Set{memberInfo.MemberName}Value(in void* ptr, in {currentType.Name} value)
-        {{
-");
-                if (!currentType.IsValueType)
-                {
-                    builder.Append($@"
-            if(*((byte*)ptr) == 0)
-            {{
-                throw new NullReferenceException(""ptr is null value"");
-            }}
-");
-                }
-
-                builder.Append($@"
-            if(value.{memberInfo.MemberName} == null)
+            if(value == null)
             {{
                 *((byte*)ptr + {offsetStr}) = 0;
                 return;
             }}
-            
-            {memberInfo.TypeName}Helper.CopyToPtr(value.{memberInfo.MemberName}, (byte*)ptr + {offsetStr});
-        }}
 ");
             }
+
+            builder.Append($@"           
+            {memberInfo.TypeName}Helper.CopyToPtr(in value, (byte*)ptr + {offsetStr});
+        }}
+");
         }
 
         private void GenerateCopyToPtr(

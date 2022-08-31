@@ -35,7 +35,7 @@ namespace StackMemoryCollections
 
                 if(!typeInfos.TryGetValue(member.TypeName, out var memberTypeInfo))
                 {
-                    throw new Exception($"Type information not found, types filling error. Type name: {member.TypeName}");
+                    throw new Exception($"{nameof(CalculateSize)}: Member Type information not found(for type '{typeInfo.TypeName}'), types filling error. Type name: {member.TypeName}");
                 }
 
                 typeInfo.AllPointersCount += memberTypeInfo.AllPointersCount;
@@ -80,11 +80,12 @@ namespace StackMemoryCollections
                 if(member.AsPointer)
                 {
                     pointersCount++;
+                    continue;
                 }
 
                 if (!typeInfos.TryGetValue(member.TypeName, out var memberTypeInfo))
                 {
-                    throw new Exception($"Type information not found, types filling error. Type name: {member.TypeName}");
+                    throw new Exception($"{nameof(CalculateOffset)}: Member Type information not found(for type '{containTypeInfo.TypeName}'), types filling error. Type name: {member.TypeName}");
                 }
 
                 newMember.Offset += memberTypeInfo.Size;

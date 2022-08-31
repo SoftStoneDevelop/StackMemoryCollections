@@ -225,7 +225,7 @@ namespace StackMemoryCollections
                             if(asPointer)
                             {
                                 var memberInfo = new MemberInfo();
-                                memberInfo.TypeName = $"IntPtr";
+                                memberInfo.TypeName = $"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}";
                                 memberInfo.MemberName = propertySymbol.Name;
                                 memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
                                 memberInfo.IsValueType = propertySymbol.Type.IsValueType;
@@ -317,7 +317,7 @@ namespace StackMemoryCollections
                             if (asPointer)
                             {
                                 var memberInfo = new MemberInfo();
-                                memberInfo.TypeName = $"IntPtr";
+                                memberInfo.TypeName = $"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}";
                                 memberInfo.MemberName = fieldSymbol.Name;
                                 memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
                                 memberInfo.IsValueType = fieldSymbol.Type.IsValueType;

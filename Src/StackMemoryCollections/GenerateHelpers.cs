@@ -21,7 +21,7 @@ namespace StackMemoryCollections
 
                 if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
                 {
-                    throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
+                    throw new Exception($"{nameof(GenerateHelpers)}: Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
                 }
 
                 GenerateStart(in builder, in currentType);
@@ -34,15 +34,24 @@ namespace StackMemoryCollections
                     var offsetStr = memberInfo.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{memberInfo.MemberName}Offset" : $"{memberInfo.Offset}";
                     GenerateGetPtr(in builder, in memberInfo, in offsetStr);
                     
-                    if (memberInfo.IsPrimitive)
+                    if (memberInfo.IsPrimitive || memberInfo.AsPointer)
                     {
+                        var memberType = memberInfo.TypeName;
+                        if(memberInfo.AsPointer)
+                        {
+                            memberInfo.TypeName = nameof(IntPtr);
+                        }
                         GenerateGetPrimitiveValue(in builder, in memberInfo, in offsetStr);
                         GenerateGetPrimitiveValueRef(in builder, in memberInfo, in offsetStr);
                         GenerateGetPrimitiveValueOut(in builder, in memberInfo, in offsetStr);
 
                         GenerateSetPrimitiveValue(in builder, in memberInfo, in offsetStr);
                         GenerateSetPrimitiveValueFromPtr(in builder, in memberInfo, in offsetStr);
-                        GenerateSetPrimitiveValueFrom(in builder, in memberInfo, in currentType, in offsetStr);
+
+                        if (!memberInfo.AsPointer)
+                            GenerateSetPrimitiveValueFrom(in builder, in memberInfo, in currentType, in offsetStr);
+
+                        memberInfo.TypeName = memberType;
                     }
                     else
                     {
@@ -52,8 +61,8 @@ namespace StackMemoryCollections
                 }
 
                 GenerateCopyToPtr(in builder, in typeInfo, in currentType);
-                GenerateCopyToValue(in builder, in typeInfo, in currentType);
-                GenerateCopyToValueOut(in builder, in typeInfo, in currentType);
+                GenerateCopyToValue(in builder, in typeInfo, in currentType, in typeInfos);
+                GenerateCopyToValueOut(in builder, in typeInfo, in currentType, in typeInfos);
 
                 var sizeOfStr = typeInfo.IsRuntimeCalculatedSize ? $"{currentType.Name}Helper.SizeOf" : $"{typeInfo.Size}";
                 GenerateCopy(in builder, in typeInfo, in sizeOfStr);
@@ -91,7 +100,7 @@ namespace {currentType.ContainingNamespace}
             )
         {
             builder.Append($@"
-        public static readonly nuint SizeOf = {typeInfo.SizeOf};
+        public static readonly nuint SizeOf = (nuint){typeInfo.SizeOf};
 ");
 
             foreach (var memberInfo in typeInfo.Members)
@@ -115,7 +124,6 @@ namespace {currentType.ContainingNamespace}
         {{
             return {(!typeInfo.IsValueType).ToString().ToLowerInvariant()};
         }}
-
 ");
         }
 
@@ -130,7 +138,6 @@ namespace {currentType.ContainingNamespace}
         {{
             return (byte*)ptr + {offsetStr};
         }}
-
 ");
         }
 
@@ -187,7 +194,6 @@ namespace {currentType.ContainingNamespace}
         {{
             *({memberInfo.TypeName}*)((byte*)ptr + {offsetStr}) = value;
         }}
-
 ");
         }
 
@@ -203,7 +209,6 @@ namespace {currentType.ContainingNamespace}
         {{
             *({memberInfo.TypeName}*)((byte*)ptr + {offsetStr}) = value.{memberInfo.MemberName};
         }}
-
 ");
         }
 
@@ -218,7 +223,6 @@ namespace {currentType.ContainingNamespace}
         {{
             *({memberInfo.TypeName}*)((byte*)ptr + {offsetStr}) = *valuePtr;
         }}
-
 ");
         }
 
@@ -334,7 +338,7 @@ namespace {currentType.ContainingNamespace}
                 builder.Append($@"
             if(value.{memberInfo.MemberName} == null)
             {{
-                *((byte*)ptr + {currentType.Name}Helper.{memberInfo.MemberName}) = 0;
+                *((byte*)ptr + {offsetStr}) = 0;
                 return;
             }}
             
@@ -371,9 +375,18 @@ namespace {currentType.ContainingNamespace}
 
             foreach (var memberInfo in typeInfo.Members)
             {
-                builder.Append($@"
+                if(memberInfo.AsPointer)
+                {
+                    builder.Append($@"
+            Set{memberInfo.MemberName}Value(in ptr, in IntPtr.Zero);
+");
+                }
+                else
+                {
+                    builder.Append($@"
             Set{memberInfo.MemberName}Value(in ptr, in value);
 ");
+                }
             }
 
             builder.Append($@"
@@ -384,7 +397,8 @@ namespace {currentType.ContainingNamespace}
         private void GenerateCopyToValue(
             in StringBuilder builder,
             in TypeInfo typeInfo,
-            in INamedTypeSymbol currentType
+            in INamedTypeSymbol currentType,
+            in Dictionary<string, TypeInfo> typeInfos
             )
         {
             builder.Append($@"
@@ -404,9 +418,33 @@ namespace {currentType.ContainingNamespace}
 
             foreach (var memberInfo in typeInfo.Members)
             {
-                builder.Append($@"
+                if(memberInfo.AsPointer)
+                {
+                    if (!typeInfos.TryGetValue($"{memberInfo.TypeName}", out var memberTypeInfo))
+                    {
+                        throw new Exception($"{nameof(GenerateCopyToValue)}: Type information not found, types filling error. Type name: {memberInfo.TypeName}");
+                    }
+
+                    builder.Append($@"
+            var intPtr = Get{memberInfo.MemberName}Value(in ptr);
+            if(intPtr == IntPtr.Zero)
+            {{
+                value.{memberInfo.MemberName} = null;
+            }}
+            else
+            {{
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName} {memberInfo.MemberName.ToLowerInvariant()} = new {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}();
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToValue(intPtr.ToPointer(), ref {memberInfo.MemberName.ToLowerInvariant()});
+                value.{memberInfo.MemberName} = {memberInfo.MemberName.ToLowerInvariant()};
+            }}
+");
+                }
+                else
+                {
+                    builder.Append($@"
             value.{memberInfo.MemberName} = Get{memberInfo.MemberName}Value(in ptr);
 ");
+                }
             }
 
             builder.Append($@"
@@ -418,7 +456,8 @@ namespace {currentType.ContainingNamespace}
         private void GenerateCopyToValueOut(
             in StringBuilder builder,
             in TypeInfo typeInfo,
-            in INamedTypeSymbol currentType
+            in INamedTypeSymbol currentType,
+            in Dictionary<string, TypeInfo> typeInfos
             )
         {
             if (typeInfo.IsValueType)
@@ -431,9 +470,33 @@ namespace {currentType.ContainingNamespace}
 ");
                 foreach (var memberInfo in typeInfo.Members)
                 {
-                    builder.Append($@"
+                    if (memberInfo.AsPointer)
+                    {
+                        if (!typeInfos.TryGetValue($"{memberInfo.TypeName}", out var memberTypeInfo))
+                        {
+                            throw new Exception($"{nameof(GenerateCopyToValue)}: Type information not found, types filling error. Type name: {memberInfo.TypeName}");
+                        }
+
+                        builder.Append($@"
+            var intPtr = Get{memberInfo.MemberName}Value(in ptr);
+            if(intPtr == IntPtr.Zero)
+            {{
+                value.{memberInfo.MemberName} = null;
+            }}
+            else
+            {{
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName} {memberInfo.MemberName.ToLowerInvariant()} = new {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}();
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToValue(intPtr.ToPointer(), ref {memberInfo.MemberName.ToLowerInvariant()});
+                value.{memberInfo.MemberName} = {memberInfo.MemberName.ToLowerInvariant()};
+            }}
+");
+                    }
+                    else
+                    {
+                        builder.Append($@"
             value.{memberInfo.MemberName} = Get{memberInfo.MemberName}Value(in ptr);
 ");
+                    }
                 }
 
                 builder.Append($@"
@@ -463,9 +526,33 @@ namespace {currentType.ContainingNamespace}
 
                 foreach (var memberInfo in typeInfo.Members)
                 {
-                    builder.Append($@"
+                    if (memberInfo.AsPointer)
+                    {
+                        if (!typeInfos.TryGetValue($"{memberInfo.TypeName}", out var memberTypeInfo))
+                        {
+                            throw new Exception($"{nameof(GenerateCopyToValue)}: Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
+                        }
+
+                        builder.Append($@"
+            var intPtr = Get{memberInfo.MemberName}Value(in ptr);
+            if(intPtr == IntPtr.Zero)
+            {{
+                value.{memberInfo.MemberName} = null;
+            }}
+            else
+            {{
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName} {memberInfo.MemberName.ToLowerInvariant()} = new {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}();
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToValue(intPtr.ToPointer(), ref {memberInfo.MemberName.ToLowerInvariant()});
+                value.{memberInfo.MemberName} = {memberInfo.MemberName.ToLowerInvariant()};
+            }}
+");
+                    }
+                    else
+                    {
+                        builder.Append($@"
             value.{memberInfo.MemberName} = Get{memberInfo.MemberName}Value(in ptr);
 ");
+                    }
                 }
 
                 builder.Append($@"

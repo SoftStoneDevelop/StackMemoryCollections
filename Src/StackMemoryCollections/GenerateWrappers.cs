@@ -19,7 +19,7 @@ namespace StackMemoryCollections
                 var currentType = typeWrappers[i];
                 if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
                 {
-                    throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
+                    throw new Exception($"{nameof(GenerateWrappers)}: Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
                 }
 
                 GenerateWrapper(in currentType, in context, in typeInfo, in builder, "Class", in typeInfos);
@@ -356,19 +356,25 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             for (int i = 0; i < typeInfo.Members.Count; i++)
             {
                 var currentMember = typeInfo.Members[i];
-                if (currentMember.IsPrimitive)
+                if (currentMember.IsPrimitive || currentMember.AsPointer)
                 {
+                    var memberType = currentMember.TypeName;
+                    if (currentMember.AsPointer)
+                        currentMember.TypeName = typeof(IntPtr).Name;
+
                     WrapperPrimitiveGetSet(in builder, in currentMember, in typeInfo);
                     WrapperPrimitiveSetIn(in builder, in currentMember, in typeInfo);
                     WrapperPrimitiveSetPtr(in builder, in currentMember, in typeInfo);
 
                     WrapperPrimitiveGetOut(in builder, in currentMember, in typeInfo);
+
+                    currentMember.TypeName = memberType;
                 }
                 else
                 {
                     if (!typeInfos.TryGetValue(currentMember.TypeName, out var memberTypeInfo))
                     {
-                        throw new Exception($"Type information not found, types filling error. Type name: {currentMember.TypeName}");
+                        throw new Exception($"{nameof(WrapperProperties)}: Type information not found, types filling error. Type name: {currentMember.TypeName}");
                     }
 
                     WrapperСompositeGetSet(in builder, in currentMember, in memberTypeInfo, in typeInfo);

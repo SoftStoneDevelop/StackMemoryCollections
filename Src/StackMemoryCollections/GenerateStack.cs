@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 
 namespace StackMemoryCollections
@@ -20,7 +20,7 @@ namespace StackMemoryCollections
                 var currentType = typeStack[i];
                 if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
                 {
-                    throw new Exception($"Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
+                    throw new Exception($"{nameof(GenerateStack)}: Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
                 }
 
                 GenerateStack(in context, in builder, in currentType, in typeInfo, "Class");
@@ -962,7 +962,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 if (_currentIndex == -2)
                 {{
                     _currentIndex = (int)_stack.Size - 1;
-                    _current = (byte*)_stack._start + (_currentIndex * {sizeOfStr});
+                    _current = (byte*)_stack._start + (_currentIndex * (int){sizeOfStr});
                     return true;
                 }}
 
@@ -974,7 +974,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 --_currentIndex;
                 if (_currentIndex >= 0)
                 {{
-                    _current = (byte*)_stack._start + (_currentIndex * {sizeOfStr});
+                    _current = (byte*)_stack._start + (_currentIndex * (int){sizeOfStr});
                     return true;
                 }}
                 else
@@ -1040,7 +1040,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             )
         {
             builder.Append($@"
-        public void Copy(in void* ptrDest, in int count)
+        public void Copy(in void* ptrDest, in nuint count)
         {{
             Buffer.MemoryCopy(
                 _start,

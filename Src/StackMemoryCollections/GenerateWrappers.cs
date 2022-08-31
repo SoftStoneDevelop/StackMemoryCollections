@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace StackMemoryCollections
@@ -402,6 +403,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                     if (currentMember.AsPointer)
                         currentMember.TypeName = typeof(IntPtr).Name;
 
+                    WrapperPrimitiveGetPtr(in builder, in currentMember, in typeInfo);
                     WrapperPrimitiveGetSet(in builder, in currentMember, in typeInfo);
                     WrapperPrimitiveSetIn(in builder, in currentMember, in typeInfo);
                     WrapperPrimitiveSetPtr(in builder, in currentMember, in typeInfo);
@@ -409,6 +411,10 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                     WrapperPrimitiveGetOut(in builder, in currentMember, in typeInfo);
 
                     currentMember.TypeName = memberType;
+                    if(currentMember.AsPointer)
+                    {
+                        WrapperGetValueInPtr(in typeInfo, in currentMember, in builder, in typeInfos);
+                    }
                 }
                 else
                 {
@@ -417,6 +423,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                         throw new Exception($"{nameof(WrapperProperties)}: Type information not found, types filling error. Type name: {currentMember.TypeName}");
                     }
 
+                    WrapperСompositeGetPtr(in builder, in currentMember, in typeInfo);
                     WrapperСompositeGetSet(in builder, in currentMember, in memberTypeInfo, in typeInfo);
                     WrapperСompositeSetIn(in builder, in currentMember, in memberTypeInfo, in typeInfo);
                     WrapperСompositeSetPtr(in builder, in currentMember, in memberTypeInfo, in typeInfo);
@@ -451,8 +458,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 
             return result;
         }}
-
-            ");
+");
             }
             else
             {
@@ -463,8 +469,51 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             {typeInfo.ContainingNamespace}.{typeInfo.TypeName}Helper.CopyToValue(in _start, ref result);
             return result;
         }}
-            ");
+");
             }
+        }
+
+        private void WrapperGetValueInPtr(
+            in TypeInfo containType,
+            in MemberInfo memberInfo,
+            in StringBuilder builder,
+            in Dictionary<string, TypeInfo> typeInfos
+            )
+        {
+            if (!typeInfos.TryGetValue($"{memberInfo.TypeName}", out var memberTypeInfo))
+            {
+                throw new Exception($"{nameof(WrapperGetValueInPtr)}: Type information not found, types filling error. Type name: {memberInfo.TypeName}");
+            }
+
+            builder.Append($@"
+        public {memberInfo.TypeName} {memberInfo.MemberName}ValueInPtr
+        {{
+            get
+            {{
+");
+            if(!containType.IsValueType)
+            {
+                builder.Append($@"
+                if (*((byte*)_start) == 0)
+                {{
+                    throw new NullReferenceException(""ptr is null value"");
+                }}
+");
+            }
+
+            builder.Append($@"
+                var intPtr = {memberInfo.MemberName};
+                if(intPtr == IntPtr.Zero)
+                {{
+                    return null;
+                }}
+
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName} result = new {memberTypeInfo.TypeName}();
+                {memberTypeInfo.ContainingNamespace}.{memberTypeInfo.TypeName}Helper.CopyToValue(intPtr.ToPointer(), ref result);
+                return result;
+            }}
+        }}
+");
         }
 
         private void WrapperFillValue(
@@ -498,6 +547,23 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             set
             {{
                 {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Set{memberInfo.MemberName}Value(in _start, in value);
+            }}
+        }}
+");
+        }
+
+        private void WrapperPrimitiveGetPtr(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in TypeInfo containingType
+            )
+        {
+            builder.Append($@"
+        public {memberInfo.TypeName}* {memberInfo.MemberName}Ptr
+        {{
+            get
+            {{
+                return ({memberInfo.TypeName}*){containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
             }}
         }}
 ");
@@ -541,6 +607,23 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         public void GetOut{memberInfo.MemberName}(out {memberInfo.TypeName} item)
         {{
             {containingType.ContainingNamespace}.{containingType.TypeName}Helper.GetOut{memberInfo.MemberName}Value(in _start, out item);
+        }}
+");
+        }
+
+        private void WrapperСompositeGetPtr(
+            in StringBuilder builder,
+            in MemberInfo memberInfo,
+            in TypeInfo containingType
+            )
+        {
+            builder.Append($@"
+        public void* {memberInfo.MemberName}Ptr
+        {{
+            get
+            {{
+                return {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
+            }}
         }}
 ");
         }

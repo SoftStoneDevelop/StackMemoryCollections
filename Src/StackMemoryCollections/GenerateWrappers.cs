@@ -44,6 +44,7 @@ namespace StackMemoryCollections
             WrapperConstructor2(in currentType, in typeInfo, in builder, in sizeOfStr);
             WrapperConstructor3(in currentType, in typeInfo, in builder, in sizeOfStr);
             WrapperConstructor4(in currentType, in typeInfo, in builder);
+            WrapperCreateInstance(in typeInfo, in builder);
 
             WrapperProperties(in typeInfo, in builder, in typeInfos);
 
@@ -103,27 +104,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             }
 
-            for (int i = 0; i < typeInfo.Members.Count; i++)
-            {
-                var currentMember = typeInfo.Members[i];
-                if (!currentMember.IsValueType && !currentMember.AsPointer)
-                {
-                    builder.Append($@"
-            //set null marker {currentMember.MemberName}
-            *((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = 0;
-");
-                    continue;
-                }
-                
-                if(currentMember.AsPointer)
-                {
-                    builder.Append($@"
-            //IntPtr must be a valid structure, so write it down. Member: {currentMember.MemberName}
-            *(IntPtr*)((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = IntPtr.Zero;
-");
-                    continue;
-                }
-            }
+            ResetPointerAndReference(in typeInfo, in builder, "            ");
 
             builder.Append($@"
         }}
@@ -157,27 +138,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             }
 
-            for (int i = 0; i < typeInfo.Members.Count; i++)
-            {
-                var currentMember = typeInfo.Members[i];
-                if (!currentMember.IsValueType && !currentMember.AsPointer)
-                {
-                    builder.Append($@"
-            //set null marker {currentMember.MemberName}
-            *((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = 0;
-");
-                    continue;
-                }
-
-                if (currentMember.AsPointer)
-                {
-                    builder.Append($@"
-            //IntPtr must be a valid structure, so write it down. Member: {currentMember.MemberName}
-            *(IntPtr*)((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = IntPtr.Zero;
-");
-                    continue;
-                }
-            }
+            ResetPointerAndReference(in typeInfo, in builder, "            ");
 
             builder.Append($@"
         }}
@@ -212,27 +173,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             }
 
-            for (int i = 0; i < typeInfo.Members.Count; i++)
-            {
-                var currentMember = typeInfo.Members[i];
-                if (!currentMember.IsValueType && !currentMember.AsPointer)
-                {
-                    builder.Append($@"
-            //set null marker {currentMember.MemberName}
-            *((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = 0;
-");
-                    continue;
-                }
-
-                if (currentMember.AsPointer)
-                {
-                    builder.Append($@"
-            //IntPtr must be a valid structure, so write it down. Member: {currentMember.MemberName}
-            *(IntPtr*)((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = IntPtr.Zero;
-");
-                    continue;
-                }
-            }
+            ResetPointerAndReference(in typeInfo, in builder, "            ");
 
             builder.Append($@"
         }}
@@ -263,7 +204,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             builder.Append($@"
             if(createInstance)
             {{
-            
+                
 ");
 
             if (!currentType.IsValueType)
@@ -273,14 +214,27 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             }
 
+            ResetPointerAndReference(in typeInfo, in builder, "                ");
+            builder.Append($@"
+            }}
+        }}
+");
+        }
+
+        private void ResetPointerAndReference(
+            in TypeInfo typeInfo,
+            in StringBuilder builder,
+            in string paddings
+            )
+        {
             for (int i = 0; i < typeInfo.Members.Count; i++)
             {
                 var currentMember = typeInfo.Members[i];
                 if (!currentMember.IsValueType && !currentMember.AsPointer)
                 {
                     builder.Append($@"
-            //set null marker {currentMember.MemberName}
-            *((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = 0;
+{paddings}//set null marker {currentMember.MemberName}
+{paddings}*((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{typeInfo.TypeName}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = 0;
 ");
                     continue;
                 }
@@ -288,17 +242,31 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 if (currentMember.AsPointer)
                 {
                     builder.Append($@"
-            //IntPtr must be a valid structure, so write it down. Member: {currentMember.MemberName}
-            *(IntPtr*)((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = IntPtr.Zero;
+{paddings}//IntPtr must be a valid structure, so write it down. Member: {currentMember.MemberName}
+{paddings}*(IntPtr*)((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{typeInfo.TypeName}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = IntPtr.Zero;
 ");
                     continue;
                 }
             }
+        }
 
-            builder.Append($@"
-            }}
+        private void WrapperCreateInstance(
+            in TypeInfo typeInfo,
+            in StringBuilder builder
+            )
+        {
+            if (!typeInfo.IsValueType)
+            {
+                builder.Append($@"
+        public void CreateInstance()
+        {{
+            *((byte*)_start) = 1;
+");
+                ResetPointerAndReference(in typeInfo, in builder, "            ");
+                builder.Append($@"
         }}
 ");
+            }
         }
 
         private void WrapperDispose(
@@ -390,6 +358,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             )
         {
             WrapperPtr(in builder);
+            WrapperIsNull(in typeInfo, in builder);
             PrimitiveWrapperChangePtr(in builder);
             WrapperGetValue(in typeInfo, in builder);
             WrapperFillValue(in typeInfo, in builder);
@@ -439,6 +408,19 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             builder.Append($@"
         public void* Ptr => _start;
 ");
+        }
+
+        private void WrapperIsNull(
+            in TypeInfo typeInfo,
+            in StringBuilder builder
+            )
+        {
+            if(!typeInfo.IsValueType)
+            {
+                builder.Append($@"
+        public bool IsNull => *((byte*)_start) == 0;
+");
+            }
         }
 
         private void WrapperGetValue(

@@ -98,6 +98,29 @@ namespace Tests
         }
 
         [Test]
+        public void NullableTest()
+        {
+            unsafe
+            {
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(HelpClassHelper.SizeOf))
+                {
+                    { 
+                        var wrap2 = new Struct.HelpClassWrapper(memory.Current, true);
+                        Assert.That(wrap2.HelpClass2, Is.EqualTo(IntPtr.Zero));
+                        Assert.That(wrap2.IsNull, Is.EqualTo(false));
+                        wrap2.HelpClass2 = new IntPtr(456421332);
+                        Assert.That(wrap2.HelpClass2, Is.Not.EqualTo(IntPtr.Zero));
+                        wrap2.Fill(null);
+                        Assert.That(wrap2.IsNull, Is.EqualTo(true));
+                        wrap2.CreateInstance();
+                        Assert.That(wrap2.IsNull, Is.EqualTo(false));
+                        Assert.That(wrap2.HelpClass2, Is.EqualTo(IntPtr.Zero));
+                    }
+                }
+            }
+        }
+
+        [Test]
         public void GetOutTest()
         {
             unsafe

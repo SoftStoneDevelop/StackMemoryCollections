@@ -6,7 +6,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
-		<PackageReference Include="StackMemoryCollections.Attributes" Version="0.7.0" />
+		<PackageReference Include="StackMemoryCollections.Attributes" Version="1.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\StackMemoryCollections\StackMemoryCollections.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />

@@ -24,16 +24,16 @@
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageId>StackMemoryCollections</PackageId>
-		<PackageVersion>0.1.1.0-beta</PackageVersion>
+		<PackageVersion>0.1.2.0-beta</PackageVersion>
 		<Authors>Brevnov Vyacheslav Sergeevich</Authors>
 		<RepositoryUrl>https://github.com/SoftStoneDevelop/StackMemoryCollections</RepositoryUrl>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Description>Fast unsafe collections for memory reuse by stack type. Adding elements without overhead when increasing Capacity. Can also be used in as classic collection with resizing or on a custom memory allocator.</Description>
-		<PackageTags>collection, unsafe collection, memory, stack memory, stack, list, queue, analysis</PackageTags>
+		<PackageTags>collection, unsafe, memory, stack, list, queue, analysis, generator, wrapper</PackageTags>
 		<NoPackageAnalysis>true</NoPackageAnalysis>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageReleaseNotes>
-- Support nullable properties/variables and added check IsNull method
+- Added generation mode: treat classes as references(IntPtr)
 </PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>

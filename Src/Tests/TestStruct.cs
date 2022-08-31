@@ -1,5 +1,5 @@
-﻿using StackMemoryCollections.Attibutes;
-using System;
+﻿using StackMemoryAttributes.Attributes;
+using StackMemoryCollections.Attibutes;
 
 namespace Tests
 {
@@ -26,11 +26,6 @@ namespace Tests
 
         [AsPointer]
         public TestClass TestClass2;
-    }
-
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class AsPointerAttribute : Attribute
-    {
     }
 
     [GenerateHelper]

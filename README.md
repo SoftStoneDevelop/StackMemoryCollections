@@ -33,7 +33,6 @@ Usage:
 
 ```C#
 //Marking a class/struct with attributes is all that is required of you.
-[GenerateHelper]
 [GenerateStack]
 [GenerateWrapper]
 public struct JobStruct

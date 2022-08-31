@@ -199,5 +199,52 @@ namespace Tests
                 Assert.That(new IntPtr(helpClass2Ptr), Is.EqualTo(new IntPtr((byte*)wrap2.Ptr + 12 + HelpClassHelper.SizeOf)));
             }
         }
+
+        [Test]
+        public void GetPropertyValueTest()
+        {
+            unsafe
+            {
+                var wrap2 = new Struct.HelpStructWrapper();
+                var helpStructRef = new HelpStruct()
+                {
+                    Int32 = 45,
+                    Int64 = 4564564564,
+                    HelpClass = new HelpClass()
+                    {
+                        Int32 = 12,
+                        Int64 = 321123,
+                        HelpStruct2 = new HelpStruct2(321, 98746512),
+                        HelpClass2 = new HelpClass()
+                    }
+                };
+                wrap2.Fill(in helpStructRef);
+                wrap2.HelpClass2 = new IntPtr(4823);
+
+                var int64Value = HelpStructHelper.GetInt64Value(wrap2.Ptr);
+                Assert.That(int64Value, Is.EqualTo(4564564564));
+
+                var int32Value = HelpStructHelper.GetInt32Value(wrap2.Ptr);
+                Assert.That(int32Value, Is.EqualTo(45));
+
+                var helpClassValue = HelpStructHelper.GetHelpClassValue(wrap2.Ptr);
+                var helpClassValue2 = HelpStructHelper.GetHelpClassValue(wrap2.Ptr);
+                Assert.That(!Is.ReferenceEquals(helpClassValue, helpClassValue2));
+                Assert.That(helpClassValue.Int32, Is.EqualTo(12));
+                Assert.That(helpClassValue.Int64, Is.EqualTo(321123));
+                Assert.That(helpClassValue.HelpStruct2, Is.EqualTo(new HelpStruct2(321, 98746512)));
+                Assert.That(helpClassValue.HelpClass2, Is.EqualTo(null));
+
+                Assert.That(helpClassValue.Int32, Is.EqualTo(helpClassValue2.Int32));
+                Assert.That(helpClassValue.Int64, Is.EqualTo(helpClassValue2.Int64));
+                Assert.That(helpClassValue.HelpStruct2, Is.EqualTo(helpClassValue.HelpStruct2));
+                Assert.That(helpClassValue.HelpClass2, Is.EqualTo(helpClassValue.HelpClass2));
+
+                var helpClass2Value = HelpStructHelper.GetHelpClass2Value(wrap2.Ptr);
+                Assert.That(helpClass2Value, Is.EqualTo(new IntPtr(4823)));
+
+                wrap2.Dispose();
+            }
+        }
     }
 }

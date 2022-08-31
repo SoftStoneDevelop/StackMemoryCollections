@@ -179,5 +179,25 @@ namespace Tests
                 wrap2.Dispose();
             }
         }
+
+        [Test]
+        public void GetPropertyPtrTest()
+        {
+            unsafe
+            {
+                using var wrap2 = new Struct.HelpStructWrapper();
+                var int64Ptr = HelpStructHelper.GetInt64Ptr(wrap2.Ptr);
+                Assert.That(new IntPtr(int64Ptr), Is.EqualTo(new IntPtr((byte*)wrap2.Ptr + 0)));
+
+                var int32Ptr = HelpStructHelper.GetInt32Ptr(wrap2.Ptr);
+                Assert.That(new IntPtr(int32Ptr), Is.EqualTo(new IntPtr((byte*)wrap2.Ptr + 8)));
+
+                var helpClassPtr = HelpStructHelper.GetHelpClassPtr(wrap2.Ptr);
+                Assert.That(new IntPtr(helpClassPtr), Is.EqualTo(new IntPtr((byte*)wrap2.Ptr + 12)));
+
+                var helpClass2Ptr = HelpStructHelper.GetHelpClass2Ptr(wrap2.Ptr);
+                Assert.That(new IntPtr(helpClass2Ptr), Is.EqualTo(new IntPtr((byte*)wrap2.Ptr + 12 + HelpClassHelper.SizeOf)));
+            }
+        }
     }
 }

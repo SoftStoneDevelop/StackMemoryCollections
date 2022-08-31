@@ -1,6 +1,6 @@
-<h3 align="center">
+<h1 align="center">
   <a>StackMemoryCollections</a>
-</h3>
+</h1>
 
 <h3 align="center">
 

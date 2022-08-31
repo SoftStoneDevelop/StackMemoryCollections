@@ -59,7 +59,7 @@ public struct JobStruct
 //Stack of pointers
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.GetSize() + (nuint)sizeof(IntPtr)))
+    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf + (nuint)sizeof(IntPtr)))
     {
         using var stack = new StackMemoryCollections.Struct.StackOfIntPtr(1, &memory);
         {
@@ -75,10 +75,10 @@ unsafe
 
 ```C#
 //Stack of structures
-//All alocate memory = JobStructHelper.GetSize() * (nuint)100)
+//All alocate memory = JobStructHelper.SizeOf * (nuint)100)
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.GetSize() * (nuint)100))//allocate memory
+    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)100))//allocate memory
     {
         var item = new JobStruct(0, 0);
         

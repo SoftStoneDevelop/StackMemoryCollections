@@ -22,6 +22,8 @@ Allows you to allocate memory for a method / class and place all sets of variabl
 Avoid repeated copying of structures when placing them in collections.
 And other use cases.
 
+The generated code uses .Net 5 features. So use only with .Net 5+.
+
 Supported collections:
 - Stack
 - List [TODO](https://github.com/SoftStoneDevelop/StackMemoryCollections/issues/1)

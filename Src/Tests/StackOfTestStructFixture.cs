@@ -294,11 +294,25 @@ namespace Tests
                 {
                     var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
 
+                    var testClass2W = new Struct.TestClassWrapper();
                     stack.Push(new TestStruct(45, 27, new TestClass(123, 5776)));
+                    var testStructW = new Struct.TestStructWrapper(stack.TopPtr(), false);
+                    testStructW.TestClass2 = new IntPtr(testClass2W.Ptr);
+
                     stack.Push(new TestStruct(13, 400, new TestClass(22, 5787)));
+                    testStructW.ChangePtr(stack.TopPtr());
+                    testStructW.TestClass2 = new IntPtr(testClass2W.Ptr);
+
                     stack.Push(new TestStruct(8, 85, new TestClass(711, 446)));
+                    testStructW.ChangePtr(stack.TopPtr());
+                    testStructW.TestClass2 = new IntPtr(testClass2W.Ptr);
+
                     stack.Push(new TestStruct(6, 84, new TestClass(756, 33)));
+                    testStructW.ChangePtr(stack.TopPtr());
+                    testStructW.TestClass2 = new IntPtr(testClass2W.Ptr);
+
                     stack.Push(new TestStruct(25, 46, new TestClass(7, 22)));
+                    testStructW.ChangePtr(stack.TopPtr());
 
                     var stack2 = new Tests.Struct.StackOfTestStruct(5, &memory2);
                     stack.Copy(stack2.Start);
@@ -313,6 +327,7 @@ namespace Tests
                     Assert.That(wrap.Int64, Is.EqualTo(wrap2.Int64));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(wrap2.TestClass.Int32));
                     Assert.That(wrap.TestClass.Int64, Is.EqualTo(wrap2.TestClass.Int64));
+                    Assert.That(wrap.TestClass2, Is.EqualTo(IntPtr.Zero));
 
                     wrap.ChangePtr(stack[1]);
                     wrap2.ChangePtr(stack2[1]);
@@ -320,6 +335,7 @@ namespace Tests
                     Assert.That(wrap.Int64, Is.EqualTo(wrap2.Int64));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(wrap2.TestClass.Int32));
                     Assert.That(wrap.TestClass.Int64, Is.EqualTo(wrap2.TestClass.Int64));
+                    Assert.That(wrap.TestClass2, Is.EqualTo(new IntPtr(testClass2W.Ptr)));
 
                     wrap.ChangePtr(stack[2]);
                     wrap2.ChangePtr(stack2[2]);
@@ -327,6 +343,7 @@ namespace Tests
                     Assert.That(wrap.Int64, Is.EqualTo(wrap2.Int64));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(wrap2.TestClass.Int32));
                     Assert.That(wrap.TestClass.Int64, Is.EqualTo(wrap2.TestClass.Int64));
+                    Assert.That(wrap.TestClass2, Is.EqualTo(new IntPtr(testClass2W.Ptr)));
 
                     wrap.ChangePtr(stack[3]);
                     wrap2.ChangePtr(stack2[3]);
@@ -334,6 +351,7 @@ namespace Tests
                     Assert.That(wrap.Int64, Is.EqualTo(wrap2.Int64));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(wrap2.TestClass.Int32));
                     Assert.That(wrap.TestClass.Int64, Is.EqualTo(wrap2.TestClass.Int64));
+                    Assert.That(wrap.TestClass2, Is.EqualTo(new IntPtr(testClass2W.Ptr)));
 
                     wrap.ChangePtr(stack[4]);
                     wrap2.ChangePtr(stack2[4]);
@@ -341,7 +359,9 @@ namespace Tests
                     Assert.That(wrap.Int64, Is.EqualTo(wrap2.Int64));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(wrap2.TestClass.Int32));
                     Assert.That(wrap.TestClass.Int64, Is.EqualTo(wrap2.TestClass.Int64));
+                    Assert.That(wrap.TestClass2, Is.EqualTo(new IntPtr(testClass2W.Ptr)));
 
+                    testClass2W.Dispose();
                 }
             }
         }
@@ -544,6 +564,7 @@ namespace Tests
                     Assert.That(wrap.Int64, Is.EqualTo(21));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(6));
                     Assert.That(wrap.TestClass.Int64, Is.EqualTo(543));
+                    Assert.That(wrap.TestClass2, Is.EqualTo(IntPtr.Zero));
 
                     Assert.That(new IntPtr(stack[1]), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.SizeOf)));
                     wrap.ChangePtr(stack[1]);
@@ -551,6 +572,7 @@ namespace Tests
                     Assert.That(wrap.Int64, Is.EqualTo(28));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(5));
                     Assert.That(wrap.TestClass.Int64, Is.EqualTo(5));
+                    Assert.That(wrap.TestClass2, Is.EqualTo(IntPtr.Zero));
 
                     Assert.That(new IntPtr(stack[2]), Is.EqualTo(new IntPtr((byte*)memory.Start)));
                     wrap.ChangePtr(stack[2]);
@@ -558,6 +580,7 @@ namespace Tests
                     Assert.That(wrap.Int64, Is.EqualTo(11));
                     Assert.That(wrap.TestClass.Int32, Is.EqualTo(1));
                     Assert.That(wrap.TestClass.Int64, Is.EqualTo(5776));
+                    Assert.That(wrap.TestClass2, Is.EqualTo(IntPtr.Zero));
 
                     Assert.That(() => stack[3],
                         Throws.Exception.TypeOf(typeof(Exception))
@@ -698,7 +721,7 @@ namespace Tests
 
         [Test]
         [SkipLocalsInit]
-        public void TopRefPtrTest()
+        public void TopInPtrTest()
         {
             unsafe
             {
@@ -760,21 +783,35 @@ namespace Tests
                         .And.Message.EqualTo("There are no elements on the stack")
                         );
 
+                    var wrapTestClass0 = new Struct.TestClassWrapper();
+                    wrapTestClass0.Int32 = 88;
+                    wrapTestClass0.Int64 = 112;
                     stack.Push(new TestStruct(15, 10, new TestClass(8, 5)));
+                    var wrap0 = new Struct.TestStructWrapper(stack.TopPtr(), false);
+                    wrap0.TestClass2 = new IntPtr(wrapTestClass0.Ptr);
                     var item0 = new TestStruct();
                     stack.Top(ref item0);
                     Assert.That(item0.Int32, Is.EqualTo(15));
                     Assert.That(item0.Int64, Is.EqualTo(10));
                     Assert.That(item0.TestClass.Int32, Is.EqualTo(8));
                     Assert.That(item0.TestClass.Int64, Is.EqualTo(5));
+                    Assert.That(item0.TestClass2.Int32, Is.EqualTo(88));
+                    Assert.That(item0.TestClass2.Int64, Is.EqualTo(112));
+                    wrapTestClass0.Dispose();
 
                     stack.Push(new TestStruct(2, 1, new TestClass(1, 7)));
+                    wrapTestClass0.Int32 = 14;
+                    wrapTestClass0.Int64 = 45;
+                    var wrap1 = new Struct.TestStructWrapper(stack.TopPtr(), false);
+                    wrap1.TestClass2 = new IntPtr(wrapTestClass0.Ptr);
                     var item1 = new TestStruct();
                     stack.Top(ref item1);
                     Assert.That(item1.Int32, Is.EqualTo(2));
                     Assert.That(item1.Int64, Is.EqualTo(1));
                     Assert.That(item1.TestClass.Int32, Is.EqualTo(1));
                     Assert.That(item1.TestClass.Int64, Is.EqualTo(7));
+                    Assert.That(item1.TestClass2.Int32, Is.EqualTo(14));
+                    Assert.That(item1.TestClass2.Int64, Is.EqualTo(45));
                 }
             }
         }

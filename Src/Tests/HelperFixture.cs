@@ -318,5 +318,13 @@ namespace Tests
                 wrap2.Dispose();
             }
         }
+
+        [Test]
+        public void IsNullableTest()
+        {
+            Assert.That(HelpStruct2Helper.IsNullable(), Is.EqualTo(false));
+            Assert.That(HelpStructHelper.IsNullable(), Is.EqualTo(false));
+            Assert.That(HelpClassHelper.IsNullable(), Is.EqualTo(true));
+        }
     }
 }

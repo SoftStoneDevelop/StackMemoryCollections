@@ -246,5 +246,39 @@ namespace Tests
                 wrap2.Dispose();
             }
         }
+
+        [Test]
+        public void GetOutPropertyValueTest()
+        {
+            unsafe
+            {
+                var wrap2 = new Struct.HelpStructWrapper();
+                var helpStructRef = new HelpStruct()
+                {
+                    Int32 = 45,
+                    Int64 = 4564564564,
+                    HelpClass = new HelpClass()
+                    {
+                        Int32 = 12,
+                        Int64 = 321123,
+                        HelpStruct2 = new HelpStruct2(321, 98746512),
+                        HelpClass2 = new HelpClass()
+                    }
+                };
+                wrap2.Fill(in helpStructRef);
+                wrap2.HelpClass2 = new IntPtr(4823);
+
+                HelpStructHelper.GetOutInt64Value(wrap2.Ptr, out var int64Value);
+                Assert.That(int64Value, Is.EqualTo(4564564564));
+
+                HelpStructHelper.GetOutInt32Value(wrap2.Ptr, out var int32Value);
+                Assert.That(int32Value, Is.EqualTo(45));
+
+                HelpStructHelper.GetOutHelpClass2Value(wrap2.Ptr, out var helpClass2Value);
+                Assert.That(helpClass2Value, Is.EqualTo(new IntPtr(4823)));
+
+                wrap2.Dispose();
+            }
+        }
     }
 }

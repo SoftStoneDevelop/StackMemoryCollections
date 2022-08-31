@@ -121,6 +121,30 @@ namespace Tests
         }
 
         [Test]
+        public void ChangePtrTest()
+        {
+            unsafe
+            {
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(HelpClassHelper.SizeOf))
+                using (var memory2 = new StackMemoryCollections.Struct.StackMemory(HelpClassHelper.SizeOf))
+                {
+                    var wrap = new Struct.HelpClassWrapper(memory.Current, true);
+                    var wrap2 = new Struct.HelpClassWrapper(memory2.Current, true);
+
+                    Assert.That(new IntPtr(wrap.Ptr), Is.EqualTo(new IntPtr(memory.Current)));
+                    Assert.That(new IntPtr(wrap2.Ptr), Is.EqualTo(new IntPtr(memory2.Current)));
+
+                    var tempPtr = wrap.Ptr;
+                    wrap.ChangePtr(wrap2.Ptr);
+                    wrap2.ChangePtr(tempPtr);
+
+                    Assert.That(new IntPtr(wrap.Ptr), Is.EqualTo(new IntPtr(memory2.Current)));
+                    Assert.That(new IntPtr(wrap2.Ptr), Is.EqualTo(new IntPtr(memory.Current)));
+                }
+            }
+        }
+
+        [Test]
         public void GetOutTest()
         {
             unsafe

@@ -1,5 +1,6 @@
 ﻿using StackMemoryAttributes.Attributes;
 using StackMemoryCollections.Attibutes;
+using System.Collections.Generic;
 
 namespace Tests
 {
@@ -73,5 +74,8 @@ namespace Tests
         public int Int32 { get; set; }
 
         public HelpStruct2 HelpStruct2 { get; set; }
+
+        [GeneratorIgnore]
+        public Dictionary<int, string> Dictionary { get; set; }
     }
 }

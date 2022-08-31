@@ -2,6 +2,7 @@ using NUnit.Framework;
 using StackMemoryAttributes.Attributes;
 using StackMemoryCollections.Attibutes;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Tests
@@ -49,6 +50,9 @@ namespace Tests
 
         public long Int64;
         public int Int32;
+
+        [GeneratorIgnore]
+        public Dictionary<int, string> Dictionary { get; set; }
     }
 
     [TestFixture]

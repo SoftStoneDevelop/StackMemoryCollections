@@ -96,5 +96,68 @@ namespace Tests
                 wrap2.Dispose();
             }
         }
+
+        [Test]
+        public void GetOutTest()
+        {
+            unsafe
+            {
+                var wrap2 = new Struct.HelpStructWrapper();
+                var helpStructValueIn = new HelpStruct()
+                {
+                    Int32 = 45,
+                    Int64 = 4564564564,
+                    HelpClass = new HelpClass()
+                    {
+                        Int32 = 12,
+                        Int64 = 321123,
+                        HelpStruct2 = new HelpStruct2(321, 98746512),
+                        HelpClass2 = new HelpClass()
+                        {
+                            Int32 = 238,
+                            Int64 = 40,
+                            HelpStruct2 = new HelpStruct2(1, 2)
+                        }
+                    }
+                };
+                wrap2.Fill(in helpStructValueIn);
+
+                IntPtr helpClass2Out;
+                wrap2.GetOutHelpClass2(out helpClass2Out);
+                Assert.That(helpClass2Out, Is.EqualTo(IntPtr.Zero));
+                long int64Out;
+                wrap2.GetOutInt64(out int64Out);
+                Assert.That(int64Out, Is.EqualTo(4564564564));
+                int int32Out;
+                wrap2.GetOutInt32(out int32Out);
+                Assert.That(int32Out, Is.EqualTo(45));
+                HelpClass helpClassValue;
+                wrap2.GetOutHelpClass(out helpClassValue);
+                Assert.That(helpClassValue.Int32, Is.EqualTo(12));
+                Assert.That(helpClassValue.Int64, Is.EqualTo(321123));
+                Assert.That(helpClassValue.HelpStruct2, Is.EqualTo(new HelpStruct2(321, 98746512)));
+                Assert.That(helpClassValue.HelpClass2, Is.EqualTo(null));
+
+                var wrapClass = new Struct.HelpClassWrapper();
+                wrapClass.Fill(new HelpClass(44, 235, new HelpStruct2(140, 78)));
+                var wrapClass2 = new Struct.HelpClassWrapper(wrap2.HelpClassPtr, false);
+                wrapClass2.HelpClass2 = new IntPtr(wrapClass.Ptr);
+
+                HelpClass helpClassValue2;
+                wrap2.GetOutHelpClass(out helpClassValue2);
+                Assert.That(helpClassValue2.Int32, Is.EqualTo(12));
+                Assert.That(helpClassValue2.Int64, Is.EqualTo(321123));
+                Assert.That(helpClassValue2.HelpStruct2, Is.EqualTo(new HelpStruct2(321, 98746512)));
+                Assert.That(helpClassValue2.HelpClass2, Is.Not.EqualTo(null));
+
+                Assert.That(helpClassValue2.HelpClass2.Int32, Is.EqualTo(44));
+                Assert.That(helpClassValue2.HelpClass2.Int64, Is.EqualTo(235));
+                Assert.That(helpClassValue2.HelpClass2.HelpStruct2, Is.EqualTo(new HelpStruct2(140, 78)));
+                Assert.That(helpClassValue2.HelpClass2.HelpClass2, Is.EqualTo(null));
+
+                wrapClass.Dispose();
+                wrap2.Dispose();
+            }
+        }
     }
 }

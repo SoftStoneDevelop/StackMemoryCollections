@@ -74,7 +74,7 @@ unsafe
 
 ```C#
 //Stack of structures
-//All alocate memory = JobStructHelper.SizeOf * (nuint)100)
+//All alocate memory = JobStructHelper.SizeOf * 100
 unsafe
 {
     using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)100))//allocate memory

@@ -57,7 +57,7 @@ Implements
 | Name | ForType |
 | ------------- | ------------- |
 | [{ItemType}Wrapper()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Constructor1.md)  | All |
-| [{ItemType}Wrapper(Struct.StackMemory*))](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Constructor2.md)  | All |
+| [{ItemType}Wrapper(Struct.StackMemory*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Constructor2.md)  | All |
 | [{ItemType}Wrapper(Class.StackMemory)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Constructor3.md)  | All |
 | [{ItemType}Wrapper(void*, bool)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor4.md)  | All |
 

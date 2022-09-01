@@ -21,7 +21,7 @@ namespace {ItemTypeNamespace}
 
 | Name | ForMemberType |
 | ------------- | ------------- |
-| [IsNullable()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/GetValue.md)  | All |
+| [IsNullable()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/GetValue.md)  | For ItemType |
 | [Get{MemberName}Ptr(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Helper/GetPtr.md)  | All |
 | [Get{MemberName}Value(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Helper/GetValue.md)  | All |
 | [GetRef{MemberName}Value(in void*, ref {MemberType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Helper/GetRef.md)  | Primitive |

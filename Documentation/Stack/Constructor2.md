@@ -4,7 +4,7 @@
 Creates an instance with Capacity equal `count` and allocate collection memory from StackMemory.
 
 ```C#
-public StackOfTestStruct(nuint count, Struct.StackMemory* stackMemory)
+public StackOf{ItemType}(nuint count, Struct.StackMemory* stackMemory)
 ```
 ## Parametrs
 `count nuint`

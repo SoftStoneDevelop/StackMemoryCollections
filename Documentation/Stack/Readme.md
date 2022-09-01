@@ -25,7 +25,8 @@ namespace {ItemTypeNamespace}.Struct
 
 ```
 
-## For primitive types (`Int32`, `Int64`, `UInt32`... and `IntPtr`):
+## For primitive types:
+`Int32`, `Int64`, `UInt32`... and `IntPtr`.
 Class
 ```C#
 

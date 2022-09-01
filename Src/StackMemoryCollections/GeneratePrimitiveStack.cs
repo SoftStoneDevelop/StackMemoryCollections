@@ -1025,8 +1025,8 @@ namespace StackMemoryCollections.{stackNamespace}
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,
-                Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())},
-                Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())}
+                Size * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())},
+                Size * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())}
                 );
         }}
 ");

@@ -1026,8 +1026,8 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,
-                Capacity * {sizeOfStr},
-                Capacity * {sizeOfStr}
+                Size * {sizeOfStr},
+                Size * {sizeOfStr}
                 );
         }}
 ");

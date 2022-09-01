@@ -23,7 +23,8 @@ namespace StackMemoryCollections
             builder.Clear();
             MemoryStart(in builder, in memoryNamespace);
 
-            MemoryConstructor1(in builder);
+            MemoryConstructor1(in builder, in memoryNamespace);
+            MemoryConstructor2(in builder);
             MemoryProperties(in builder);
             MemoryAllocateMemory(in builder);
             MemoryTryAllocateMemory(in builder);
@@ -52,6 +53,24 @@ namespace StackMemoryCollections.{memoryNamespace}
         }
 
         private void MemoryConstructor1(
+            in StringBuilder builder,
+            in string memoryNamespace
+            )
+        {
+            if(memoryNamespace == "Class")
+            {
+                return;
+            }
+
+            builder.Append($@"
+        public StackMemory()
+        {{
+            throw new Exception(""Constructor without parameters is not supported"");
+        }}
+");
+        }
+
+        private void MemoryConstructor2(
             in StringBuilder builder
             )
         {

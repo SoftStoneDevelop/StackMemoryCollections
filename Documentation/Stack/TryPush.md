@@ -4,7 +4,7 @@
 Tries to push an element to the top of the stack.
 
 ```C#
-public void TryPush(in {ItemType} item)
+public bool TryPush(in {ItemType} item)
 ```
 
 ## Parameters

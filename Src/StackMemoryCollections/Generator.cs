@@ -12,7 +12,6 @@ namespace StackMemoryCollections
     {
         public void Execute(GeneratorExecutionContext context)
         {
-            System.Diagnostics.Debugger.Launch();
             var c = (CSharpCompilation)context.Compilation;
             var typeHelpers = new List<INamedTypeSymbol>();
             var typeWrappers = new List<INamedTypeSymbol>();
@@ -148,6 +147,11 @@ namespace StackMemoryCollections
                 while(stackCurrentTypes.Count != 0)
                 {
                     var currentType = stackCurrentTypes.Peek();
+                    if(!currentType.Constructors.Any(an => an.Parameters.Length == 0))
+                    {
+                        throw new Exception($"The type '{currentType.Name}' must have a parameterless constructor");
+                    }
+
                     var info = new TypeInfo();
                     info.IsValueType = currentType.IsValueType;
                     info.IsPrimitive = TypeInfoHelper.IsPrimitive(currentType.Name);

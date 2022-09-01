@@ -23,3 +23,4 @@ if memoryStart is null
 ## Remarks
 
 The correctness of the memory remains under the control of the developer. The collection has no way to check the correctness of the passed pointer.
+For collections on primitive types memoryStart is `{ItemType}*` pointer

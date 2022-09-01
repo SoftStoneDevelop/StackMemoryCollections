@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Text;
 
 namespace StackMemoryCollections
@@ -77,6 +78,11 @@ namespace StackMemoryCollections.{memoryNamespace}
             builder.Append($@"
         public StackMemory(nuint byteCount)
         {{
+            if(byteCount == 0)
+            {{
+                throw new ArgumentException(""Allocated memory size cannot be zero"");
+            }}
+
             Start = NativeMemory.Alloc(byteCount);
             Current = Start;
             ByteCount = byteCount;

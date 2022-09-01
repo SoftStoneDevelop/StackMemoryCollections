@@ -57,8 +57,8 @@ Implements
 | Name | ForType |
 | ------------- | ------------- |
 | [StackOf{ItemType}()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor1.md)  | All |
-| [StackOf{ItemType}(nuint, StackMemoryCollections.Struct.StackMemory*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor2.md)  | All |
-| [StackOf{ItemType}(nuint, StackMemoryCollections.Class.StackMemory)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor3.md)  | All |
+| [StackOf{ItemType}(nuint, Struct.StackMemory*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor2.md)  | All |
+| [StackOf{ItemType}(nuint, Class.StackMemory)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor3.md)  | All |
 | [StackOf{ItemType}(nuint, void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor4.md)  | All |
 
 # Properties

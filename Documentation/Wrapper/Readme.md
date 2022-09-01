@@ -65,7 +65,7 @@ Implements
 
 | Name | ForType | ForPropertyType |
 | ------------- | ------------- |------------- |
-| [Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/MemoryPtr.md)  | All | Once on instance |
+| [Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/MemoryPtr.md)  | All | For Instance |
 | [{PropertyName}Ptr { get; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyPtr.md)  | All | All |
 | [{PropertyName} { get; set; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyGetSet.md)  | All | All |
 | [{PropertyName}ValuiInPtr { get; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyValueInPtr.md)  | All | Class as Pointer |
@@ -85,10 +85,37 @@ Implements
 
 ```C#
 
-[GenerateStack]
-public struct JobStruct
+[GenerateHelper]
+[GenerateWrapper]
+public struct HelpStruct
 {
-    public JobStruct(
+    public HelpStruct(
+        int int32,
+        long int64,
+        HelpClass helpClass,
+        HelpClass helpClass2
+        )
+    {
+        Int32 = int32;
+        Int64 = int64;
+        HelpClass = helpClass;
+        HelpClass2 = helpClass2;
+    }
+
+    public long Int64;
+    public int Int32;
+
+    public HelpClass HelpClass;
+
+    [AsPointer]
+    public HelpClass HelpClass2 { get; set; }
+}
+
+[GenerateHelper]
+[GenerateWrapper]
+public struct HelpStruct2
+{
+    public HelpStruct2(
         int int32,
         long int64
         )
@@ -97,56 +124,70 @@ public struct JobStruct
         Int64 = int64;
     }
 
-    public long Int64;
+    public long Int64 { get; set; }
     public int Int32;
 }
 
-unsafe
+[GenerateHelper]
+[GenerateWrapper]
+public class HelpClass
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)5))
+    public HelpClass()
     {
-        var item = new JobStruct(0, 0);
-        using var stack = new Struct.StackOfJobStruct((nuint)5, &memory);
-        for (int i = 0; i < 3; i++)
-        {
-            item.Int32 = i;
-            item.Int64 = i * 2;
-            stack.Push(in item);
-        }
-
-        stack.TrimExcess();//No copy just pointer offset
-        while (stack.TryPop())
-        {
-        }
     }
+
+    public HelpClass(
+        int int32,
+        long int64,
+        HelpStruct2 helpStruct2
+        )
+    {
+        Int32 = int32;
+        Int64 = int64;
+        HelpStruct2 = helpStruct2;
+    }
+
+    public long Int64;
+
+    [AsPointer]
+    public HelpClass HelpClass2 { get; set; }
+
+    public int Int32 { get; set; }
+
+    public HelpStruct2 HelpStruct2 { get; set; }
+
+    [GeneratorIgnore]
+    public Dictionary<int, string> Dictionary { get; set; }
 }
 
-```
-
-```C#
-
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)10))
+    var wrap = new Struct.HelpStructWrapper();
+    var helpStructValueIn = new HelpStruct()
     {
-        var item = new JobStruct(0, 0);
-        using var stack = new Struct.StackOfJobStruct((nuint)5, &memory);
-        for (int i = 0; i < 10; i++)
+        Int32 = 45,
+        Int64 = 4564564564,
+        HelpClass = new HelpClass()
         {
-            item.Int32 = i;
-            item.Int64 = i * 2;
-            
-            if(!stack.TryPush(in item))
+            Int32 = 12,
+            Int64 = 321123,
+            HelpStruct2 = new HelpStruct2(321, 98746512),
+            HelpClass2 = new HelpClass()
             {
-                stack.ExpandCapacity(1);//No copy just pointer offset
-                stack.Push(in item);
+                Int32 = 238,
+                Int64 = 40,
+                HelpStruct2 = new HelpStruct2(1, 2)
             }
         }
-
-        while (stack.TryPop())
-        {
-        }
-    }
+    };
+    wrap.Fill(in helpStructValueIn);
+    IntPtr helpClass2Out;
+    wrap2.GetOutHelpClass2(out helpClass2Out);
+    
+    var wrapClass = new Struct.HelpClassWrapper();
+    wrapClass.Fill(new HelpClass(44, 235, new HelpStruct2(140, 78)));
+    var wrapClass2 = new Struct.HelpClassWrapper(wrap.HelpClassPtr, false);
+    wrapClass2.HelpClass2 = new IntPtr(wrapClass.Ptr);
 }
 
 ```

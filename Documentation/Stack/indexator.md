@@ -1,31 +1,21 @@
-# FreeMemory(nuint) Method
+# [nuint] Method
 
 ## Definition
-Free memory.
+Return pointer to the element from the stack by index.
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public void* this[nuint index]
 ```
 
-## Parameters
-reducingBytes nuint
+## Return
+`void*`
 
-Freed memory size in bytes
-
-## Returns
-void
+Pointer to the element from the top of the stack. For collections on primitive types return type is `{ItemType}*` instead of `void*`.
 
 ## Exceptions
 
 ```C#
-ObjectDisposedException
-```
--or-
-
-```C#
 Exception
 ```
-If all memory is already free
 
-## Remark
-Shifts the Current pointer by -reducingBytes
+If there is no element at that index

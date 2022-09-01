@@ -1,4 +1,4 @@
-<details><summary>Stack</summary>
+# Stack
 
 ### Primitive types:
 Stack elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
@@ -162,5 +162,3 @@ ______
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Optimal/StructOptimalJob.cs)
 
 ______
-
-</details>

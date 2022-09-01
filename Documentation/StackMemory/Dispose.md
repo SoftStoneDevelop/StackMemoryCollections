@@ -1,10 +1,10 @@
 # Dispose() Method
 
 ## Definition
-Free all memory.
+Free all memory owned by the instance.
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public void Dispose()
 ```
 ## Remark
-After calling Dispose, don't try to use the class/struct, it will result in UB
+The class will automatically call `Dispose` in the finalizer.

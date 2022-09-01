@@ -25,30 +25,30 @@ Implements IDisposable
 
 # Constructors
 
-| Name | Description | ForType |
-| ------------- | ------------- | ------------- |
-| [StackMemory()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Constructor1.md)  | Creates an instance and allocates memory | Struct |
-| [StackMemory(nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Constructor2.md)  | Creates an instance and allocates memory | All |
+| Name | ForType |
+| ------------- | ------------- |
+| [StackMemory()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Constructor1.md)  | Struct |
+| [StackMemory(nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Constructor2.md)  | All |
 
 # Properties
 
-| Name | Description | ForType |
-| ------------- | ------------- | ------------- |
-| [Start](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Start.md)  | Start of memory | All |
-| [Current](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Current.md)  | Pointer to free memory | All |
-| [ByteCount](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/ByteCount.md)  | Total memory size | All |
-| [FreeByteCount](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/FreeByteCount.md)  | Free memory size | All |
+| Name | ForType |
+| ------------- | ------------- |
+| [Start](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Start.md)  | All |
+| [Current](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Current.md)  | All |
+| [ByteCount](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/ByteCount.md)  | All |
+| [FreeByteCount](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/FreeByteCount.md)  | All |
 
 # Methods
 
 
-| Name | Description | ForType |
-| ------------- | ------------- | ------------- |
-| [AllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/AllocateMemory.md)  | Allocate free memory | All |
-| [TryAllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/TryAllocateMemory.md) | Try Allocate free memory | All |
-| [FreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/FreeMemory.md)  | Free up occupied memory | All |
-| [TryFreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/TryFreeMemory.md)  | Free up occupied memory | All |
-| [Dispose](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Dispose.md)  | Free all memory | All |
+| Name | ForType |
+| ------------- | ------------- |
+| [AllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/AllocateMemory.md)  | All |
+| [TryAllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/TryAllocateMemory.md) | All |
+| [FreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/FreeMemory.md)  | All |
+| [TryFreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/TryFreeMemory.md)  | All |
+| [Dispose](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Dispose.md)  | All |
 
 ## Examples
 ```C#

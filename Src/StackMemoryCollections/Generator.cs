@@ -12,6 +12,7 @@ namespace StackMemoryCollections
     {
         public void Execute(GeneratorExecutionContext context)
         {
+            System.Diagnostics.Debugger.Launch();
             var c = (CSharpCompilation)context.Compilation;
             var typeHelpers = new List<INamedTypeSymbol>();
             var typeWrappers = new List<INamedTypeSymbol>();
@@ -155,11 +156,16 @@ namespace StackMemoryCollections
                     info.TypeName = currentType.Name;
 
                     var needSkip = false;
+
                     foreach (var member in currentType.GetMembers())
                     {
+                        if (!member.Kind.HasFlag(SymbolKind.Property) && !member.Kind.HasFlag(SymbolKind.Field))
+                        {
+                            continue;
+                        }
+
                         var mustBeIgnored = member.GetAttributes().Any(wh => wh.AttributeClass.Name == "GeneratorIgnoreAttribute");
                         info.HasIgnoredMembers |= mustBeIgnored;
-
                         if (mustBeIgnored)
                         {
                             continue;
@@ -167,202 +173,24 @@ namespace StackMemoryCollections
 
                         if (member is Microsoft.CodeAnalysis.IPropertySymbol propertySymbol)
                         {
-                            if (!member.DeclaredAccessibility.HasFlag(Accessibility.Public))
+                            if(!ProcessProperty(in info, in currentType, in typeInfos, in propertySymbol, in stackCurrentTypes))
                             {
-                                throw new Exception($"Generation is possible only for the public property. Property name: '{member.Name}'");
-                            }
-
-                            if (propertySymbol.GetMethod == null)
-                            {
-                                throw new Exception($"The property must have GetMethod. Property name: '{member.Name}'");
-                            }
-
-                            if (!propertySymbol.GetMethod.DeclaredAccessibility.HasFlag(Accessibility.Public))
-                            {
-                                throw new Exception($"GetMethod must be public. Property name: '{member.Name}'");
-                            }
-
-                            if (propertySymbol.SetMethod == null)
-                            {
-                                throw new Exception($"The property must have SetMethod. Property name: '{member.Name}'");
-                            }
-
-                            if (!propertySymbol.SetMethod.DeclaredAccessibility.HasFlag(Accessibility.Public))
-                            {
-                                throw new Exception($"SetMethod must be public. Property name: '{member.Name}'");
-                            }
-
-                            if (TypeInfoHelper.IsPrimitive(propertySymbol.Type.Name))
-                            {
-                                var memberInfo = new MemberInfo();
-                                memberInfo.TypeName = propertySymbol.Type.Name;
-                                memberInfo.MemberName = propertySymbol.Name;
-                                memberInfo.IsPrimitive = true;
-                                memberInfo.IsValueType = true;
-                                memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
-                                memberInfo.AsPointer = false;
-                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
-
-                                info.Members.Add(memberInfo);
-                                continue;
-                            }
-
-                            if (propertySymbol.Type.IsAbstract)
-                            {
-                                throw new Exception($"Abstract type are not supported, property name: '{member.Name}'");
-                            }
-
-                            if (propertySymbol.Type.IsRecord)
-                            {
-                                throw new Exception($"Record type are not supported, property name: '{member.Name}'");
-                            }
-                            
-                            var asPointer =
-                                    !propertySymbol.Type.IsValueType &&
-                                    propertySymbol.GetAttributes().Any(wh => wh.AttributeClass.Name == "AsPointerAttribute")
-                                    ;
-
-                            if(asPointer)
-                            {
-                                var memberInfo = new MemberInfo();
-                                memberInfo.TypeName = $"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}";
-                                memberInfo.MemberName = propertySymbol.Name;
-                                memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
-                                memberInfo.IsValueType = propertySymbol.Type.IsValueType;
-                                memberInfo.AsPointer = asPointer;
-                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
-
-                                info.Members.Add(memberInfo);
-                                continue;
-                            }
-                            else
-                            if (typeInfos.TryGetValue($"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}", out var tInfo))
-                            {
-                                var memberInfo = new MemberInfo();
-                                memberInfo.TypeName = $"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}";
-                                memberInfo.MemberName = propertySymbol.Name;
-                                memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
-                                memberInfo.IsValueType = propertySymbol.Type.IsValueType;
-                                memberInfo.AsPointer = asPointer;
-                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
-
-                                info.Members.Add(memberInfo);
-                                continue;
-                            }
-                            else
-                            {
-                                var attributes = propertySymbol.Type.GetAttributes();
-                                if (!HelperMustGenerated(attributes))
-                                {
-                                    throw new Exception($"A type '{propertySymbol.Type.Name}' nested in a type '{currentType.Name}' is not marked with an generate attribute");
-                                }
-
-                                if (!(propertySymbol.Type is INamedTypeSymbol namedTypeSymbol))
-                                {
-                                    throw new Exception($"A type '{propertySymbol.Type.Name}' nested in a type '{currentType.Name}' is not 'INamedTypeSymbol'");
-                                }
-
-                                if (stackCurrentTypes.Contains(namedTypeSymbol, SymbolEqualityComparer.Default))
-                                {
-                                    throw new Exception($"Cyclic dependency detected: type '{propertySymbol.Type.Name}'; property '{propertySymbol.Name}'");
-                                }
-
-                                stackCurrentTypes.Push(namedTypeSymbol);
                                 needSkip = true;
                                 break;
                             }
+
+                            continue;
                         }
-                        else
+
                         if (member is Microsoft.CodeAnalysis.IFieldSymbol fieldSymbol)
                         {
-                            if (!member.DeclaredAccessibility.HasFlag(Accessibility.Public))
+                            if (!ProcessField(in info, in currentType, in typeInfos, in fieldSymbol, in stackCurrentTypes))
                             {
-                                if (!member.IsImplicitlyDeclared)
-                                {
-                                    throw new Exception($"Generation is possible only for the public field. Field name: '{member.Name}'");
-                                }
-                                continue;
-                            }
-
-                            if (TypeInfoHelper.IsPrimitive(fieldSymbol.Type.Name))
-                            {
-                                var memberInfo = new MemberInfo();
-                                memberInfo.TypeName = fieldSymbol.Type.Name;
-                                memberInfo.MemberName = fieldSymbol.Name;
-                                memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
-                                memberInfo.IsPrimitive = true;
-                                memberInfo.IsValueType = true;
-                                memberInfo.AsPointer = false;
-                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
-
-                                info.Members.Add(memberInfo);
-                                continue;
-                            }
-
-                            if (fieldSymbol.Type.IsAbstract)
-                            {
-                                throw new Exception($"Abstract type are not supported, field name: '{member.Name}'");
-                            }
-
-                            if (fieldSymbol.Type.IsRecord)
-                            {
-                                throw new Exception($"Record type are not supported, field name: '{member.Name}'");
-                            }
-
-                            var asPointer =
-                                    !fieldSymbol.Type.IsValueType &&
-                                    fieldSymbol.GetAttributes().Any(wh => wh.AttributeClass.Name == "AsPointerAttribute")
-                                    ;
-                            
-                            if (asPointer)
-                            {
-                                var memberInfo = new MemberInfo();
-                                memberInfo.TypeName = $"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}";
-                                memberInfo.MemberName = fieldSymbol.Name;
-                                memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
-                                memberInfo.IsValueType = fieldSymbol.Type.IsValueType;
-                                memberInfo.AsPointer = asPointer;
-                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
-
-                                info.Members.Add(memberInfo);
-                                continue;
-                            }
-                            else
-                            if (typeInfos.TryGetValue($"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}", out var tInfo))
-                            {
-                                var memberInfo = new MemberInfo();
-                                memberInfo.TypeName = $"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}";
-                                memberInfo.MemberName = fieldSymbol.Name;
-                                memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
-                                memberInfo.IsValueType = fieldSymbol.Type.IsValueType;
-                                memberInfo.AsPointer = asPointer;
-                                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
-
-                                info.Members.Add(memberInfo);
-                                continue;
-                            }
-                            else
-                            {
-                                var attributes = fieldSymbol.Type.GetAttributes();
-                                if (!HelperMustGenerated(attributes))
-                                {
-                                    throw new Exception($"A type '{fieldSymbol.Type.Name}' nested in a type '{currentType.Name}' is not marked with an generate attribute");
-                                }
-
-                                if (!(fieldSymbol.Type is INamedTypeSymbol namedTypeSymbol))
-                                {
-                                    throw new Exception($"A type '{fieldSymbol.Type.Name}' nested in a type '{currentType.Name}' is not 'INamedTypeSymbol'");
-                                }
-
-                                if(stackCurrentTypes.Contains(namedTypeSymbol, SymbolEqualityComparer.Default))
-                                {
-                                    throw new Exception($"Cyclic dependency detected: type '{fieldSymbol.Type.Name}'; field '{fieldSymbol.Name}'");
-                                }
-
-                                stackCurrentTypes.Push(namedTypeSymbol);
                                 needSkip = true;
                                 break;
                             }
+
+                            continue;
                         }
                     }
 
@@ -376,6 +204,225 @@ namespace StackMemoryCollections
                         stackCurrentTypes.Pop();
                     }
                 }
+            }
+        }
+
+        private bool ProcessProperty(
+            in TypeInfo info,
+            in INamedTypeSymbol currentType,
+            in Dictionary<string, TypeInfo> typeInfos,
+            in Microsoft.CodeAnalysis.IPropertySymbol propertySymbol,
+            in Stack<INamedTypeSymbol> stackCurrentTypes
+            )
+        {
+            if (!(propertySymbol.Type is INamedTypeSymbol namedTypeSymbol))
+            {
+                throw new Exception($"A type '{propertySymbol.Type.Name}' nested in a type '{currentType.Name}' is not 'INamedTypeSymbol'");
+            }
+
+            if (namedTypeSymbol.IsGenericType)
+            {
+                throw new Exception($"Generic property not supported. Property name: '{propertySymbol.Name}'");
+            }
+
+            if (!propertySymbol.DeclaredAccessibility.HasFlag(Accessibility.Public))
+            {
+                throw new Exception($"Generation is possible only for the public property. Property name: '{propertySymbol.Name}'");
+            }
+
+            if (propertySymbol.GetMethod == null)
+            {
+                throw new Exception($"The property must have GetMethod. Property name: '{propertySymbol.Name}'");
+            }
+
+            if (!propertySymbol.GetMethod.DeclaredAccessibility.HasFlag(Accessibility.Public))
+            {
+                throw new Exception($"GetMethod must be public. Property name: '{propertySymbol.Name}'");
+            }
+
+            if (propertySymbol.SetMethod == null)
+            {
+                throw new Exception($"The property must have SetMethod. Property name: '{propertySymbol.Name}'");
+            }
+
+            if (!propertySymbol.SetMethod.DeclaredAccessibility.HasFlag(Accessibility.Public))
+            {
+                throw new Exception($"SetMethod must be public. Property name: '{propertySymbol.Name}'");
+            }
+
+            if (TypeInfoHelper.IsPrimitive(propertySymbol.Type.Name))
+            {
+                var memberInfo = new MemberInfo();
+                memberInfo.TypeName = propertySymbol.Type.Name;
+                memberInfo.MemberName = propertySymbol.Name;
+                memberInfo.IsPrimitive = true;
+                memberInfo.IsValueType = true;
+                memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
+                memberInfo.AsPointer = false;
+                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
+                info.Members.Add(memberInfo);
+                return true;
+            }
+
+            if (propertySymbol.Type.IsAbstract)
+            {
+                throw new Exception($"Abstract type are not supported, property name: '{propertySymbol.Name}'");
+            }
+
+            if (propertySymbol.Type.IsRecord)
+            {
+                throw new Exception($"Record type are not supported, property name: '{propertySymbol.Name}'");
+            }
+
+            var asPointer =
+                    !propertySymbol.Type.IsValueType &&
+                    propertySymbol.GetAttributes().Any(wh => wh.AttributeClass.Name == "AsPointerAttribute")
+                    ;
+
+            if (asPointer)
+            {
+                var memberInfo = new MemberInfo();
+                memberInfo.TypeName = $"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}";
+                memberInfo.MemberName = propertySymbol.Name;
+                memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
+                memberInfo.IsValueType = propertySymbol.Type.IsValueType;
+                memberInfo.AsPointer = asPointer;
+                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
+                info.Members.Add(memberInfo);
+                return true;
+            }
+            
+            if (typeInfos.TryGetValue($"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}", out var tInfo))
+            {
+                var memberInfo = new MemberInfo();
+                memberInfo.TypeName = $"{propertySymbol.Type.ContainingNamespace}.{propertySymbol.Type.Name}";
+                memberInfo.MemberName = propertySymbol.Name;
+                memberInfo.IsUnmanagedType = propertySymbol.Type.IsUnmanagedType;
+                memberInfo.IsValueType = propertySymbol.Type.IsValueType;
+                memberInfo.AsPointer = asPointer;
+                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
+                info.Members.Add(memberInfo);
+                return true;
+            }
+
+            var attributes = propertySymbol.Type.GetAttributes();
+            if (!HelperMustGenerated(attributes))
+            {
+                throw new Exception($"A type '{propertySymbol.Type.Name}' nested in a type '{currentType.Name}' is not marked with an generate attribute");
+            }
+
+            if (stackCurrentTypes.Contains(namedTypeSymbol, SymbolEqualityComparer.Default))
+            {
+                throw new Exception($"Cyclic dependency detected: type '{propertySymbol.Type.Name}'; property '{propertySymbol.Name}'");
+            }
+
+            stackCurrentTypes.Push(namedTypeSymbol);
+            return false;
+        }
+
+        private bool ProcessField(
+            in TypeInfo info,
+            in INamedTypeSymbol currentType,
+            in Dictionary<string, TypeInfo> typeInfos,
+            in Microsoft.CodeAnalysis.IFieldSymbol fieldSymbol,
+            in Stack<INamedTypeSymbol> stackCurrentTypes
+            )
+        {
+            if (!fieldSymbol.DeclaredAccessibility.HasFlag(Accessibility.Public))
+            {
+                if (fieldSymbol.IsImplicitlyDeclared)
+                {
+                    return true;
+                }
+
+                throw new Exception($"Generation is possible only for the public field. Field name: '{fieldSymbol.Name}'");
+            }
+
+            if (!(fieldSymbol.Type is INamedTypeSymbol namedTypeSymbol))
+            {
+                throw new Exception($"A type '{fieldSymbol.Type.Name}' nested in a type '{currentType.Name}' is not 'INamedTypeSymbol'");
+            }
+
+            if (namedTypeSymbol.IsGenericType)
+            {
+                throw new Exception($"Generic field not supported. Field name: '{fieldSymbol.Name}'");
+            }
+
+            if (TypeInfoHelper.IsPrimitive(fieldSymbol.Type.Name))
+            {
+                var memberInfo = new MemberInfo();
+                memberInfo.TypeName = fieldSymbol.Type.Name;
+                memberInfo.MemberName = fieldSymbol.Name;
+                memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
+                memberInfo.IsPrimitive = true;
+                memberInfo.IsValueType = true;
+                memberInfo.AsPointer = false;
+                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
+                info.Members.Add(memberInfo);
+                return true;
+            }
+
+            if (fieldSymbol.Type.IsAbstract)
+            {
+                throw new Exception($"Abstract type are not supported, field name: '{fieldSymbol.Name}'");
+            }
+
+            if (fieldSymbol.Type.IsRecord)
+            {
+                throw new Exception($"Record type are not supported, field name: '{fieldSymbol.Name}'");
+            }
+
+            var asPointer =
+                    !fieldSymbol.Type.IsValueType &&
+                    fieldSymbol.GetAttributes().Any(wh => wh.AttributeClass.Name == "AsPointerAttribute")
+                    ;
+
+            if (asPointer)
+            {
+                var memberInfo = new MemberInfo();
+                memberInfo.TypeName = $"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}";
+                memberInfo.MemberName = fieldSymbol.Name;
+                memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
+                memberInfo.IsValueType = fieldSymbol.Type.IsValueType;
+                memberInfo.AsPointer = asPointer;
+                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
+                info.Members.Add(memberInfo);
+                return true;
+            }
+            else
+            if (typeInfos.TryGetValue($"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}", out var tInfo))
+            {
+                var memberInfo = new MemberInfo();
+                memberInfo.TypeName = $"{fieldSymbol.Type.ContainingNamespace}.{fieldSymbol.Type.Name}";
+                memberInfo.MemberName = fieldSymbol.Name;
+                memberInfo.IsUnmanagedType = fieldSymbol.Type.IsUnmanagedType;
+                memberInfo.IsValueType = fieldSymbol.Type.IsValueType;
+                memberInfo.AsPointer = asPointer;
+                TypeInfoHelper.CalculateOffset(memberInfo, in info, in typeInfos);
+
+                info.Members.Add(memberInfo);
+                return true;
+            }
+            else
+            {
+                var attributes = fieldSymbol.Type.GetAttributes();
+                if (!HelperMustGenerated(attributes))
+                {
+                    throw new Exception($"A type '{fieldSymbol.Type.Name}' nested in a type '{currentType.Name}' is not marked with an generate attribute");
+                }
+
+                if (stackCurrentTypes.Contains(namedTypeSymbol, SymbolEqualityComparer.Default))
+                {
+                    throw new Exception($"Cyclic dependency detected: type '{fieldSymbol.Type.Name}'; field '{fieldSymbol.Name}'");
+                }
+
+                stackCurrentTypes.Push(namedTypeSymbol);
+                return false;
             }
         }
 

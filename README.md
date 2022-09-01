@@ -12,7 +12,7 @@
 </h3>
 
 <h3 align="center">
-  <a href="https://github.com/SoftStoneDevelop/StackMemoryCollections/wiki">Documentation</a>
+  <a href="https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Readme.md">Documentation</a>
   <a href="https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Benchmarks.md">Benchmarks</a>
 </h3>
 

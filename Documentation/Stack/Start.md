@@ -8,4 +8,4 @@ public void* Start => _start;
 ```
 
 ## Remarks
-For collections on primitive types returns `{ItemType}*` pointer of `void*`
+For collections on primitive types returns `{ItemType}*` pointer instead of `void*`

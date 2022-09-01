@@ -63,39 +63,23 @@ Implements
 
 # Properties
 
-| Name | ForType |
+| Name | ForType | ForPropertyType |
 | ------------- | ------------- |
-| [Capacity](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Capacity.md)  | All |
-| [Size](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Size.md)  | All |
-| [Start](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Start.md) | All |
-| [IsEmpty](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/IsEmpty.md)  | All |
+| [Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/MemoryPtr.md)  | All | Once on instance |
+| [{PropertyName}Ptr { get; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyPtr.md)  | All | All |
+| [{PropertyName} { get; set; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyGetSet.md)  | All | All |
+| [{PropertyName}ValuiInPtr { get; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyValueInPtr.md)  | All | Class as Pointer |
 
 # Methods
 
-| Name | ForType |
+| Name | ForType | ForPropertyType |
 | ------------- | ------------- |
-| [ReducingCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/ReducingCapacity.md)  | All |
-| [ExpandCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/ExpandCapacity.md)  | All |
-| [TrimExcess()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TrimExcess.md)  | All |
-| [Push(in {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Push.md)  | All |
-| [Push(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/PushPtr.md)  | All |
-| [TryPush(in {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryPush.md)  | All |
-| [TryPush(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryPushPtr.md)  | All |
-| [Pop()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Pop.md)  | All |
-| [TryPop()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryPop.md)  | All |
-| [Clear()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Clear.md)  | All |
-| [Top()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Top.md)  | All |
-| [Top(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopInPtr.md)  | All |
-| [Top(ref {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopRef.md)  | All |
-| [TopPtr()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopPtr.md)  | All |
-| [TopOut(out {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopOut.md)  | All |
-| [indexator[nuint]](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/indexator.md)  | All |
-| [Copy(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Copy.md)  | All |
-| [Copy(in void*, nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/CopyCount.md)  | All |
-| [Copy(in Class.StackOf{ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/CopyToStack.md)  | All |
-| [IEnumerator<{ItemType}> GetEnumerator()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/GetEnumeratorItemType.md)  | Class |
-| [IEnumerable GetEnumerator()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/GetEnumerator.md)  | Class |
-| [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Dispose.md)  | All |
+| [GetValue()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/GetValue.md)  | All | For Instance |
+| [Fill(in {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Fill.md)  | All | For Instance |
+| [Set{PropertyName}(in {PropertyType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/SetIn.md)  | All | All |
+| [Set{PropertyName}(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/SetInPtr.md)  | All | All |
+| [GetOut{PropertyName}(out {PropertyType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/GetOut.md)  | All | All |
+| [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Dispose.md)  | All | All |
 
 # Examples
 

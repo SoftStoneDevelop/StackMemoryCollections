@@ -69,6 +69,7 @@ Implements
 | [{PropertyName}Ptr { get; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyPtr.md)  | All | All |
 | [{PropertyName} { get; set; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyGetSet.md)  | All | All |
 | [{PropertyName}ValuiInPtr { get; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyValueInPtr.md)  | All | Class as Pointer |
+| [IsNull](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/IsNull.md)  | All | Class |
 
 # Methods
 
@@ -79,7 +80,9 @@ Implements
 | [Set{PropertyName}(in {PropertyType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/SetIn.md)  | All | All |
 | [Set{PropertyName}(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/SetInPtr.md)  | All | All |
 | [GetOut{PropertyName}(out {PropertyType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/GetOut.md)  | All | All |
-| [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Dispose.md)  | All | All |
+| [ChangePtr(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/ChangePtr.md)  | All | For Instance |
+| [CreateInstance()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/CreateInstance.md)  | All | For Instance |
+| [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Dispose.md)  | All | For Instance |
 
 # Examples
 

@@ -1001,13 +1001,18 @@ namespace StackMemoryCollections.{stackNamespace}
             ) where T : unmanaged
         {
             builder.Append($@"
-        public void Copy(in void* ptrDest, in int count)
+        public void Copy(in void* ptrDest, in nuint count)
         {{
+            if(Size < (nuint)count)
+            {{
+                throw new Exception(""The collection does not have that many elements"");
+            }}
+
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,
-                count * {(calculateSize ? $"sizeof({typeof(T).Name})" : (sizeOf).ToString())},
-                count * {(calculateSize ? $"sizeof({typeof(T).Name})" : (sizeOf).ToString())}
+                count * (nuint){(calculateSize ? $"sizeof({typeof(T).Name})" : (sizeOf).ToString())},
+                count * (nuint){(calculateSize ? $"sizeof({typeof(T).Name})" : (sizeOf).ToString())}
                 );
         }}
 ");
@@ -1022,6 +1027,11 @@ namespace StackMemoryCollections.{stackNamespace}
             builder.Append($@"
         public void Copy(in void* ptrDest)
         {{
+            if(Size == 0)
+            {{
+                return;
+            }}
+
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,

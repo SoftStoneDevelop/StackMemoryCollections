@@ -1023,6 +1023,11 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             builder.Append($@"
         public void Copy(in void* ptrDest)
         {{
+            if(Size == 0)
+            {{
+                return;
+            }}
+
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,
@@ -1041,6 +1046,11 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             builder.Append($@"
         public void Copy(in void* ptrDest, in nuint count)
         {{
+            if(Size < count)
+            {{
+                throw new Exception(""The collection does not have that many elements"");
+            }}
+
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,

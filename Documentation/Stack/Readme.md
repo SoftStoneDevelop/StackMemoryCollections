@@ -56,10 +56,10 @@ Implements
 
 | Name | ForType |
 | ------------- | ------------- |
-| StackOf{ItemTypeName}()  | All |
-| StackOf{ItemTypeName}(nuint, StackMemoryCollections.Struct.StackMemory*)  | All |
-| StackOf{ItemTypeName}(nuint, StackMemoryCollections.Class.StackMemory)  | All |
-| StackOf{ItemTypeName}(nuint, void*)  | All |
+| [StackOf{ItemTypeName}()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor1.md)  | All |
+| [StackOf{ItemTypeName}(nuint, StackMemoryCollections.Struct.StackMemory*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor2.md)  | All |
+| [StackOf{ItemTypeName}(nuint, StackMemoryCollections.Class.StackMemory)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor3.md)  | All |
+| [StackOf{ItemTypeName}(nuint, void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor4.md)  | All |
 
 # Properties
 

@@ -1051,7 +1051,12 @@ namespace StackMemoryCollections.{stackNamespace}
             builder.Append($@"
         public void Copy(in Class.StackOf{typeof(T).Name} destStack)
         {{
-            if (destStack.Capacity < Capacity)
+            if(Size == 0)
+            {{
+                return;
+            }}
+
+            if (destStack.Capacity < Size)
             {{
                 throw new ArgumentException(""Destination stack not enough capacity"");
             }}
@@ -1060,7 +1065,7 @@ namespace StackMemoryCollections.{stackNamespace}
                 _start,
                 destStack.Start,
                 destStack.Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())},
-                Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())}
+                Size * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())}
                 );
 
             destStack.Size = Size;

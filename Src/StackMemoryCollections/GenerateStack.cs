@@ -1070,7 +1070,12 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             builder.Append($@"
         public void Copy(in {currentType.ContainingNamespace}.Class.StackOf{currentType.Name} destStack)
         {{
-            if (destStack.Capacity < Capacity)
+            if(Size == 0)
+            {{
+                return;
+            }}
+
+            if (destStack.Capacity < Size)
             {{
                 throw new ArgumentException(""Destination stack not enough capacity"");
             }}
@@ -1079,7 +1084,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 _start,
                 destStack.Start,
                 destStack.Capacity * {sizeOfStr},
-                Capacity * {sizeOfStr}
+                Size * {sizeOfStr}
                 );
 
             destStack.Size = Size;

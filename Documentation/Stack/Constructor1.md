@@ -1,15 +1,11 @@
-# StackMemory(nuint) Constructor
+# StackOf{ItemType}() Constructor
 
 ## Definition
-Creates an instance and allocates memory
+Creates an instance with a capacity of 4 and on its own memory.
 
 ```C#
-public StackMemory(nuint byteCount)
+public StackOf{ItemType}()
 ```
-## Parametrs
-byteCount nuint
-
-Size of allocated memory in bytes
 
 ## Remarks
-The default constructor of a struct will throw an Exception
+The collection works like a regular collection with auto resizing.

@@ -1,15 +1,21 @@
-# StackMemory(nuint) Constructor
+# StackOf{ItemType}(nuint, Struct.StackMemory*) Constructor
 
 ## Definition
-Creates an instance and allocates memory
+Creates an instance with Capacity equal `count` and allocate collection memory from StackMemory.
 
 ```C#
-public StackMemory(nuint byteCount)
+public StackOf{ItemType}(nuint count, Struct.StackMemory* stackMemory)
 ```
 ## Parametrs
-byteCount nuint
+`count nuint`
 
-Size of allocated memory in bytes
+Capacity of Collection
 
-## Remarks
-The default constructor of a struct will throw an Exception
+
+`Struct.StackMemory* stackMemory`
+
+The memory on which the collection runs
+
+## Exceptions
+`ArgumentNullException`
+if stackMemory is null

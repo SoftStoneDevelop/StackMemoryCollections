@@ -1,31 +1,13 @@
-# FreeMemory(nuint) Method
+# Copy(in void*) Method
 
 ## Definition
-Free memory.
+Copies the elements of the collection into memory.
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public void Copy(in void* ptrDest)
 ```
 
 ## Parameters
-reducingBytes nuint
+`in void* ptrDest`
 
-Freed memory size in bytes
-
-## Returns
-void
-
-## Exceptions
-
-```C#
-ObjectDisposedException
-```
--or-
-
-```C#
-Exception
-```
-If all memory is already free
-
-## Remark
-Shifts the Current pointer by -reducingBytes
+Pointer to the memory where the elements will be copied

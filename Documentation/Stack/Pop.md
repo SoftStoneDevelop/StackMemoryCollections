@@ -1,31 +1,16 @@
-# FreeMemory(nuint) Method
+# Pop() Method
 
 ## Definition
-Free memory.
+Removes an element from the top of the stack
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public void Pop()
 ```
-
-## Parameters
-reducingBytes nuint
-
-Freed memory size in bytes
-
-## Returns
-void
 
 ## Exceptions
 
 ```C#
-ObjectDisposedException
-```
--or-
-
-```C#
 Exception
 ```
-If all memory is already free
 
-## Remark
-Shifts the Current pointer by -reducingBytes
+If there are no elements on the stack

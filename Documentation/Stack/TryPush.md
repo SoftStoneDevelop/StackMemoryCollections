@@ -1,18 +1,19 @@
-# TryPush(in {ItemTypeName}) Method
+# TryPush(in {ItemType}) Method
 
 ## Definition
-Inserts an element at the top of the Stack..
+Tries to push an element to the top of the stack.
 
 ```C#
-public bool TryPush(in {ItemTypeName} item)
+public bool TryPush(in {ItemType} item)
 ```
 
 ## Parameters
-item {ItemTypeName}
+`item {ItemType}`
 
 Inserted element
 
-## Returns
-bool
 
-True if operation successful otherwise false
+## Returns
+`bool`
+
+True if element is successfully inserted otherwise False

@@ -1,31 +1,8 @@
-# FreeMemory(nuint) Method
+# Clear() Method
 
 ## Definition
-Free memory.
+Remove all items from a collection
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public void Clear()
 ```
-
-## Parameters
-reducingBytes nuint
-
-Freed memory size in bytes
-
-## Returns
-void
-
-## Exceptions
-
-```C#
-ObjectDisposedException
-```
--or-
-
-```C#
-Exception
-```
-If all memory is already free
-
-## Remark
-Shifts the Current pointer by -reducingBytes

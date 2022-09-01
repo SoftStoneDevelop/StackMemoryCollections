@@ -33,10 +33,10 @@ Implements IDisposable
 
 | Name | Description |
 | ------------- | ------------- |
-| Start  | Start of memory |
-| Current  | Pointer to free memory |
-| ByteCount  | Total memory size |
-| FreeByteCount  | Free memory size |
+| [Start](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Start.md)  | Start of memory |
+| [Current](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Current.md)  | Pointer to free memory |
+| [ByteCount](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/ByteCount.md)  | Total memory size |
+| [FreeByteCount](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/FreeByteCount.md)  | Free memory size |
 
 # Methods
 
@@ -44,7 +44,9 @@ Implements IDisposable
 | Name | Description |
 | ------------- | ------------- |
 | [AllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/AllocateMemory.md)  | Allocate free memory |
+| [TryAllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/TryAllocateMemory.md) | Try Allocate free memory |
 | [FreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/FreeMemory.md)  | Free up occupied memory |
+| [TryFreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/TryFreeMemory.md)  | Free up occupied memory |
 | [Dispose](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Dispose.md)  | Free all memory |
 
 ## Examples

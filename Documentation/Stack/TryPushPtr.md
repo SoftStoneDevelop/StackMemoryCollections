@@ -19,3 +19,4 @@ True if element is successfully inserted otherwise False
 
 ## Remarks
 For collections on primitive types then ptr is `{ItemType}*` pointer instead of `void*`
+If the instance was created using a constructor on a memory and no place for the element in the collection then: try allocate memory from `memory`.

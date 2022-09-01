@@ -17,3 +17,4 @@ Inserted element
 `bool`
 
 True if element is successfully inserted otherwise False
+If the instance was created using a constructor on a memory and no place for the element in the collection then: try allocate memory from `memory`.

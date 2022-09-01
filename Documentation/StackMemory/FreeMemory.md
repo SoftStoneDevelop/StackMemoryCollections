@@ -8,12 +8,12 @@ public void FreeMemory(nuint reducingBytes)
 ```
 
 ## Parameters
-reducingBytes nuint
+`reducingBytes nuint`
 
 Freed memory size in bytes
 
 ## Returns
-void
+`void`
 
 ## Exceptions
 

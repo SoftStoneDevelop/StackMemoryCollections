@@ -8,7 +8,7 @@ Class
 
 namespace {ItemTypeNamespace}.Class
 {
-    public unsafe class StackOf{ItemTypeName} : IDisposable, System.Collections.Generic.IEnumerable<{ItemType}>
+    public unsafe class StackOf{ItemType} : IDisposable, System.Collections.Generic.IEnumerable<{ItemType}>
 }
 
 ```
@@ -20,7 +20,7 @@ Struct
 
 namespace {ItemTypeNamespace}.Struct
 {
-    public unsafe struct StackOf{ItemTypeName} : IDisposable
+    public unsafe struct StackOf{ItemType} : IDisposable
 }
 
 ```
@@ -32,7 +32,7 @@ Class
 
 namespace StackMemoryCollections.Class
 {
-    public unsafe class StackOf{PrimitiveTypeName} : IDisposable, System.Collections.Generic.IEnumerable<{PrimitiveType}>
+    public unsafe class StackOf{PrimitiveType} : IDisposable, System.Collections.Generic.IEnumerable<{PrimitiveType}>
 }
 
 ```
@@ -44,7 +44,7 @@ Struct
 
 namespace StackMemoryCollections.Struct
 {
-    public unsafe struct StackOf{PrimitiveTypeName} : IDisposable
+    public unsafe struct StackOf{PrimitiveType} : IDisposable
 }
 
 ```
@@ -56,10 +56,10 @@ Implements
 
 | Name | ForType |
 | ------------- | ------------- |
-| [StackOf{ItemTypeName}()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor1.md)  | All |
-| [StackOf{ItemTypeName}(nuint, StackMemoryCollections.Struct.StackMemory*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor2.md)  | All |
-| [StackOf{ItemTypeName}(nuint, StackMemoryCollections.Class.StackMemory)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor3.md)  | All |
-| [StackOf{ItemTypeName}(nuint, void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor4.md)  | All |
+| [StackOf{ItemType}()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor1.md)  | All |
+| [StackOf{ItemType}(nuint, StackMemoryCollections.Struct.StackMemory*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor2.md)  | All |
+| [StackOf{ItemType}(nuint, StackMemoryCollections.Class.StackMemory)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor3.md)  | All |
+| [StackOf{ItemType}(nuint, void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor4.md)  | All |
 
 # Properties
 

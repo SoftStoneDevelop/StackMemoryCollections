@@ -119,7 +119,7 @@ public struct JobStruct
 
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)5))
+    using (var memory = new Struct.StackMemory(JobStructHelper.SizeOf * (nuint)5))
     {
         var item = new JobStruct(0, 0);
         using var stack = new Struct.StackOfJobStruct((nuint)5, &memory);
@@ -143,7 +143,7 @@ unsafe
 
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)10))
+    using (var memory = new Struct.StackMemory(JobStructHelper.SizeOf * (nuint)10))
     {
         var item = new JobStruct(0, 0);
         using var stack = new Struct.StackOfJobStruct((nuint)5, &memory);

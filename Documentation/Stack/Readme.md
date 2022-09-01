@@ -92,8 +92,8 @@ Implements
 | [Copy(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Copy.md)  | All |
 | [Copy(in void*, nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/CopyCount.md)  | All |
 | [Copy(in Class.StackOf{ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/CopyToStack.md)  | All |
-| [IEnumerator<{ItemType}> GetEnumerator()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/GetEnumeratorItemType.md)  | All |
-| [IEnumerable GetEnumerator()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/GetEnumerator.md)  | All |
+| [IEnumerator<{ItemType}> GetEnumerator()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/GetEnumeratorItemType.md)  | Class |
+| [IEnumerable GetEnumerator()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/GetEnumerator.md)  | Class |
 | [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Dispose.md)  | All |
 
 # Examples

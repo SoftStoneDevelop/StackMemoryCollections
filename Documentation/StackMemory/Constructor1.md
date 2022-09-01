@@ -6,3 +6,7 @@ This constructor is not supported. Will throw an exception.
 ```C#
 public StackMemory()
 ```
+## Exceptions
+`Exception`
+
+always

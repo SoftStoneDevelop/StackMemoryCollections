@@ -64,7 +64,7 @@ Implements
 # Properties
 
 | Name | ForType | ForPropertyType |
-| ------------- | ------------- |
+| ------------- | ------------- |------------- |
 | [Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/MemoryPtr.md)  | All | Once on instance |
 | [{PropertyName}Ptr { get; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyPtr.md)  | All | All |
 | [{PropertyName} { get; set; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyGetSet.md)  | All | All |
@@ -73,7 +73,7 @@ Implements
 # Methods
 
 | Name | ForType | ForPropertyType |
-| ------------- | ------------- |
+| ------------- | ------------- |------------- |
 | [GetValue()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/GetValue.md)  | All | For Instance |
 | [Fill(in {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Fill.md)  | All | For Instance |
 | [Set{PropertyName}(in {PropertyType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/SetIn.md)  | All | All |

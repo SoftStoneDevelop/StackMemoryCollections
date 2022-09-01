@@ -8,26 +8,22 @@ public void* AllocateMemory(nuint allocateBytes)
 ```
 
 ## Parameters
-allocateBytes nuint
+`allocateBytes nuint`
 
 Size of allocated memory in bytes
 
 ## Returns
-void*
+`void*`
 
-Pointer to start of allocated memory(same as Current property)
+Pointer to start of allocated memory
 
 # Exceptions
 
 ```C#
 ObjectDisposedException
 ```
--or-
 
 ```C#
 ArgumentException
 ```
 If more memory requested than can be allocated
-
-## Remark
-Shifts the Current pointer by +allocateBytes

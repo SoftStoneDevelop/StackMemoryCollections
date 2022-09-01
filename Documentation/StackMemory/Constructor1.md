@@ -1,15 +1,12 @@
-# StackMemory(nuint) Constructor
+# StackMemory() Constructor
 
 ## Definition
-Creates an instance and allocates memory
+This constructor is not supported. Will throw an exception.
 
 ```C#
-public StackMemory(nuint byteCount)
+public StackMemory()
 ```
-## Parametrs
-byteCount nuint
+## Exceptions
+`Exception`
 
-Size of allocated memory in bytes
-
-## Remarks
-The default constructor of a struct will throw an Exception
+always

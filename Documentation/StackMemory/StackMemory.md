@@ -66,7 +66,7 @@ unsafe
 
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory())//throw error "Default constructor not supported"
+    using (var memory = new StackMemoryCollections.Struct.StackMemory())//throw error "Constructor without parameters is not supported"
     {
     }
 }

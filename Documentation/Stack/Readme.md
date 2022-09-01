@@ -1,5 +1,5 @@
 # Definition
-Represents a simple last-in-first-out (LIFO) collection of {ItemTypeName}. Where ItemName is you class/struct name.
+Represents a simple last-in-first-out (LIFO) collection of {ItemTypeName}. Where ItemType is you class/struct name.
 The collection is auto-generated, for generation the class/struct {ItemTypeName} must be marked with the attribute [GenerateStack].
 
 ## For class/struct items:
@@ -25,72 +25,76 @@ namespace {ItemTypeNamespace}.Struct
 
 ```
 
-## For primitive types:
+## For primitive types (`Int32`, `Int64`, `UInt32`... and `IntPtr`):
 Class
 ```C#
 
 namespace StackMemoryCollections.Class
 {
-    public unsafe class Stack<T> : IDisposable, IEnumerable<T> where T : unmanaged
+    public unsafe class StackOf{PrimitiveTypeName} : IDisposable, System.Collections.Generic.IEnumerable<{PrimitiveType}>
 }
 
 ```
 Implements
-`IEnumerable<T>, IEnumerable, IDisposable`
+`IEnumerable<{PrimitiveType}>, IEnumerable, IDisposable`
 
 Struct
 ```C#
 
 namespace StackMemoryCollections.Struct
 {
-    public unsafe struct Stack<T> : IDisposable where T : unmanaged
+    public unsafe struct StackOf{PrimitiveTypeName} : IDisposable
 }
 
 ```
-
 
 Implements
 `IDisposable`
 
 # Constructors
 
-| Name | Description |
+| Name | ForType |
 | ------------- | ------------- |
-| StackOf{ItemTypeName}(nuint, StackMemoryCollections.Struct.StackMemory* stackMemory)  | Creates a new instance of the collection, allocates memory using StackMemory |
-| StackOf{ItemTypeName}(nuint, StackMemoryCollections.Class.StackMemory stackMemory)  | Creates a new instance of the collection, allocates memory using StackMemory |
-| StackOf{ItemTypeName}(nuint, void* memoryStart)  | Creates a new collection instance at a pointer to memory |
+| StackOf{ItemTypeName}()  | All |
+| StackOf{ItemTypeName}(nuint, StackMemoryCollections.Struct.StackMemory*)  | All |
+| StackOf{ItemTypeName}(nuint, StackMemoryCollections.Class.StackMemory)  | All |
+| StackOf{ItemTypeName}(nuint, void*)  | All |
 
 # Properties
 
-| Name | Description |
+| Name | ForType |
 | ------------- | ------------- |
-| Capacity  | Сollection capacity |
-| Size  | Current collection size |
-| IsEmpty  | Sign of an empty collection |
+| [Capacity](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Capacity.md)  | All |
+| [Size](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Size.md)  | All |
+| [Start](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Start.md) | All |
+| [IsEmpty](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/IsEmpty.md)  | All |
 
 # Methods
 
-
-| Name | Description |
+| Name | ForType |
 | ------------- | ------------- |
-| [ReducingCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/ReducingCapacity.md)  | Reducing The Capacity of a collection |
-| [ExpandCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/ExpandCapacity.md)  | Expand The Capacity of a collection |
-| [TrimExcess()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TrimExcess.md)  |  |
-| [Push(in {ItemTypeName})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Push.md)  | Inserts an item at the top of The Stack. |
-| [TryPush(in {ItemTypeName})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryPush.md)  | Inserts an item at the top of The Stack. |
-| [Pop()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Pop.md)  | Removes the item at the top of The Stack. |
-| [Clear()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Clear.md)  | Removes all items from The Stack. |
-| [Top()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Top.md)  | Returns the item at the top of The Stack. |
-| [TopPtr()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopPtr.md)  | Returns the pointer on item at the top of The Stack. |
-| [indexator[nuint]](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/indexator.md)  | Returns the pointer on item by index. |
-| [Copy(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Copy.md)  | Copy elements to memory |
-| [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Dispose.md)  | Free memory |
-
-## Only for the class
-| Name | Description |
-| ------------- | ------------- |
-| IEnumerator<{ItemTypeName}> GetEnumerator()  | Return enumerator |
-| IEnumerable GetEnumerator()  | Return enumerator |
+| [ReducingCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/ReducingCapacity.md)  | All |
+| [ExpandCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/ExpandCapacity.md)  | All |
+| [TrimExcess()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TrimExcess.md)  | All |
+| [Push(in {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Push.md)  | All |
+| [Push(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/PushPtr.md)  | All |
+| [TryPush(in {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryPush.md)  | All |
+| [TryPush(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryPushPtr.md)  | All |
+| [Pop()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Pop.md)  | All |
+| [TryPop()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryPop.md)  | All |
+| [Clear()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Clear.md)  | All |
+| [Top()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Top.md)  | All |
+| [Top(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopInPtr.md)  | All |
+| [Top(ref {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopRef.md)  | All |
+| [TopPtr()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopPtr.md)  | All |
+| [TopOut(out {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopOut.md)  | All |
+| [indexator[nuint]](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/indexator.md)  | All |
+| [Copy(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Copy.md)  | All |
+| [Copy(in void*, nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/CopyCount.md)  | All |
+| [Copy(in Class.StackOf{ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/CopyToStack.md)  | All |
+| [IEnumerator<{ItemType}> GetEnumerator()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/GetEnumeratorItemType.md)  | All |
+| [IEnumerable GetEnumerator()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/GetEnumerator.md)  | All |
+| [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Dispose.md)  | All |
 
 # Examples
 
@@ -114,7 +118,7 @@ public struct JobStruct
 
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.GetSize() * (nuint)5))
+    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)5))
     {
         var item = new JobStruct(0, 0);
         using var stack = new Struct.StackOfJobStruct((nuint)5, &memory);
@@ -126,9 +130,8 @@ unsafe
         }
 
         stack.TrimExcess();//No copy just pointer offset
-        while (!stack.IsEmpty)
+        while (stack.TryPop())
         {
-            stack.Pop();
         }
     }
 }
@@ -139,7 +142,7 @@ unsafe
 
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.GetSize() * (nuint)10))
+    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)10))
     {
         var item = new JobStruct(0, 0);
         using var stack = new Struct.StackOfJobStruct((nuint)5, &memory);
@@ -155,9 +158,8 @@ unsafe
             }
         }
 
-        while (!stack.IsEmpty)
+        while (stack.TryPop())
         {
-            stack.Pop();
         }
     }
 }

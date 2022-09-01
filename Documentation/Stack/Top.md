@@ -1,31 +1,22 @@
-# FreeMemory(nuint) Method
+# Top() Method
 
 ## Definition
-Free memory.
+Get an element from the top of the stack
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public {ItemType} Top()
 ```
 
-## Parameters
-reducingBytes nuint
-
-Freed memory size in bytes
-
 ## Returns
-void
+{ItemType}
+
+element from the top of the stack
+
 
 ## Exceptions
 
 ```C#
-ObjectDisposedException
-```
--or-
-
-```C#
 Exception
 ```
-If all memory is already free
 
-## Remark
-Shifts the Current pointer by -reducingBytes
+If there are no elements on the stack

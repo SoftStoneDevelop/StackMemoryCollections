@@ -58,9 +58,9 @@ public struct JobStruct
 //Stack of pointers
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf + (nuint)sizeof(IntPtr)))
+    using (var memory = new Struct.StackMemory(JobStructHelper.SizeOf + (nuint)sizeof(IntPtr)))
     {
-        using var stack = new StackMemoryCollections.Struct.StackOfIntPtr(1, &memory);
+        using var stack = new Struct.StackOfIntPtr(1, &memory);
         {
             var item = new Struct.JobStructWrapper(&memory);
             item.Int32 = 456;
@@ -77,12 +77,12 @@ unsafe
 //All alocate memory = JobStructHelper.SizeOf * 100
 unsafe
 {
-    using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)100))//allocate memory
+    using (var memory = new Struct.StackMemory(JobStructHelper.SizeOf * (nuint)100))//allocate memory
     {
         var item = new JobStruct(0, 0);
         
         {
-            using var stack = new Benchmark.Struct.StackOfJobStruct((nuint)Size, &memory);//get memory
+            using var stack = new Struct.StackOfJobStruct((nuint)Size, &memory);//get memory
             for (int i = 0; i < Size; i++)
             {
                 item.Int32 = i;
@@ -95,7 +95,7 @@ unsafe
             //Do whatever you want with stack
         }//return memory
 
-        var stack2 = new Benchmark.Struct.StackOfJobStruct((nuint)Size, &memory);//get memory
+        var stack2 = new Struct.StackOfJobStruct((nuint)Size, &memory);//get memory
         for (int i = 0; i < 100; i++)
         {
             item.Int32 = i;

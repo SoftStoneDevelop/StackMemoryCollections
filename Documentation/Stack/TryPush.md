@@ -16,4 +16,4 @@ Inserted element
 ## Returns
 `bool`
 
-True if element is successly inserted otherwise False
+True if element is successfully inserted otherwise False

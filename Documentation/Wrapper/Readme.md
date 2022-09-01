@@ -185,7 +185,7 @@ unsafe
     };
     wrap.Fill(in helpStructValueIn);
     IntPtr helpClass2Out;
-    wrap2.GetOutHelpClass2(out helpClass2Out);
+    wrap.GetOutHelpClass2(out helpClass2Out);
     
     var wrapClass = new Struct.HelpClassWrapper();
     wrapClass.Fill(new HelpClass(44, 235, new HelpStruct2(140, 78)));

@@ -1,31 +1,11 @@
-# FreeMemory(nuint) Method
+# Dispose() Method
 
 ## Definition
-Free memory.
+Disposed the memory used by the collection.
 
 ```C#
-public void FreeMemory(nuint reducingBytes)
+public void Dispose()
 ```
-
-## Parameters
-reducingBytes nuint
-
-Freed memory size in bytes
-
-## Returns
-void
-
-## Exceptions
-
-```C#
-ObjectDisposedException
-```
--or-
-
-```C#
-Exception
-```
-If all memory is already free
 
 ## Remark
-Shifts the Current pointer by -reducingBytes
+If the instance was created using a [constructor on a pointer](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor4.md) then: do nothing.

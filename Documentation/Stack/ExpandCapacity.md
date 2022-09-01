@@ -8,7 +8,7 @@ public void ExpandCapacity(in nuint expandCount)
 ```
 
 ## Parameters
-expandCount nuint
+`expandCount nuint`
 
 Allocate memory size in count of items
 
@@ -21,3 +21,4 @@ If The Stack collection is created using StackMemory and the StackMemory has mov
 
 ## Remark
 Increases Capacity by quantity 'expandCount'
+If the instance was created using a [constructor on a pointer](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Constructor4.md) then: Copies elements to new memory (`Capacity + expandCount`), freeing the current memory.

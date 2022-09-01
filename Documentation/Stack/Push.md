@@ -18,3 +18,7 @@ Inserted element
 Exception
 ```
 If there is no place for the element in the collection
+
+## Remarks
+
+If the instance was created using a constructor on a memory and no place for the element in the collection then: allocate memory from `memory`.

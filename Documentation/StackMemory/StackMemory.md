@@ -44,11 +44,11 @@ Implements IDisposable
 
 | Name | ForType |
 | ------------- | ------------- |
-| [AllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/AllocateMemory.md)  | All |
-| [TryAllocateMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/TryAllocateMemory.md) | All |
-| [FreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/FreeMemory.md)  | All |
-| [TryFreeMemory](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/TryFreeMemory.md)  | All |
-| [Dispose](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Dispose.md)  | All |
+| [AllocateMemory(nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/AllocateMemory.md)  | All |
+| [TryAllocateMemory(nuint, out void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/TryAllocateMemory.md) | All |
+| [FreeMemory()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/FreeMemory.md)  | All |
+| [TryFreeMemory()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/TryFreeMemory.md)  | All |
+| [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/StackMemory/Dispose.md)  | All |
 
 ## Examples
 ```C#

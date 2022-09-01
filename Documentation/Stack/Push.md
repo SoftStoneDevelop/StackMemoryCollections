@@ -1,14 +1,14 @@
-# Push(in {ItemTypeName}) Method
+# Push(in {ItemType}) Method
 
 ## Definition
-Inserts an element at the top of the Stack..
+Inserts an element at the top of the Stack.
 
 ```C#
-public void Push(in {ItemTypeName} item)
+public void Push(in {ItemType} item)
 ```
 
 ## Parameters
-item {ItemTypeName}
+`item {ItemType}`
 
 Inserted element
 

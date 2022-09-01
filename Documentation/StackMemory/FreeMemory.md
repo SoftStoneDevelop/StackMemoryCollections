@@ -1,7 +1,7 @@
 # FreeMemory(nuint) Method
 
 ## Definition
-Free memory.
+Frees up occupied memory.
 
 ```C#
 public void FreeMemory(nuint reducingBytes)
@@ -20,12 +20,9 @@ void
 ```C#
 ObjectDisposedException
 ```
--or-
+
 
 ```C#
 Exception
 ```
 If all memory is already free
-
-## Remark
-Shifts the Current pointer by -reducingBytes

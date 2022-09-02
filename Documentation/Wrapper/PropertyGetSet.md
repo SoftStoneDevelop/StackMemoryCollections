@@ -4,7 +4,7 @@
 Geter/setter value of property
 
 ```C#
-public {PropertyType}* {PropertyName} { get; set; }
+public {PropertyType} {PropertyName} { get; set; }
 ```
 
 ## Remarks

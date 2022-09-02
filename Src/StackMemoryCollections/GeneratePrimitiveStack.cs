@@ -429,7 +429,7 @@ namespace StackMemoryCollections.{stackNamespace}
                         throw new Exception(""Not enough memory to allocate stack element"");
                     }}
                     
-                    Capacity++;
+                    Capacity += 1;
                 }}
             }}
 
@@ -439,7 +439,7 @@ namespace StackMemoryCollections.{stackNamespace}
             if(stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -460,12 +460,12 @@ namespace StackMemoryCollections.{stackNamespace}
                 throw new Exception(""Not enough memory to allocate stack element"");
             }}
 
-            Size++;
+            Size += 1;
 ");
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -515,7 +515,7 @@ namespace StackMemoryCollections.{stackNamespace}
                         throw new Exception(""Not enough memory to allocate stack element"");
                     }}
                     
-                    Capacity++;
+                    Capacity += 1;
                 }}
             }}
 
@@ -525,7 +525,7 @@ namespace StackMemoryCollections.{stackNamespace}
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -581,7 +581,7 @@ namespace StackMemoryCollections.{stackNamespace}
                         return false;
                     }}
                     
-                    Capacity++;
+                    Capacity += 1;
                 }}
             }}
 
@@ -591,7 +591,7 @@ namespace StackMemoryCollections.{stackNamespace}
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -648,7 +648,7 @@ namespace StackMemoryCollections.{stackNamespace}
                         return false;
                     }}
                     
-                    Capacity++;
+                    Capacity += 1;
                 }}
             }}
 
@@ -658,7 +658,7 @@ namespace StackMemoryCollections.{stackNamespace}
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -680,12 +680,12 @@ namespace StackMemoryCollections.{stackNamespace}
                 throw new Exception(""There are no elements on the stack"");
             }}
 
-            Size--;
+            Size -= 1;
 ");
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -706,12 +706,12 @@ namespace StackMemoryCollections.{stackNamespace}
                 return false;
             }}
 
-            Size--;
+            Size -= 1;
 ");
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -736,7 +736,7 @@ namespace StackMemoryCollections.{stackNamespace}
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -996,8 +996,7 @@ namespace StackMemoryCollections.{stackNamespace}
                     return false;
                 }}
 
-                --_currentIndex;
-                if (_currentIndex >= 0)
+                if (--_currentIndex >= 0)
                 {{
                     _current = _stack._start + _currentIndex;
                     return true;

@@ -404,7 +404,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                         throw new Exception(""Not enough memory to allocate stack element"");
                     }}
                     
-                    Capacity++;
+                    Capacity += 1;
                 }}
             }}
 
@@ -414,7 +414,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             if(stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -435,12 +435,12 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 throw new Exception(""Not enough memory to allocate stack element"");
             }}
 
-            Size++;
+            Size += 1;
 ");
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -490,7 +490,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                         throw new Exception(""Not enough memory to allocate stack element"");
                     }}
                     
-                    Capacity++;
+                    Capacity += 1;
                 }}
             }}
 
@@ -500,7 +500,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -556,7 +556,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                         return false;
                     }}
                     
-                    Capacity++;
+                    Capacity += 1;
                 }}
             }}
 
@@ -566,7 +566,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -623,7 +623,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                         return false;
                     }}
                     
-                    Capacity++;
+                    Capacity += 1;
                 }}
             }}
 
@@ -633,7 +633,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -655,12 +655,12 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 throw new Exception(""There are no elements on the stack"");
             }}
 
-            Size--;
+            Size -= 1;
 ");
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -681,12 +681,12 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 return false;
             }}
 
-            Size--;
+            Size -= 1;
 ");
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -711,7 +711,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             if (stackNamespace == "Class")
             {
                 builder.Append($@"
-            _version++;
+            _version += 1;
 ");
             }
             builder.Append($@"
@@ -1015,8 +1015,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                     return false;
                 }}
 
-                --_currentIndex;
-                if (_currentIndex >= 0)
+                if (--_currentIndex >= 0)
                 {{
                     _current = (byte*)_stack._start + (_currentIndex * (int){sizeOfStr});
                     return true;

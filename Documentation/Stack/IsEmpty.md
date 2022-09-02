@@ -4,5 +4,5 @@
 Gets a sign of absence in the collection of elements
 
 ```C#
-public bool IsEmpty => Size == 0;
+public bool IsEmpty { get; }
 ```

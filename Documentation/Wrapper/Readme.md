@@ -66,9 +66,9 @@ Implements
 | Name | ForType | ForPropertyType |
 | ------------- | ------------- |------------- |
 | [Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/MemoryPtr.md)  | All | For Instance |
-| [{PropertyName}Ptr { get; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyPtr.md)  | All | All |
-| [{PropertyName} { get; set; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyGetSet.md)  | All | All |
-| [{PropertyName}ValuiInPtr { get; }](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyValueInPtr.md)  | All | Class as Pointer |
+| [{PropertyName}Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyPtr.md)  | All | All |
+| [{PropertyName}](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyGetSet.md)  | All | All |
+| [{PropertyName}ValuiInPtr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyValueInPtr.md)  | All | Class as Pointer |
 | [IsNull](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/IsNull.md)  | All | Class |
 
 # Methods

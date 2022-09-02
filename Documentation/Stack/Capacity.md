@@ -4,5 +4,5 @@
 Gets the capacity of the collection
 
 ```C#
-public nuint Capacity { get; private set; }
+public nuint Capacity { get; }
 ```

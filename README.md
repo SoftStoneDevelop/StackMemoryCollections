@@ -64,7 +64,8 @@ unsafe
         {
             var item = new Struct.JobStructWrapper(&memory);
             item.Int32 = 456;
-            stack.Push(new IntPtr(item.Ptr));
+            *stack.TopFuture() = new IntPtr(item.Ptr);
+            stack.PushFuture();
         }
         var item2 = new Struct.JobStructWrapper(stack.Top().ToPointer());
         //item2 point to same memory as is item
@@ -79,17 +80,20 @@ unsafe
 {
     using (var memory = new Struct.StackMemory(JobStructHelper.SizeOf * (nuint)100))//allocate memory
     {
-        var item = new JobStruct(0, 0);
+        var item = new Benchmark.Struct.JobStructWrapper(memory.Start, false);
+        var js2W = new Benchmark.Struct.JobStruct2Wrapper(memory.Start, false);
         
         {
             using var stack = new Struct.StackOfJobStruct((nuint)Size, &memory);//get memory
             for (int i = 0; i < Size; i++)
             {
+                item.ChangePtr(stack.TopFuture());
                 item.Int32 = i;
                 item.Int64 = i * 2;
-                item.JobStruct2.Int32 = 15;
-                item.JobStruct2.Int64 = 36;
-                stack.Push(in item);
+                js2W.ChangePtr(item.JobStruct2Ptr);
+                js2W.Int32 = 777;
+                js2W.Int64 = 111;
+                stack.PushFuture();
             }
         
             //Do whatever you want with stack
@@ -98,11 +102,13 @@ unsafe
         var stack2 = new Struct.StackOfJobStruct((nuint)Size, &memory);//get memory
         for (int i = 0; i < 100; i++)
         {
+            item.ChangePtr(stack2.TopFuture());
             item.Int32 = i;
             item.Int64 = i * 2;
-            item.JobStruct2.Int32 = 15;
-            item.JobStruct2.Int64 = 36;
-            stack2.Push(in item);
+            js2W.ChangePtr(item.JobStruct2Ptr);
+            js2W.Int32 = 465;
+            js2W.Int64 = 7898721;
+            stack2.PushFuture();
         }
     }//free all memory
 }

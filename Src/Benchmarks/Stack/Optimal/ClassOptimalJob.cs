@@ -16,7 +16,7 @@ namespace Benchmark
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(JobClassHelper.SizeOf + (JobClassHelper.SizeOf * (nuint)Size)))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(JobClassHelper.SizeOf * (nuint)Size))
                 {
                     var item = new Benchmark.Struct.JobClassWrapper(memory.Start, false);
                     var js2W = new Benchmark.Struct.JobClass2Wrapper(memory.Start, false);

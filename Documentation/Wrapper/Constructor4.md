@@ -7,12 +7,12 @@ Creates an instance with memory for the instance starting at `start`.
 public {ItemType}Wrapper(void* start, bool createInstance)
 ```
 ## Parametrs
-`bool createInstance`
+`bool` createInstance
 
 If true - set nullable mark to NotNull and set all IntPtr property to IntPtr.Zero
 
 
-`void* start`
+`void*` start
 
 The memory on which the instance runs
 

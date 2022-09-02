@@ -81,6 +81,7 @@ Implements
 | [Push(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/PushPtr.md)  | All |
 | [TryPush(in {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryPush.md)  | All |
 | [TryPush(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryPushPtr.md)  | All |
+| [PushFuture()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/PushFuture.md)  | All |
 | [Pop()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Pop.md)  | All |
 | [TryPop()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryPop.md)  | All |
 | [Clear()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Clear.md)  | All |
@@ -88,6 +89,7 @@ Implements
 | [Top(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopInPtr.md)  | All |
 | [Top(ref {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopRef.md)  | All |
 | [TopPtr()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopPtr.md)  | All |
+| [TopFuture()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopFuture.md)  | All |
 | [TopOut(out {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TopOut.md)  | All |
 | [[nuint]](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/indexator.md)  | All |
 | [Copy(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Copy.md)  | All |

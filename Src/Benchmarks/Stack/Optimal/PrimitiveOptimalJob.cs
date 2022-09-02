@@ -25,6 +25,7 @@ namespace Benchmark
                             for (int i = 0; i < Size; i++)
                             {
                                 *stack.TopFuture() = i;
+                                stack.PushFuture();
                             }
 
                             if(j > 50)

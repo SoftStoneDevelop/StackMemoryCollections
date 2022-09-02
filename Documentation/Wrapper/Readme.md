@@ -33,7 +33,7 @@ Class
 
 namespace StackMemoryCollections.Class
 {
-    public unsafe class {PrimitiveTypeName}Wrapper : IDisposable
+    public unsafe class {PrimitiveType}Wrapper : IDisposable
 }
 
 ```
@@ -45,7 +45,7 @@ Struct
 
 namespace StackMemoryCollections.Struct
 {
-    public unsafe struct {PrimitiveTypeName}Wrapper : IDisposable
+    public unsafe struct {PrimitiveType}Wrapper : IDisposable
 }
 
 ```
@@ -66,9 +66,9 @@ Implements
 | Name | ForType | ForPropertyType |
 | ------------- | ------------- |------------- |
 | [Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/MemoryPtr.md)  | All | For Instance |
-| [{PropertyName}Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyPtr.md)  | All | All |
-| [{PropertyName}](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyGetSet.md)  | All | All |
-| [{PropertyName}ValuiInPtr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyValueInPtr.md)  | All | Class as Pointer |
+| [{MemberName}Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyPtr.md)  | All | All |
+| [{MemberName}](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyGetSet.md)  | All | All |
+| [{MemberName}ValueInPtr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyValueInPtr.md)  | All | Class as Pointer |
 | [IsNull](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/IsNull.md)  | All | Class |
 
 # Methods
@@ -77,9 +77,9 @@ Implements
 | ------------- | ------------- |------------- |
 | [GetValue()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/GetValue.md)  | All | For Instance |
 | [Fill(in {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Fill.md)  | All | For Instance |
-| [Set{PropertyName}(in {PropertyType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/SetIn.md)  | All | All |
-| [Set{PropertyName}(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/SetInPtr.md)  | All | All |
-| [GetOut{PropertyName}(out {PropertyType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/GetOut.md)  | All | All |
+| [Set{MemberName}(in {PropertyType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/SetIn.md)  | All | All |
+| [Set{MemberName}(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/SetInPtr.md)  | All | All |
+| [GetOut{MemberName}(out {PropertyType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/GetOut.md)  | All | All |
 | [ChangePtr(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/ChangePtr.md)  | All | For Instance |
 | [CreateInstance()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/CreateInstance.md)  | All | For Instance |
 | [Dispose()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Dispose.md)  | All | For Instance |

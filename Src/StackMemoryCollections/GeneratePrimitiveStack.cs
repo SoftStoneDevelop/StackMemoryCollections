@@ -76,6 +76,7 @@ namespace StackMemoryCollections
             StackPrimitiveExpandCapacity<T>(in builder, in sizeOf, calculateSize);
             StackPrimitiveTrimExcess(in builder);
             StackPrimitivePushIn<T>(in builder, in stackNamespace, in sizeOf, calculateSize);
+            StackPrimitivePushFuture(in builder, in stackNamespace);
             StackPrimitivePushInPtr<T>(in builder, in stackNamespace, in sizeOf, calculateSize);
             StackPrimitiveTryPushIn<T>(in builder, in stackNamespace, in sizeOf, calculateSize);
             StackPrimitiveTryPushInPtr<T>(in builder, in stackNamespace, in sizeOf, calculateSize);
@@ -86,6 +87,7 @@ namespace StackMemoryCollections
             StackPrimitiveTopInPtr<T>(in builder);
             StackPrimitiveTopRefValue<T>(in builder);
             StackPrimitiveTopPtr<T>(in builder);
+            StackPrimitiveTopFuture<T>(in builder);
             StackPrimitiveDispose<T>(in builder, in stackNamespace, in sizeOf, calculateSize);
             StackPrimitiveIndexator<T>(in builder);
             StackPrimitiveCopyCount<T>(in builder, in sizeOf, calculateSize);
@@ -445,6 +447,32 @@ namespace StackMemoryCollections.{stackNamespace}
 ");
         }
 
+        private void StackPrimitivePushFuture(
+            in StringBuilder builder,
+            in string stackNamespace
+            )
+        {
+            builder.Append($@"
+        public void PushFuture()
+        {{
+            if (Size == Capacity)
+            {{
+                throw new Exception(""Not enough memory to allocate stack element"");
+            }}
+
+            Size++;
+");
+            if (stackNamespace == "Class")
+            {
+                builder.Append($@"
+            _version++;
+");
+            }
+            builder.Append($@"
+        }}
+");
+        }
+
         private void StackPrimitivePushInPtr<T>(
             in StringBuilder builder,
             in string stackNamespace,
@@ -731,6 +759,24 @@ namespace StackMemoryCollections.{stackNamespace}
 
             return
                 *(_start + (Size - 1));
+        }}
+");
+        }
+
+        private void StackPrimitiveTopFuture<T>(
+            in StringBuilder builder
+            ) where T : unmanaged
+        {
+            builder.Append($@"
+        public {typeof(T).Name}* TopFuture()
+        {{
+            if (Capacity == 0 || Size == Capacity)
+            {{
+                throw new Exception(""Future element not available"");
+            }}
+
+            return
+                _start + Size;
         }}
 ");
         }

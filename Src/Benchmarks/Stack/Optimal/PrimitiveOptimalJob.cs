@@ -24,7 +24,7 @@ namespace Benchmark
                             using var stack = new StackMemoryCollections.Struct.StackOfInt32((nuint)Size, &memory);
                             for (int i = 0; i < Size; i++)
                             {
-                                stack.Push(in i);
+                                *stack.TopFuture() = i;
                             }
 
                             if(j > 50)
@@ -42,7 +42,7 @@ namespace Benchmark
                         using var stack2 = new StackMemoryCollections.Struct.StackOfInt32((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
-                            stack2.Push(in i);
+                            *stack2.TopFuture() = i;
                         }
 
                         if (j > 50)

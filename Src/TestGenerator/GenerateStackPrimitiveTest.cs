@@ -267,6 +267,7 @@ namespace TestGenerator
             StackPrimitiveNotDispose(in values, in builder, in stackNamespace);
             StackPrimitiveReseize(in values, in builder, in stackNamespace, in toStr);
             StackPrimitivePush(in values, in builder, in stackNamespace, in toStr);
+            StackPrimitivePushFuture(in values, in builder, in stackNamespace, in toStr);
             StackPrimitivePushPtr(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveTryPush(in values, in builder, in stackNamespace, in toStr);
             StackPrimitiveTryPushPtr(in values, in builder, in stackNamespace, in toStr);
@@ -455,6 +456,60 @@ namespace Tests
                     Assert.That(() => stack.Push({toStr(values[0])}),
                         Throws.Exception.TypeOf(typeof(ArgumentException))
                         .And.Message.EqualTo(""Can't allocate memory"")
+                        );
+                }}
+            }}
+        }}
+");
+        }
+
+        private void StackPrimitivePushFuture<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string stackNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void PushFutureTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
+                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
+                    Assert.That(stack.IsEmpty, Is.EqualTo(true));
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+
+                    *stack.TopFuture() = {toStr(values[i])};
+                    stack.PushFuture();
+                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(stack.Size, Is.EqualTo((nuint){i + 1}));
+                    Assert.That(stack.Top(), Is.EqualTo({toStr(values[i])}));
+");
+            }
+
+            builder.Append($@"
+                    Assert.That(() => stack.TopFuture(),
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo(""Future element not available"")
+                        );
+
+                    Assert.That(() => stack.PushFuture(),
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo(""Not enough memory to allocate stack element"")
                         );
                 }}
             }}

@@ -50,6 +50,7 @@ namespace StackMemoryCollections
             StackExpandCapacity(in builder, in sizeOfStr);
             StackTrimExcess(in builder);
             StackPushIn(in builder, in currentType, in stackNamespace, in sizeOfStr);
+            StackPushFuture(in builder, in stackNamespace);
             StackPushInPtr(in builder, in currentType, in stackNamespace, in sizeOfStr);
             StackTryPushIn(in builder, in currentType, in stackNamespace, in sizeOfStr);
             StackTryPushInPtr(in builder, in currentType, in stackNamespace, in sizeOfStr);
@@ -59,7 +60,8 @@ namespace StackMemoryCollections
             StackTop(in builder, in currentType, in typeInfo, in sizeOfStr);
             StackTopInPtr(in builder, in currentType, in sizeOfStr);
             StackTopRefValue(in builder, in currentType, in sizeOfStr);
-            StackTopPtr(in builder, in typeInfo, in sizeOfStr);
+            StackTopPtr(in builder, in sizeOfStr);
+            StackTopFuture(in builder, in sizeOfStr);
             StackDispose(in builder, in currentType, in stackNamespace, in sizeOfStr);
             StackIndexator(in builder, in sizeOfStr);
             StackCopy(in builder, in sizeOfStr);
@@ -410,6 +412,32 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             Size = tempSize;
 ");
             if(stackNamespace == "Class")
+            {
+                builder.Append($@"
+            _version++;
+");
+            }
+            builder.Append($@"
+        }}
+");
+        }
+
+        private void StackPushFuture(
+            in StringBuilder builder,
+            in string stackNamespace
+            )
+        {
+            builder.Append($@"
+        public void PushFuture()
+        {{
+            if (Size == Capacity)
+            {{
+                throw new Exception(""Not enough memory to allocate stack element"");
+            }}
+
+            Size++;
+");
+            if (stackNamespace == "Class")
             {
                 builder.Append($@"
             _version++;
@@ -796,7 +824,6 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
 
         private void StackTopPtr(
             in StringBuilder builder,
-            in TypeInfo typeInfo,
             in string sizeOfStr
             )
         {
@@ -809,6 +836,24 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             }}
 
             return (byte*)_start + ((Size - 1) * {sizeOfStr});
+        }}
+");
+        }
+
+        private void StackTopFuture(
+            in StringBuilder builder,
+            in string sizeOfStr
+            )
+        {
+            builder.Append($@"
+        public void* TopFuture()
+        {{
+            if (Capacity == 0 || Size == Capacity)
+            {{
+                throw new Exception(""Future element not available"");
+            }}
+
+            return (byte*)_start + (Size * {sizeOfStr});
         }}
 ");
         }

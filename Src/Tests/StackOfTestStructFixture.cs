@@ -165,6 +165,63 @@ namespace Tests
         }
 
         [Test]
+        public void PushFutureTest()
+        {
+            unsafe
+            {
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
+                {
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
+                    var stack = new Tests.Struct.StackOfTestStruct(5, &memory);
+                    Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 5))));
+                    Assert.That(stack.IsEmpty, Is.EqualTo(true));
+
+                    Assert.That(new IntPtr(stack.TopFuture()), Is.EqualTo(new IntPtr((byte*)memory.Start)));
+                    stack.PushFuture();
+                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
+                    Assert.That(stack.Size, Is.EqualTo((nuint)1));
+
+                    Assert.That(new IntPtr(stack.TopFuture()), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 1))));
+                    stack.PushFuture();
+                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
+                    Assert.That(stack.Size, Is.EqualTo((nuint)2));
+
+                    Assert.That(new IntPtr(stack.TopFuture()), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 2))));
+                    stack.PushFuture();
+                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
+                    Assert.That(stack.Size, Is.EqualTo((nuint)3));
+
+                    Assert.That(new IntPtr(stack.TopFuture()), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 3))));
+                    stack.PushFuture();
+                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
+                    Assert.That(stack.Size, Is.EqualTo((nuint)4));
+
+
+                    Assert.That(new IntPtr(stack.TopFuture()), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 4))));
+                    stack.PushFuture();
+                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
+                    Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
+                    Assert.That(stack.Size, Is.EqualTo((nuint)5));
+
+
+                    Assert.That(() => stack.TopFuture(),
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo("Future element not available")
+                        );
+
+                    Assert.That(() => stack.PushFuture(),
+                        Throws.Exception.TypeOf(typeof(Exception))
+                        .And.Message.EqualTo("Not enough memory to allocate stack element")
+                        );
+                }
+            }
+        }
+
+        [Test]
         public void PushNullTest()
         {
             unsafe

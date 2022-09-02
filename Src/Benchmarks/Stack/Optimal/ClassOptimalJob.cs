@@ -18,19 +18,21 @@ namespace Benchmark
             {
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(JobClassHelper.SizeOf + (JobClassHelper.SizeOf * (nuint)Size)))
                 {
-                    var item = new Benchmark.Struct.JobClassWrapper(&memory);
+                    var item = new Benchmark.Struct.JobClassWrapper(memory.Start, false);
+                    var js2W = new Benchmark.Struct.JobClass2Wrapper(memory.Start, false);
                     for (int j = 0; j < 100; j++)
                     {
                         {
                             using var stack = new Benchmark.Struct.StackOfJobClass((nuint)Size, &memory);
                             for (int i = 0; i < Size; i++)
                             {
+                                item.ChangePtr(stack.TopFuture());
                                 item.Int32 = i;
                                 item.Int64 = i * 2;
-                                var jc2 = Benchmark.JobClassHelper.GetJobClass2Ptr(item.Ptr);
-                                Benchmark.JobClass2Helper.SetInt32Value(in jc2, i + 3);
-                                Benchmark.JobClass2Helper.SetInt64Value(in jc2, i * 3);
-                                stack.Push(item.Ptr);
+                                js2W.ChangePtr(item.JobClass2Ptr);
+                                js2W.Int32 = i + 3;
+                                js2W.Int64 = i * 3;
+                                stack.PushFuture();
                             }
 
                             if(j > 50)
@@ -48,12 +50,13 @@ namespace Benchmark
                         using var stack2 = new Benchmark.Struct.StackOfJobClass((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
+                            item.ChangePtr(stack2.TopFuture());
                             item.Int32 = i;
                             item.Int64 = i * 2;
-                            var jc2 = Benchmark.JobClassHelper.GetJobClass2Ptr(item.Ptr);
-                            Benchmark.JobClass2Helper.SetInt32Value(in jc2, i + 3);
-                            Benchmark.JobClass2Helper.SetInt64Value(in jc2, i * 3);
-                            stack2.Push(item.Ptr);
+                            js2W.ChangePtr(item.JobClass2Ptr);
+                            js2W.Int32 = i + 3;
+                            js2W.Int64 = i * 3;
+                            stack2.PushFuture();
                         }
 
                         if (j > 50)

@@ -397,8 +397,7 @@ namespace StackMemoryCollections.{stackNamespace}
             builder.Append($@"
         public void Push(in {typeof(T).Name} item)
         {{
-            var tempSize = Size + 1;
-            if (tempSize > Capacity)
+            if (Size == Capacity)
             {{
                 if (_memoryOwner)
                 {{
@@ -434,7 +433,7 @@ namespace StackMemoryCollections.{stackNamespace}
             }}
 
             *(_start + Size) = item;
-            Size = tempSize;
+            Size += 1;
 ");
             if(stackNamespace == "Class")
             {
@@ -483,8 +482,7 @@ namespace StackMemoryCollections.{stackNamespace}
             builder.Append($@"
         public void Push(in {typeof(T).Name}* ptr)
         {{
-            var tempSize = Size + 1;
-            if (tempSize > Capacity)
+            if (Size == Capacity)
             {{
                 if (_memoryOwner)
                 {{
@@ -520,7 +518,7 @@ namespace StackMemoryCollections.{stackNamespace}
             }}
 
             *(_start + Size) = *ptr;
-            Size = tempSize;
+            Size += 1;
 ");
             if (stackNamespace == "Class")
             {
@@ -543,8 +541,7 @@ namespace StackMemoryCollections.{stackNamespace}
             builder.Append($@"
         public bool TryPush(in {typeof(T).Name} item)
         {{
-            var tempSize = Size + 1;
-            if (tempSize > Capacity)
+            if (Size == Capacity)
             {{
                 if (_memoryOwner)
                 {{
@@ -586,7 +583,7 @@ namespace StackMemoryCollections.{stackNamespace}
             }}
 
             *(_start + Size) = item;
-            Size = tempSize;
+            Size += 1;
 ");
             if (stackNamespace == "Class")
             {
@@ -610,8 +607,7 @@ namespace StackMemoryCollections.{stackNamespace}
             builder.Append($@"
         public bool TryPush(in {typeof(T).Name}* ptr)
         {{
-            var tempSize = Size + 1;
-            if (tempSize > Capacity)
+            if (Size == Capacity)
             {{
                 if (_memoryOwner)
                 {{
@@ -653,7 +649,7 @@ namespace StackMemoryCollections.{stackNamespace}
             }}
 
             *(_start + Size) = *ptr;
-            Size = tempSize;
+            Size += 1;
 ");
             if (stackNamespace == "Class")
             {

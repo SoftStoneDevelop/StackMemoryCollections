@@ -372,8 +372,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             builder.Append($@"
         public void Push(in {currentType.Name} item)
         {{
-            var tempSize = Size + 1;
-            if (tempSize > Capacity)
+            if (Size == Capacity)
             {{
                 if (_memoryOwner)
                 {{
@@ -409,7 +408,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             }}
 
             {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {sizeOfStr}));
-            Size = tempSize;
+            Size += 1;
 ");
             if(stackNamespace == "Class")
             {
@@ -458,8 +457,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             builder.Append($@"
         public void Push(in void* ptr)
         {{
-            var tempSize = Size + 1;
-            if (tempSize > Capacity)
+            if (Size == Capacity)
             {{
                 if (_memoryOwner)
                 {{
@@ -495,7 +493,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             }}
 
             {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {sizeOfStr}));
-            Size = tempSize;
+            Size += 1;
 ");
             if (stackNamespace == "Class")
             {
@@ -518,8 +516,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             builder.Append($@"
         public bool TryPush(in {currentType.Name} item)
         {{
-            var tempSize = Size + 1;
-            if (tempSize > Capacity)
+            if (Size == Capacity)
             {{
                 if (_memoryOwner)
                 {{
@@ -561,7 +558,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             }}
 
             {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {sizeOfStr}));
-            Size = tempSize;
+            Size += 1;
 ");
             if (stackNamespace == "Class")
             {
@@ -585,8 +582,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             builder.Append($@"
         public bool TryPush(in void* ptr)
         {{
-            var tempSize = Size + 1;
-            if (tempSize > Capacity)
+            if (Size == Capacity)
             {{
                 if (_memoryOwner)
                 {{
@@ -628,7 +624,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             }}
 
             {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {sizeOfStr}));
-            Size = tempSize;
+            Size += 1;
 ");
             if (stackNamespace == "Class")
             {

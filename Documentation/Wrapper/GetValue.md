@@ -7,7 +7,7 @@ Gets value of wrapped ItemType from instance.
 public {ItemType} GetValue()
 ```
 
-## Returns
+## Return
 `{ItemType}`
 
 New instance of wrapped item

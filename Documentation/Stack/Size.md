@@ -4,5 +4,5 @@
 Gets the current size of the collection
 
 ```C#
-public nuint Size { get; set; } = 0;
+public nuint Size { get; set; }
 ```

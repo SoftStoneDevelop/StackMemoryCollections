@@ -44,6 +44,7 @@ namespace Benchmark
                         for (int i = 0; i < Size; i++)
                         {
                             *stack2.TopFuture() = i;
+                            stack2.PushFuture();
                         }
 
                         if (j > 50)

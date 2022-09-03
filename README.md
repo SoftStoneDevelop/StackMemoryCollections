@@ -44,7 +44,6 @@ public struct JobStruct
     {
         Int32 = int32;
         Int64 = int64;
-        JobStruct2 = default;
     }
 
     public long Int64;

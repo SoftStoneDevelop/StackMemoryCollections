@@ -284,6 +284,8 @@ namespace TestGenerator
 
             QueuePrimitiveExpandCapacity(in values, in builder, in queueNamespace);
             QueuePrimitiveExpandCapacityHeadAfterTail(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveExpandCapacityHeadAfterTailOwn(in values, in builder, in queueNamespace, in toStr);
+
             QueuePrimitiveReducingCapacity(in values, in builder, in queueNamespace);
 
             QueuePrimitiveSize(in values, in builder, in queueNamespace, in toStr);
@@ -1054,6 +1056,69 @@ namespace Tests
                     queue.Pop();
 
                 }}
+            }}
+        }}
+");
+        }
+
+        private void QueuePrimitiveExpandCapacityHeadAfterTailOwn<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string queueNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void ExpandCapacityHeadAfterTailOwnTest()
+        {{
+            unsafe
+            {{
+                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+");
+            for (int i = 0; i < 4; i++)
+            {
+                builder.Append($@"
+                queue.Push({toStr(values[i])});
+");
+            }
+            builder.Append($@"
+                queue.Pop();
+                queue.Pop();
+");
+            for (int i = 0; i < 2; i++)
+            {
+                builder.Append($@"
+                queue.Push({toStr(values[i])});
+");
+            }
+            builder.Append($@"
+                queue.ExpandCapacity(3);
+                queue.Push({toStr(values[values.Count - 1])});
+");
+            for (int i = 2; i < 4; i++)
+            {
+                builder.Append($@"
+                Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                queue.Pop();
+");
+            }
+            for (int i = 0; i < 2; i++)
+            {
+                builder.Append($@"
+                Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                queue.Pop();
+");
+            }
+
+            builder.Append($@"
+                Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
+                queue.Pop();
             }}
         }}
 ");

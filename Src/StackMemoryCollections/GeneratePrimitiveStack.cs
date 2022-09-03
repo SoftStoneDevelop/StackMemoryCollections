@@ -89,11 +89,11 @@ namespace StackMemoryCollections
             StackPrimitiveTopRefValue<T>(in builder);
             StackPrimitiveTopPtr<T>(in builder);
             StackPrimitiveTopFuture<T>(in builder);
+            StackPrimitiveTopOutValue<T>(in builder);
             StackPrimitiveDispose<T>(in builder, in stackNamespace, in sizeOf, calculateSize);
             StackPrimitiveIndexator<T>(in builder);
             StackPrimitiveCopyCount<T>(in builder, in sizeOf, calculateSize);
             StackPrimitiveCopy<T>(in builder, in sizeOf, calculateSize);
-            StackPrimitiveTopOutValue<T>(in builder);
             StackPrimitiveCopyInStack<T>(in builder, in sizeOf, calculateSize);
 
             if (stackNamespace == "Class")
@@ -920,7 +920,7 @@ namespace StackMemoryCollections.{stackNamespace}
                     throw new InvalidOperationException(""The stack was changed during the enumeration"");
                 }}
 
-                if (_stack.Size < 0)
+                if (_stack.Size == 0)
                 {{
                     return false;
                 }}
@@ -1039,6 +1039,7 @@ namespace StackMemoryCollections.{stackNamespace}
         {{
             if(Size == 0)
             {{
+                destStack.Size = 0;
                 return;
             }}
 

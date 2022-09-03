@@ -285,6 +285,8 @@ namespace TestGenerator
             QueuePrimitiveExpandCapacity(in values, in builder, in queueNamespace);
             QueuePrimitiveExpandCapacityHeadAfterTail(in values, in builder, in queueNamespace, in toStr);
             QueuePrimitiveExpandCapacityHeadAfterTailOwn(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveExpandCapacityHeadBeforeTail(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveExpandCapacityHeadBeforeTailOwn(in values, in builder, in queueNamespace, in toStr);
 
             QueuePrimitiveReducingCapacity(in values, in builder, in queueNamespace);
 
@@ -1116,6 +1118,100 @@ namespace Tests
 ");
             }
 
+            builder.Append($@"
+                Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
+                queue.Pop();
+            }}
+        }}
+");
+        }
+
+        private void QueuePrimitiveExpandCapacityHeadBeforeTail<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string queueNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void ExpandCapacityHeadBeforeTailTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count + 3}))
+                {{
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    queue.Push({toStr(values[i])});
+");
+            }
+            builder.Append($@"
+                    queue.ExpandCapacity(3);
+                    queue.Push({toStr(values[values.Count - 1])});
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                    queue.Pop();
+");
+            }
+            builder.Append($@"
+                    Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
+                    queue.Pop();
+
+                }}
+            }}
+        }}
+");
+        }
+
+        private void QueuePrimitiveExpandCapacityHeadBeforeTailOwn<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string queueNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void ExpandCapacityHeadBeforeTailOwnTest()
+        {{
+            unsafe
+            {{
+                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+");
+            for (int i = 0; i < 4; i++)
+            {
+                builder.Append($@"
+                queue.Push({toStr(values[i])});
+");
+            }
+            builder.Append($@"
+                queue.ExpandCapacity(3);
+                queue.Push({toStr(values[values.Count - 1])});
+");
+            for (int i = 0; i < 4; i++)
+            {
+                builder.Append($@"
+                Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                queue.Pop();
+");
+            }
             builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
                 queue.Pop();

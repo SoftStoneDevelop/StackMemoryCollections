@@ -361,19 +361,22 @@ namespace StackMemoryCollections.{queueNamespace}
                         _head -= reducingCount;{incrementVersion}
                     }}
                     else
-                    if ((_head < _tail && Capacity - _tail + 1 < reducingCount) ||
-                       (_head == _tail && Capacity - _tail + 1 < reducingCount)
-                       )
+                    if (_head <= _tail)
                     {{
-                        var freeCountToEnd = Capacity - (_head + 1);
-                        if(freeCountToEnd != 0 && freeCountToEnd <= reducingCount)
+                        if(Size == 1)
                         {{
-                            //do nothing
+                            *(_start) = *(_start + _tail);
+                            _tail = 0;
+                            _head = 0;
                         }}
                         else
                         {{
-                            _stackMemoryS->ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
-                            _tail = 0;{incrementVersion}
+                            var freeCountToEnd = Capacity - (_tail + 1);
+                            if(freeCountToEnd == 0 || freeCountToEnd < reducingCount)
+                            {{
+                                _stackMemoryS->ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
+                                _head = 0;{incrementVersion}
+                            }}
                         }}
                     }}
                     
@@ -398,19 +401,22 @@ namespace StackMemoryCollections.{queueNamespace}
                         _head -= reducingCount;{incrementVersion}
                     }}
                     else
-                    if ((_head < _tail && Capacity - _tail + 1 < reducingCount) ||
-                       (_head == _tail && Capacity - _tail + 1 < reducingCount)
-                       )
+                    if (_head <= _tail)
                     {{
-                        var freeCountToEnd = Capacity - (_head + 1);
-                        if(freeCountToEnd != 0 && freeCountToEnd <= reducingCount)
+                        if(Size == 1)
                         {{
-                            //do nothing
+                            *(_start) = *(_start + _tail);
+                            _tail = 0;
+                            _head = 0;
                         }}
                         else
                         {{
-                            _stackMemoryC.ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
-                            _tail = 0;{incrementVersion}
+                            var freeCountToEnd = Capacity - (_tail + 1);
+                            if(freeCountToEnd == 0 || freeCountToEnd < reducingCount)
+                            {{
+                                _stackMemoryC.ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
+                                _head = 0;{incrementVersion}
+                            }}
                         }}
                     }}                    
 

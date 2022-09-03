@@ -291,6 +291,7 @@ namespace TestGenerator
             QueuePrimitiveReducingCapacity(in values, in builder, in queueNamespace);
             QueuePrimitiveReducingCapacityHeadAfterTail(in values, in builder, in queueNamespace, in toStr);
             QueuePrimitiveReducingCapacityHeadAfterTailOwn(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveReducingCapacityHeadBeforeTail(in values, in builder, in queueNamespace, in toStr);
 
             QueuePrimitiveSize(in values, in builder, in queueNamespace, in toStr);
             QueuePrimitiveCapacity(in values, in builder, in queueNamespace, in toStr);
@@ -1089,7 +1090,7 @@ namespace Tests
             builder.Append($@"
                     Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
                     queue.Pop();
-
+                    Assert.That(queue.Size, Is.EqualTo((nuint)0));
                 }}
             }}
         }}
@@ -1162,6 +1163,7 @@ namespace Tests
 ");
             }
                 builder.Append($@"
+                Assert.That(queue.Size, Is.EqualTo((nuint)0));
             }}
         }}
 ");
@@ -1209,7 +1211,7 @@ namespace Tests
             builder.Append($@"
                     Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
                     queue.Pop();
-
+                    Assert.That(queue.Size, Is.EqualTo((nuint)0));
                 }}
             }}
         }}
@@ -1264,6 +1266,7 @@ namespace Tests
 ");
             }
             builder.Append($@"
+                Assert.That(queue.Size, Is.EqualTo((nuint)0));
             }}
         }}
 ");
@@ -1364,6 +1367,7 @@ namespace Tests
             builder.Append($@"
                     Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
                     queue.Pop();
+                    Assert.That(queue.Size, Is.EqualTo((nuint)0));
                 }}
             }}
         }}
@@ -1427,6 +1431,55 @@ namespace Tests
 ");
             }
             builder.Append($@"
+                Assert.That(queue.Size, Is.EqualTo((nuint)0));
+            }}
+        }}
+");
+        }
+
+        private void QueuePrimitiveReducingCapacityHeadBeforeTail<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string queueNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void ReducingCapacityHeadBeforeTailTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
+");
+            for (int i = 0; i < values.Count - 1; i++)
+            {
+                builder.Append($@"
+                    queue.Push({toStr(values[i])});
+");
+            }
+
+            builder.Append($@"
+                    queue.Pop();
+                    queue.ReducingCapacity(2);
+");
+            for (int i = 1; i < values.Count - 1; i++)
+            {
+                builder.Append($@"
+                    Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                    queue.Pop();
+");
+            }
+            builder.Append($@"
+                    Assert.That(queue.Size, Is.EqualTo((nuint)0));
+                }}
             }}
         }}
 ");

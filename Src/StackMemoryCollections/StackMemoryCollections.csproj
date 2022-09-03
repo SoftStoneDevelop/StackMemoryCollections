@@ -31,7 +31,6 @@
 		<Description>Fast unsafe collections for memory reuse by stack type. Adding elements without overhead when increasing Capacity. Can also be used in as classic collection with resizing or on a custom memory allocator. See collection descriptions and examples on GitHub.</Description>
 		<PackageTags>collection, unsafe, memory, stack, list, queue, analysis, generator, wrapper, roslyn</PackageTags>
 		<NoPackageAnalysis>true</NoPackageAnalysis>
-		<AssetTargetFallback>net6.0,net7.0</AssetTargetFallback>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageReleaseNotes>
 - Added supported Queue collection, for primitive types

@@ -1070,6 +1070,7 @@ namespace Tests
             }
             builder.Append($@"
                     queue.ExpandCapacity(3);
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[2])}));
                     queue.Push({toStr(values[values.Count - 1])});
 ");
             for (int i = 3; i < values.Count; i++)
@@ -1077,6 +1078,7 @@ namespace Tests
                 builder.Append($@"
                     Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
                     queue.Pop();
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
             }
             for (int i = 0; i < 3; i++)
@@ -1084,6 +1086,7 @@ namespace Tests
                 builder.Append($@"
                     Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
                     queue.Pop();
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
             }
 
@@ -1135,6 +1138,7 @@ namespace Tests
             }
             builder.Append($@"
                 queue.ExpandCapacity(3);
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[1])}));
                 queue.Push({toStr(values[values.Count - 1])});
 ");
             for (int i = 2; i < 4; i++)
@@ -1142,6 +1146,7 @@ namespace Tests
                 builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
                 queue.Pop();
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
             }
             for (int i = 0; i < 2; i++)
@@ -1149,6 +1154,7 @@ namespace Tests
                 builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
                 queue.Pop();
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
             }
 
@@ -1199,6 +1205,7 @@ namespace Tests
             }
             builder.Append($@"
                     queue.ExpandCapacity(3);
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
                     queue.Push({toStr(values[values.Count - 1])});
 ");
             for (int i = 0; i < values.Count; i++)
@@ -1206,6 +1213,7 @@ namespace Tests
                 builder.Append($@"
                     Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
                     queue.Pop();
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
             }
             builder.Append($@"
@@ -1246,6 +1254,7 @@ namespace Tests
             }
             builder.Append($@"
                 queue.ExpandCapacity(3);
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[3])}));
                 queue.Push({toStr(values[values.Count - 1])});
 ");
             for (int i = 0; i < 4; i++)
@@ -1253,6 +1262,7 @@ namespace Tests
                 builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
                 queue.Pop();
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
             }
             builder.Append($@"
@@ -1356,12 +1366,14 @@ namespace Tests
                     queue.Pop();
                     queue.Push({toStr(values[values.Count - 1])});
                     queue.ReducingCapacity(1);
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
             for (int i = 2; i < values.Count; i++)
             {
                 builder.Append($@"
                     Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
                     queue.Pop();
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
             }
             builder.Append($@"
@@ -1410,17 +1422,20 @@ namespace Tests
             builder.Append($@"
                 queue.Push({toStr(values[values.Count - 1])});
                 queue.ReducingCapacity(1);
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
             for (int i = 2; i < 4; i++)
             {
                 builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
                 queue.Pop();
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
             }
             builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[0])}));
                 queue.Pop();
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
                 queue.Pop();
 ");
@@ -1469,11 +1484,13 @@ namespace Tests
             builder.Append($@"
                     queue.Pop();
                     queue.ReducingCapacity(2);
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 2])}));
 ");
             for (int i = 1; i < values.Count - 1; i++)
             {
                 builder.Append($@"
                     Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 2])}));
                     queue.Pop();
 ");
             }
@@ -1515,11 +1532,13 @@ namespace Tests
             builder.Append($@"
                 queue.Pop();
                 queue.ReducingCapacity(2);
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[2])}));
 ");
             for (int i = 1; i < 3; i++)
             {
                 builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[2])}));
                 queue.Pop();
 ");
             }

@@ -375,7 +375,8 @@ namespace StackMemoryCollections.{queueNamespace}
                             if(freeCountToEnd == 0 || freeCountToEnd < reducingCount)
                             {{
                                 _stackMemoryS->ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
-                                _head = 0;{incrementVersion}
+                                _head = 0;
+                                _tail = Size - 1;{incrementVersion}
                             }}
                         }}
                     }}
@@ -415,7 +416,8 @@ namespace StackMemoryCollections.{queueNamespace}
                             if(freeCountToEnd == 0 || freeCountToEnd < reducingCount)
                             {{
                                 _stackMemoryC.ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
-                                _head = 0;{incrementVersion}
+                                _head = 0;
+                                _tail = Size - 1;{incrementVersion}
                             }}
                         }}
                     }}                    

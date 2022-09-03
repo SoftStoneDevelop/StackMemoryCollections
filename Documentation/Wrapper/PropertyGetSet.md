@@ -1,10 +1,10 @@
-# {PropertyName} Property
+# {MemberName} Property
 
 ## Definition
 Geter/setter value of property
 
 ```C#
-public {PropertyType} {PropertyName} { get; set; }
+public {PropertyType} {MemberName} { get; set; }
 ```
 
 ## Remarks

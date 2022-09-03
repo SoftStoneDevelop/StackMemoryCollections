@@ -1,10 +1,10 @@
-# GetOut{PropertyName}(out {PropertyType}) Method
+# GetOut{MemberName}(out {PropertyType}) Method
 
 ## Definition
 Gets value of property as out parametr.
 
 ```C#
-public GetOut{PropertyName}(out {PropertyType} item)
+public GetOut{MemberName}(out {PropertyType} item)
 ```
 
 ## Parameters

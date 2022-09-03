@@ -1,10 +1,10 @@
-# Set{PropertyName}(in void*) Method
+# Set{MemberName}(in void*) Method
 
 ## Definition
 Set wrapper property from pointer to value.
 
 ```C#
-public Set{PropertyName}(in void* valuePtr)
+public Set{MemberName}(in void* valuePtr)
 ```
 
 ## Parameters

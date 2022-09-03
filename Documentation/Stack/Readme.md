@@ -76,6 +76,7 @@ Implements
 | ------------- | ------------- |
 | [ReducingCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/ReducingCapacity.md)  | All |
 | [ExpandCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/ExpandCapacity.md)  | All |
+| [TryExpandCapacity(in nuint)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TryExpandCapacity.md)  | All |
 | [TrimExcess()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/TrimExcess.md)  | All |
 | [Push(in {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/Push.md)  | All |
 | [Push(in void*)](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Stack/PushPtr.md)  | All |

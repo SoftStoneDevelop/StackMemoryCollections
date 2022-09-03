@@ -80,8 +80,8 @@ unsafe
 {
     using (var memory = new Struct.StackMemory(JobStructHelper.SizeOf * (nuint)100))//allocate memory
     {
-        var item = new Benchmark.Struct.JobStructWrapper(memory.Start, false);
-        var js2W = new Benchmark.Struct.JobStruct2Wrapper(memory.Start, false);
+        var item = new Struct.JobStructWrapper(memory.Start, false);
+        var js2W = new Struct.JobStruct2Wrapper(memory.Start, false);
         
         {
             using var stack = new Struct.StackOfJobStruct((nuint)Size, &memory);//get memory

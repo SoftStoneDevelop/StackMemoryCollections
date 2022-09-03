@@ -1,10 +1,10 @@
-# Set{PropertyName}(in {PropertyType}) Method
+# Set{MemberName}(in {PropertyType}) Method
 
 ## Definition
 Set wrapper property from value.
 
 ```C#
-public Set{PropertyName}(in {PropertyType} item)
+public Set{MemberName}(in {PropertyType} item)
 ```
 
 ## Parameters

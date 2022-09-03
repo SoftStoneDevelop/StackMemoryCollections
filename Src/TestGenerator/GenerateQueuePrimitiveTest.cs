@@ -434,6 +434,13 @@ namespace Tests
 ");
             }
 
+            if(queueNamespace == "Struct")
+            {
+                builder.Append($@"
+            queue.Dispose();
+");
+            }
+
             builder.Append($@"
             }}
         }}
@@ -768,6 +775,14 @@ namespace Tests
                 queue.Clear();
                 Assert.That(queue.Size, Is.EqualTo((nuint)0));
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)4));
+");
+            if (queueNamespace == "Struct")
+            {
+                builder.Append($@"
+                queue.Dispose();
+");
+            }
+            builder.Append($@"
             }}
         }}
 ");
@@ -950,6 +965,14 @@ namespace Tests
                 queue.TrimExcess();
                 Assert.That(queue.Size, Is.EqualTo((nuint)5));
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)5));
+");
+            if (queueNamespace == "Struct")
+            {
+                builder.Append($@"
+                queue.Dispose();
+");
+            }
+            builder.Append($@"
             }}
         }}
 ");
@@ -990,6 +1013,14 @@ namespace Tests
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)4));
                 queue.ExpandCapacity(6);
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)10));
+");
+            if (queueNamespace == "Struct")
+            {
+                builder.Append($@"
+                queue.Dispose();
+");
+            }
+            builder.Append($@"
             }}
         }}
 ");
@@ -1121,6 +1152,14 @@ namespace Tests
             builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
                 queue.Pop();
+");
+            if (queueNamespace == "Struct")
+            {
+                builder.Append($@"
+                queue.Dispose();
+");
+            }
+                builder.Append($@"
             }}
         }}
 ");
@@ -1215,6 +1254,14 @@ namespace Tests
             builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
                 queue.Pop();
+");
+            if (queueNamespace == "Struct")
+            {
+                builder.Append($@"
+                queue.Dispose();
+");
+            }
+            builder.Append($@"
             }}
         }}
 ");
@@ -1257,6 +1304,14 @@ namespace Tests
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)10));
                 queue.ReducingCapacity(1);
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)9));
+");
+            if (queueNamespace == "Struct")
+            {
+                builder.Append($@"
+                queue.Dispose();
+");
+            }
+            builder.Append($@"
             }}
         }}
 ");

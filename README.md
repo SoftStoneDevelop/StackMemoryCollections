@@ -49,7 +49,6 @@ public struct JobStruct
 
     public long Int64;
     public int Int32;
-    public JobStruct2 JobStruct2;
 }
 
 ```

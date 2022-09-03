@@ -10,7 +10,6 @@ namespace Benchmark
             BenchmarkRunner.Run<Queue.PrimitiveSimpleJob>();// 4 byte * Size
             BenchmarkRunner.Run<Queue.PrimitiveOptimalJob>();// 4 byte * Size
 
-            /*
             //Stack
             BenchmarkRunner.Run<Stack.PrimitiveSimpleJob>();// 4 byte * Size
             BenchmarkRunner.Run<Stack.PrimitiveOptimalJob>();// 4 byte * Size
@@ -20,7 +19,6 @@ namespace Benchmark
 
             BenchmarkRunner.Run<Stack.ClassSimpleJob>();// 24 byte * Size
             BenchmarkRunner.Run<Stack.ClassOptimalJob>();// 24 byte * Size
-            */
         }
     }
 }

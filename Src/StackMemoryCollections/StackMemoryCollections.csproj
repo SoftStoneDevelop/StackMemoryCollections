@@ -24,16 +24,19 @@
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageId>StackMemoryCollections</PackageId>
-		<PackageVersion>0.1.4.2</PackageVersion>
+		<PackageVersion>0.2.0.0</PackageVersion>
 		<Authors>Brevnov Vyacheslav Sergeevich</Authors>
 		<RepositoryUrl>https://github.com/SoftStoneDevelop/StackMemoryCollections</RepositoryUrl>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Description>Fast unsafe collections for memory reuse by stack type. Adding elements without overhead when increasing Capacity. Can also be used in as classic collection with resizing or on a custom memory allocator. See collection descriptions and examples on GitHub.</Description>
 		<PackageTags>collection, unsafe, memory, stack, list, queue, analysis, generator, wrapper, roslyn</PackageTags>
 		<NoPackageAnalysis>true</NoPackageAnalysis>
+		<AssetTargetFallback>net6.0,net7.0</AssetTargetFallback>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageReleaseNotes>
-- Added TopFuture() and PushFuture() methods for Stack
+- Added supported Queue collection, for primitive types
+- Performance optimization
+- Bug fixes
 </PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>

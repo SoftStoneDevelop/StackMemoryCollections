@@ -1,6 +1,6 @@
 # Definition
-Represents a simple last-in-first-out (LIFO) collection of {ItemTypeName}. Where ItemType is you class/struct name.
-The collection is auto-generated, for generation the class/struct {ItemTypeName} must be marked with the attribute [GenerateStack].
+Represents a simple last-in-first-out (LIFO) collection of {ItemType}. Where ItemType is you class/struct name.
+The collection is auto-generated, for generation the class/struct {ItemType} must be marked with the attribute [GenerateStack].
 
 ## For class/struct items:
 Class

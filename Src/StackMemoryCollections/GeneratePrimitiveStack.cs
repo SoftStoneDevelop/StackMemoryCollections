@@ -72,9 +72,9 @@ namespace StackMemoryCollections
 
             StackPrimitiveProperties<T>(in builder);
 
-            StackPrimitiveReducingCapacity<T>(in builder, in sizeOf, calculateSize);
-            StackPrimitiveExpandCapacity<T>(in builder, in sizeOf, calculateSize);
-            StackPrimitiveTryExpandCapacity<T>(in builder, in sizeOf, calculateSize);
+            StackPrimitiveReducingCapacity<T>(in builder, in sizeOf, in calculateSize, in stackNamespace);
+            StackPrimitiveExpandCapacity<T>(in builder, in sizeOf, in calculateSize, in stackNamespace);
+            StackPrimitiveTryExpandCapacity<T>(in builder, in sizeOf, in calculateSize, in stackNamespace);
             StackPrimitiveTrimExcess(in builder);
             StackPrimitivePushIn<T>(in builder, in stackNamespace);
             StackPrimitivePushFuture(in builder, in stackNamespace);
@@ -254,9 +254,16 @@ namespace StackMemoryCollections.{stackNamespace}
         private void StackPrimitiveReducingCapacity<T>(
             in StringBuilder builder,
             in int sizeOf,
-            bool calculateSize
+            in bool calculateSize,
+            in string stackNamespace
             ) where T :unmanaged
         {
+            var incrementVersion = stackNamespace == "Class" ?
+                @"
+                _version += 1;
+"
+: 
+"";
             builder.Append($@"
         public void ReducingCapacity(in nuint reducingCount)
         {{
@@ -283,7 +290,7 @@ namespace StackMemoryCollections.{stackNamespace}
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
                 _stackMemoryC = newMemory;
-                _start = ({typeof(T).Name}*)_stackMemoryC.Start;
+                _start = ({typeof(T).Name}*)_stackMemoryC.Start;{incrementVersion}
             }}
             else
             {{
@@ -315,9 +322,16 @@ namespace StackMemoryCollections.{stackNamespace}
         private void StackPrimitiveExpandCapacity<T>(
             in StringBuilder builder,
             in int sizeOf,
-            bool calculateSize
+            in bool calculateSize,
+            in string stackNamespace
             ) where T : unmanaged
         {
+            var incrementVersion = stackNamespace == "Class" ?
+                @"
+                _version += 1;
+"
+:
+"";
             builder.Append($@"
         public void ExpandCapacity(in nuint expandCount)
         {{
@@ -334,7 +348,7 @@ namespace StackMemoryCollections.{stackNamespace}
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
                 _stackMemoryC = newMemory;
-                _start = ({typeof(T).Name}*)_stackMemoryC.Start;
+                _start = ({typeof(T).Name}*)_stackMemoryC.Start;{incrementVersion}
             }}
             else
             {{
@@ -366,9 +380,16 @@ namespace StackMemoryCollections.{stackNamespace}
         private void StackPrimitiveTryExpandCapacity<T>(
             in StringBuilder builder,
             in int sizeOf,
-            bool calculateSize
+            in bool calculateSize,
+            in string stackNamespace
             ) where T : unmanaged
         {
+            var incrementVersion = stackNamespace == "Class" ?
+                @"
+                _version += 1;
+"
+:
+"";
             builder.Append($@"
         public bool TryExpandCapacity(in nuint expandCount)
         {{
@@ -385,7 +406,7 @@ namespace StackMemoryCollections.{stackNamespace}
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
                 _stackMemoryC = newMemory;
-                _start = ({typeof(T).Name}*)_stackMemoryC.Start;
+                _start = ({typeof(T).Name}*)_stackMemoryC.Start;{incrementVersion}
             }}
             else
             {{

@@ -46,9 +46,9 @@ namespace StackMemoryCollections
 
             StackProperties(in builder);
 
-            StackReducingCapacity(in builder, in sizeOfStr);
-            StackExpandCapacity(in builder, in sizeOfStr);
-            StackTryExpandCapacity(in builder, in sizeOfStr);
+            StackReducingCapacity(in builder, in sizeOfStr, in stackNamespace);
+            StackExpandCapacity(in builder, in sizeOfStr, in stackNamespace);
+            StackTryExpandCapacity(in builder, in sizeOfStr, in stackNamespace);
             StackTrimExcess(in builder);
             StackPushIn(in builder, in currentType, in stackNamespace, in sizeOfStr);
             StackPushFuture(in builder, in stackNamespace);
@@ -230,9 +230,16 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
 
         private void StackReducingCapacity(
             in StringBuilder builder,
-            in string sizeOfStr
+            in string sizeOfStr,
+            in string stackNamespace
             )
         {
+            var incrementVersion = stackNamespace == "Class" ?
+                @"
+                _version += 1;
+"
+:
+"";
             builder.Append($@"
         public void ReducingCapacity(in nuint reducingCount)
         {{
@@ -259,7 +266,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
                 _stackMemoryC = newMemory;
-                _start = _stackMemoryC.Start;
+                _start = _stackMemoryC.Start;{incrementVersion}
             }}
             else
             {{
@@ -290,9 +297,16 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
 
         private void StackExpandCapacity(
             in StringBuilder builder,
-            in string sizeOfStr
+            in string sizeOfStr,
+            in string stackNamespace
             )
         {
+            var incrementVersion = stackNamespace == "Class" ?
+                @"
+                _version += 1;
+"
+:
+"";
             builder.Append($@"
         public void ExpandCapacity(in nuint expandCount)
         {{
@@ -309,7 +323,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
                 _stackMemoryC = newMemory;
-                _start = _stackMemoryC.Start;
+                _start = _stackMemoryC.Start;{incrementVersion}
             }}
             else
             {{
@@ -340,9 +354,16 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
 
         private void StackTryExpandCapacity(
             in StringBuilder builder,
-            in string sizeOfStr
+            in string sizeOfStr,
+            in string stackNamespace
             )
         {
+            var incrementVersion = stackNamespace == "Class" ?
+                @"
+                _version += 1;
+"
+:
+"";
             builder.Append($@"
         public bool TryExpandCapacity(in nuint expandCount)
         {{
@@ -359,7 +380,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
                 _stackMemoryC = newMemory;
-                _start = _stackMemoryC.Start;
+                _start = _stackMemoryC.Start;{incrementVersion}
             }}
             else
             {{

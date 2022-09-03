@@ -22,7 +22,7 @@ Allows you to allocate memory for a method / class and place all sets of variabl
 Avoid repeated copying of structures when placing them in collections.
 And other use cases.
 
-The generated code uses .Net 5 features. So use only with .Net 5+.
+The generated code uses .Net 6 features. So use only with .Net 6+.
 
 Supported collections:
 - Stack

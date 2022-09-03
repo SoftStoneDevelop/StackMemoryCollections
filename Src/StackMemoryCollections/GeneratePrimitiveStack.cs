@@ -62,39 +62,45 @@ namespace StackMemoryCollections
             bool calculateSize
             ) where T : unmanaged
         {
+            var sizeOfStr = calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : sizeOf.ToString();
             builder.Clear();
             StackPrimitiveStart<T>(in builder, in stackNamespace);
 
-            StackPrimitiveConstructor1<T>(in builder, in sizeOf, calculateSize);
-            StackPrimitiveConstructor2<T>(in builder, in sizeOf, calculateSize);
-            StackPrimitiveConstructor3<T>(in builder, in sizeOf, calculateSize);
+            StackPrimitiveConstructor1<T>(in builder, in sizeOf, in sizeOfStr, calculateSize);
+            StackPrimitiveConstructor2<T>(in builder, in sizeOfStr);
+            StackPrimitiveConstructor3<T>(in builder, in sizeOfStr);
             StackPrimitiveConstructor4<T>(in builder);
 
             StackPrimitiveProperties<T>(in builder);
 
-            StackPrimitiveReducingCapacity<T>(in builder, in sizeOf, in calculateSize, in stackNamespace);
-            StackPrimitiveExpandCapacity<T>(in builder, in sizeOf, in calculateSize, in stackNamespace);
-            StackPrimitiveTryExpandCapacity<T>(in builder, in sizeOf, in calculateSize, in stackNamespace);
+            StackPrimitiveReducingCapacity<T>(in builder, in sizeOfStr, in stackNamespace);
+            StackPrimitiveExpandCapacity<T>(in builder, in sizeOfStr, in stackNamespace);
+            StackPrimitiveTryExpandCapacity<T>(in builder, in sizeOfStr, in stackNamespace);
             StackPrimitiveTrimExcess(in builder);
+
             StackPrimitivePushIn<T>(in builder, in stackNamespace);
             StackPrimitivePushFuture(in builder, in stackNamespace);
             StackPrimitivePushInPtr<T>(in builder, in stackNamespace);
             StackPrimitiveTryPushIn<T>(in builder, in stackNamespace);
             StackPrimitiveTryPushInPtr<T>(in builder, in stackNamespace);
+
             StackPrimitivePop(in builder, in stackNamespace);
             StackPrimitiveTryPop(in builder, in stackNamespace);
+
             StackPrimitiveClear(in builder, in stackNamespace);
+
             StackPrimitiveTop<T>(in builder);
             StackPrimitiveTopInPtr<T>(in builder);
             StackPrimitiveTopRefValue<T>(in builder);
             StackPrimitiveTopPtr<T>(in builder);
             StackPrimitiveTopFuture<T>(in builder);
             StackPrimitiveTopOutValue<T>(in builder);
-            StackPrimitiveDispose<T>(in builder, in stackNamespace, in sizeOf, calculateSize);
+
+            StackPrimitiveDispose<T>(in builder, in stackNamespace, in sizeOfStr);
             StackPrimitiveIndexator<T>(in builder);
-            StackPrimitiveCopyCount<T>(in builder, in sizeOf, calculateSize);
-            StackPrimitiveCopy<T>(in builder, in sizeOf, calculateSize);
-            StackPrimitiveCopyInStack<T>(in builder, in sizeOf, calculateSize);
+            StackPrimitiveCopyCount<T>(in builder, in sizeOfStr);
+            StackPrimitiveCopy<T>(in builder, in sizeOfStr);
+            StackPrimitiveCopyInStack<T>(in builder, in sizeOfStr);
 
             if (stackNamespace == "Class")
             {
@@ -150,13 +156,14 @@ namespace StackMemoryCollections.{stackNamespace}
         private void StackPrimitiveConstructor1<T>(
             in StringBuilder builder,
             in int sizeOf,
+            in string sizeOfStr,
             bool calculateSize
             ) where T : unmanaged
         {
             builder.Append($@"
         public StackOf{typeof(T).Name}()
         {{
-            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf * 4).ToString())});
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({(calculateSize ? sizeOfStr : (sizeOf * 4).ToString())});
             _start = ({typeof(T).Name}*)_stackMemoryC.Start;
             Capacity = 4;
             _memoryOwner = true;
@@ -167,8 +174,7 @@ namespace StackMemoryCollections.{stackNamespace}
 
         private void StackPrimitiveConstructor2<T>(
             in StringBuilder builder,
-            in int sizeOf,
-            bool calculateSize
+            in string sizeOf
             ) where T : unmanaged
         {
             builder.Append($@"
@@ -182,7 +188,7 @@ namespace StackMemoryCollections.{stackNamespace}
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = ({typeof(T).Name}*)stackMemory->AllocateMemory({(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : sizeOf.ToString())} * count);
+            _start = ({typeof(T).Name}*)stackMemory->AllocateMemory({sizeOf} * count);
             _stackMemoryS = stackMemory;
             Capacity = count;
         }}
@@ -191,8 +197,7 @@ namespace StackMemoryCollections.{stackNamespace}
 
         private void StackPrimitiveConstructor3<T>(
             in StringBuilder builder,
-            in int sizeOf,
-            bool calculateSize
+            in string sizeOf
             ) where T: unmanaged
         {
             builder.Append($@"
@@ -206,7 +211,7 @@ namespace StackMemoryCollections.{stackNamespace}
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = ({typeof(T).Name}*)stackMemory.AllocateMemory({(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())} * count);
+            _start = ({typeof(T).Name}*)stackMemory.AllocateMemory({sizeOf} * count);
             _stackMemoryC = stackMemory;
             _stackMemoryS = null;
             Capacity = count;
@@ -253,8 +258,7 @@ namespace StackMemoryCollections.{stackNamespace}
 
         private void StackPrimitiveReducingCapacity<T>(
             in StringBuilder builder,
-            in int sizeOf,
-            in bool calculateSize,
+            in string sizeOf,
             in string stackNamespace
             ) where T :unmanaged
         {
@@ -279,13 +283,13 @@ namespace StackMemoryCollections.{stackNamespace}
 
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory({(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())} * (Capacity - reducingCount));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({sizeOf} * (Capacity - reducingCount));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 Buffer.MemoryCopy(
                     _stackMemoryC.Start,
                     newMemory.Start,
                     newMemory.ByteCount,
-                    {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())} * (Capacity - reducingCount)
+                    {sizeOf} * (Capacity - reducingCount)
                     );
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
@@ -296,21 +300,21 @@ namespace StackMemoryCollections.{stackNamespace}
             {{
                 if(_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())})))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         throw new Exception(""Failed to reduce available memory, stack moved further"");
                     }}
 
-                    _stackMemoryS->FreeMemory(reducingCount * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())});
+                    _stackMemoryS->FreeMemory(reducingCount * {sizeOf});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())})))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         throw new Exception(""Failed to reduce available memory, stack moved further"");
                     }}
 
-                    _stackMemoryC.FreeMemory(reducingCount * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())});
+                    _stackMemoryC.FreeMemory(reducingCount * {sizeOf});
                 }}
             }}
 
@@ -321,8 +325,7 @@ namespace StackMemoryCollections.{stackNamespace}
 
         private void StackPrimitiveExpandCapacity<T>(
             in StringBuilder builder,
-            in int sizeOf,
-            in bool calculateSize,
+            in string sizeOf,
             in string stackNamespace
             ) where T : unmanaged
         {
@@ -337,7 +340,7 @@ namespace StackMemoryCollections.{stackNamespace}
         {{
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory({(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())} * (Capacity + expandCount));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({sizeOf} * (Capacity + expandCount));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 Buffer.MemoryCopy(
                     _stackMemoryC.Start,
@@ -354,21 +357,21 @@ namespace StackMemoryCollections.{stackNamespace}
             {{
                 if(_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())})))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         throw new Exception(""Failed to expand available memory, stack moved further"");
                     }}
 
-                    _stackMemoryS->AllocateMemory(expandCount * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())});
+                    _stackMemoryS->AllocateMemory(expandCount * {sizeOf});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())})))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         throw new Exception(""Failed to expand available memory, stack moved further"");
                     }}
 
-                    _stackMemoryC.AllocateMemory(expandCount * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())});
+                    _stackMemoryC.AllocateMemory(expandCount * {sizeOf});
                 }}
             }}
 
@@ -379,8 +382,7 @@ namespace StackMemoryCollections.{stackNamespace}
 
         private void StackPrimitiveTryExpandCapacity<T>(
             in StringBuilder builder,
-            in int sizeOf,
-            in bool calculateSize,
+            in string sizeOf,
             in string stackNamespace
             ) where T : unmanaged
         {
@@ -395,7 +397,7 @@ namespace StackMemoryCollections.{stackNamespace}
         {{
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory({(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())} * (Capacity + expandCount));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({sizeOf} * (Capacity + expandCount));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 Buffer.MemoryCopy(
                     _stackMemoryC.Start,
@@ -412,24 +414,24 @@ namespace StackMemoryCollections.{stackNamespace}
             {{
                 if(_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())})))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         return false;
                     }}
         
-                    if(!_stackMemoryS->TryAllocateMemory(expandCount * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())}, out _))
+                    if(!_stackMemoryS->TryAllocateMemory(expandCount * {sizeOf}, out _))
                     {{
                         return false;
                     }}
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())})))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         return false;
                     }}
 
-                    if(!_stackMemoryC.TryAllocateMemory(expandCount * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())}, out _))
+                    if(!_stackMemoryC.TryAllocateMemory(expandCount * {sizeOf}, out _))
                     {{
                         return false;
                     }}
@@ -793,8 +795,7 @@ namespace StackMemoryCollections.{stackNamespace}
         private void StackPrimitiveDispose<T>(
             in StringBuilder builder,
             in string stackNamespace,
-            in int sizeOf,
-            bool calculateSize
+            in string sizeOf
             ) where T : unmanaged
         {
             if(stackNamespace == "Class")
@@ -822,11 +823,11 @@ namespace StackMemoryCollections.{stackNamespace}
                     {{
                         if(_stackMemoryS != null)
                         {{
-                            _stackMemoryS->FreeMemory(Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())});
+                            _stackMemoryS->FreeMemory(Capacity * {sizeOf});
                         }}
                         else if (_stackMemoryC != null)
                         {{
-                            _stackMemoryC.FreeMemory(Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())});
+                            _stackMemoryC.FreeMemory(Capacity * {sizeOf});
                         }}
                     }}
                 }}
@@ -853,11 +854,11 @@ namespace StackMemoryCollections.{stackNamespace}
             {{
                 if(_stackMemoryS != null)
                 {{
-                    _stackMemoryS->FreeMemory(Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())});
+                    _stackMemoryS->FreeMemory(Capacity * {sizeOf});
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    _stackMemoryC.FreeMemory(Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())});
+                    _stackMemoryC.FreeMemory(Capacity * {sizeOf});
                 }}
             }}
             else
@@ -982,8 +983,7 @@ namespace StackMemoryCollections.{stackNamespace}
 
         private void StackPrimitiveCopy<T>(
             in StringBuilder builder,
-            in int sizeOf,
-            bool calculateSize
+            in string sizeOf
             ) where T : unmanaged
         {
             builder.Append($@"
@@ -997,8 +997,8 @@ namespace StackMemoryCollections.{stackNamespace}
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,
-                count * (nuint){(calculateSize ? $"sizeof({typeof(T).Name})" : (sizeOf).ToString())},
-                count * (nuint){(calculateSize ? $"sizeof({typeof(T).Name})" : (sizeOf).ToString())}
+                count * (nuint){sizeOf},
+                count * (nuint){sizeOf}
                 );
         }}
 ");
@@ -1006,8 +1006,7 @@ namespace StackMemoryCollections.{stackNamespace}
 
         private void StackPrimitiveCopyCount<T>(
             in StringBuilder builder,
-            in int sizeOf,
-            bool calculateSize
+            in string sizeOf
             ) where T : unmanaged
         {
             builder.Append($@"
@@ -1021,8 +1020,8 @@ namespace StackMemoryCollections.{stackNamespace}
             Buffer.MemoryCopy(
                 _start,
                 ptrDest,
-                Size * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())},
-                Size * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())}
+                Size * {sizeOf},
+                Size * {sizeOf}
                 );
         }}
 ");
@@ -1030,8 +1029,7 @@ namespace StackMemoryCollections.{stackNamespace}
 
         private void StackPrimitiveCopyInStack<T>(
             in StringBuilder builder,
-            in int sizeOf,
-            bool calculateSize
+            in string sizeOf
             ) where T : unmanaged
         {
             builder.Append($@"
@@ -1051,8 +1049,8 @@ namespace StackMemoryCollections.{stackNamespace}
             Buffer.MemoryCopy(
                 _start,
                 destStack.Start,
-                destStack.Capacity * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())},
-                Size * {(calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : (sizeOf).ToString())}
+                destStack.Capacity * {sizeOf},
+                Size * {sizeOf}
                 );
 
             destStack.Size = Size;

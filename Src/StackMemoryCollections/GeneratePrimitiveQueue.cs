@@ -307,19 +307,19 @@ namespace StackMemoryCollections.{queueNamespace}
                 else if (_tail > _head)
                 {{
                     Buffer.MemoryCopy(
-                        (byte*)_stackMemoryC.Start + (_head * ({sizeOf})),
+                        (byte*)_stackMemoryC.Start + (_head * {sizeOf}),
                         newMemory.Start,
                         newMemory.ByteCount,
-                        Size * ({sizeOf})
+                        Size * {sizeOf}
                         );
                     _tail = Size - 1;
                     _head = 0;
                 }}
                 else
                 {{
-                    var headToEndByteCount = (Capacity - _head) * ({sizeOf});
+                    var headToEndByteCount = (Capacity - _head) * {sizeOf};
                     Buffer.MemoryCopy(
-                        (byte*)_stackMemoryC.Start + (_head * ({sizeOf})),
+                        (byte*)_stackMemoryC.Start + (_head * {sizeOf}),
                         newMemory.Start,
                         newMemory.ByteCount,
                         headToEndByteCount
@@ -328,7 +328,7 @@ namespace StackMemoryCollections.{queueNamespace}
                         (byte*)_stackMemoryC.Start,
                         (byte*)newMemory.Start + headToEndByteCount,
                         newMemory.ByteCount - headToEndByteCount,
-                        (_tail + 1) * ({sizeOf})
+                        (_tail + 1) * {sizeOf}
                         );
                     _tail = Size - 1;
                     _head = 0;
@@ -342,14 +342,14 @@ namespace StackMemoryCollections.{queueNamespace}
             {{
                 if (_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * ({sizeOf}))))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         throw new Exception(""Failed to reduce available memory, stack moved further"");
                     }}
 
                     if(_head > _tail && Capacity - _head + 1 < reducingCount)
                     {{
-                        _stackMemoryS->ShiftLeft((byte*)_start + _head, (long)(reducingCount * ({sizeOf})));
+                        _stackMemoryS->ShiftLeft((byte*)_start + _head, (long)(reducingCount * {sizeOf}));
                         _head -= reducingCount;{incrementVersion}
                     }}
                     else
@@ -357,24 +357,24 @@ namespace StackMemoryCollections.{queueNamespace}
                        (_head == _tail && Capacity - _tail + 1 < reducingCount)
                        )
                     {{
-                        _stackMemoryS->ShiftLeft((byte*)_start + _tail, (long)(reducingCount * ({sizeOf})));
+                        _stackMemoryS->ShiftLeft((byte*)_start + _tail, (long)(reducingCount * {sizeOf}));
                         _tail -= reducingCount;{incrementVersion}
                     }}
                     else
                     {{
-                        _stackMemoryS->FreeMemory(reducingCount * ({sizeOf}));
+                        _stackMemoryS->FreeMemory(reducingCount * {sizeOf});
                     }}
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * ({sizeOf}))))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         throw new Exception(""Failed to reduce available memory, stack moved further"");
                     }}
 
                     if (_head > _tail && Capacity - _head + 1 < reducingCount)
                     {{
-                        _stackMemoryC.ShiftLeft((byte*)_start + _head, (long)(reducingCount * ({sizeOf})));
+                        _stackMemoryC.ShiftLeft((byte*)_start + _head, (long)(reducingCount * {sizeOf}));
                         _head -= reducingCount;{incrementVersion}
                     }}
                     else
@@ -382,12 +382,12 @@ namespace StackMemoryCollections.{queueNamespace}
                        (_head == _tail && Capacity - _tail + 1 < reducingCount)
                        )
                     {{
-                        _stackMemoryC.ShiftLeft((byte*)_start + _tail, (long)(reducingCount * ({sizeOf})));
+                        _stackMemoryC.ShiftLeft((byte*)_start + _tail, (long)(reducingCount * {sizeOf}));
                         _tail -= reducingCount;{incrementVersion}
                     }}
                     else
                     {{
-                        _stackMemoryC.FreeMemory(reducingCount * ({sizeOf}));
+                        _stackMemoryC.FreeMemory(reducingCount * {sizeOf});
                     }}
                 }}
             }}
@@ -414,7 +414,7 @@ namespace StackMemoryCollections.{queueNamespace}
         {{
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory(({sizeOf}) * (Capacity + expandCount));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({sizeOf} * (Capacity + expandCount));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if(Size == 0)
                 {{
@@ -424,19 +424,19 @@ namespace StackMemoryCollections.{queueNamespace}
                 else if(_tail > _head)
                 {{
                     Buffer.MemoryCopy(
-                        (byte*)_stackMemoryC.Start + (_head * ({sizeOf})),
+                        (byte*)_stackMemoryC.Start + (_head * {sizeOf}),
                         newMemory.Start,
                         newMemory.ByteCount,
-                        Size * ({sizeOf})
+                        Size * {sizeOf}
                         );
                     _tail = Size - 1;
                     _head = 0;
                 }}
                 else
                 {{
-                    var headToEndByteCount = (Capacity - _head) * ({sizeOf});
+                    var headToEndByteCount = (Capacity - _head) * {sizeOf};
                     Buffer.MemoryCopy(
-                        (byte*)_stackMemoryC.Start + (_head * ({sizeOf})),
+                        (byte*)_stackMemoryC.Start + (_head * {sizeOf}),
                         newMemory.Start,
                         newMemory.ByteCount,
                         headToEndByteCount
@@ -445,7 +445,7 @@ namespace StackMemoryCollections.{queueNamespace}
                         (byte*)_stackMemoryC.Start,
                         (byte*)newMemory.Start + headToEndByteCount,
                         newMemory.ByteCount - headToEndByteCount,
-                        (_tail + 1) * ({sizeOf})
+                        (_tail + 1) * {sizeOf}
                         );
                     _tail = Size - 1;
                     _head = 0;
@@ -459,28 +459,28 @@ namespace StackMemoryCollections.{queueNamespace}
             {{
                 if (_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * ({sizeOf}))))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         throw new Exception(""Failed to expand available memory, stack moved further"");
                     }}
 
-                    _stackMemoryS->AllocateMemory(expandCount * ({sizeOf}));
+                    _stackMemoryS->AllocateMemory(expandCount * {sizeOf});
                     if(Size != 0 && _head != 0 && _head > _tail)
                     {{
-                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * ({sizeOf})), (long)(Capacity * ({sizeOf})));{incrementVersion}
+                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * {sizeOf}), (long)(Capacity * {sizeOf}));{incrementVersion}
                     }}
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * ({sizeOf}))))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         throw new Exception(""Failed to expand available memory, stack moved further"");
                     }}
 
-                    _stackMemoryC.AllocateMemory(expandCount * ({sizeOf}));
+                    _stackMemoryC.AllocateMemory(expandCount * {sizeOf});
                     if (Size != 0 && _head != 0 && _head > _tail)
                     {{
-                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * ({sizeOf})), (long)(Capacity * ({sizeOf})));{incrementVersion}
+                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * {sizeOf}), (long)(Capacity * {sizeOf}));{incrementVersion}
                     }}
                 }}
             }}
@@ -507,7 +507,7 @@ namespace StackMemoryCollections.{queueNamespace}
         {{
             if (_memoryOwner)
             {{
-                var newMemory = new StackMemoryCollections.Class.StackMemory(({sizeOf}) * (Capacity + expandCount));
+                var newMemory = new StackMemoryCollections.Class.StackMemory({sizeOf} * (Capacity + expandCount));
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if(Size == 0)
                 {{
@@ -517,19 +517,19 @@ namespace StackMemoryCollections.{queueNamespace}
                 else if(_tail > _head)
                 {{
                     Buffer.MemoryCopy(
-                        (byte*)_stackMemoryC.Start + (_head * ({sizeOf})),
+                        (byte*)_stackMemoryC.Start + (_head * {sizeOf}),
                         newMemory.Start,
                         newMemory.ByteCount,
-                        Size * ({sizeOf})
+                        Size * {sizeOf}
                         );
                     _tail = Size - 1;
                     _head = 0;
                 }}
                 else
                 {{
-                    var headToEndByteCount = (Capacity - _head) * ({sizeOf});
+                    var headToEndByteCount = (Capacity - _head) * {sizeOf};
                     Buffer.MemoryCopy(
-                        (byte*)_stackMemoryC.Start + (_head * ({sizeOf})),
+                        (byte*)_stackMemoryC.Start + (_head * {sizeOf}),
                         newMemory.Start,
                         newMemory.ByteCount,
                         headToEndByteCount
@@ -538,7 +538,7 @@ namespace StackMemoryCollections.{queueNamespace}
                         (byte*)_stackMemoryC.Start,
                         (byte*)newMemory.Start + headToEndByteCount,
                         newMemory.ByteCount - headToEndByteCount,
-                        (_tail + 1) * ({sizeOf})
+                        (_tail + 1) * {sizeOf}
                         );
                     _tail = Size - 1;
                     _head = 0;
@@ -552,36 +552,36 @@ namespace StackMemoryCollections.{queueNamespace}
             {{
                 if (_stackMemoryS != null)
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * ({sizeOf}))))
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         return false;
                     }}
 
-                    if(!_stackMemoryS->TryAllocateMemory(expandCount * ({sizeOf}), out _))
+                    if(!_stackMemoryS->TryAllocateMemory(expandCount * {sizeOf}, out _))
                     {{
                         return false;
                     }}
 
                     if(Size != 0 && _head != 0 && _head > _tail)
                     {{
-                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * ({sizeOf})), (long)(Capacity * ({sizeOf})));{incrementVersion}
+                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * {sizeOf}), (long)(Capacity * {sizeOf}));{incrementVersion}
                     }}
                 }}
                 else if (_stackMemoryC != null)
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * ({sizeOf}))))
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                     {{
                         return false;
                     }}
 
-                    if(!_stackMemoryC.TryAllocateMemory(expandCount * ({sizeOf}), out _))
+                    if(!_stackMemoryC.TryAllocateMemory(expandCount * {sizeOf}, out _))
                     {{
                         return false;
                     }}
                     
                     if (Size != 0 && _head != 0 && _head > _tail)
                     {{
-                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * ({sizeOf})), (long)(Capacity * ({sizeOf})));{incrementVersion}
+                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * {sizeOf}), (long)(Capacity * {sizeOf}));{incrementVersion}
                     }}
                 }}
             }}

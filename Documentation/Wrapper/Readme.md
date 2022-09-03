@@ -63,7 +63,7 @@ Implements
 
 # Properties
 
-| Name | ForType | ForPropertyType |
+| Name | ForType | ForMemberType |
 | ------------- | ------------- |------------- |
 | [Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/MemoryPtr.md)  | All | For Instance |
 | [{MemberName}Ptr](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/PropertyPtr.md)  | All | All |
@@ -73,7 +73,7 @@ Implements
 
 # Methods
 
-| Name | ForType | ForPropertyType |
+| Name | ForType | ForMemberType |
 | ------------- | ------------- |------------- |
 | [GetValue()](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/GetValue.md)  | All | For Instance |
 | [Fill(in {ItemType})](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Documentation/Wrapper/Fill.md)  | All | For Instance |

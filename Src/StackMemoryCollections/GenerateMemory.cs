@@ -29,6 +29,8 @@ namespace StackMemoryCollections
             MemoryProperties(in builder);
             MemoryAllocateMemory(in builder);
             MemoryTryAllocateMemory(in builder);
+            MemoryShiftRight(in builder);
+            MemoryShiftLeft(in builder);
             MemoryFreeMemory(in builder);
             MemoryTryFreeMemory(in builder);
             MemoryDispose(in builder, in memoryNamespace);
@@ -255,6 +257,55 @@ namespace StackMemoryCollections.{memoryNamespace}
         #endregion
 ");
             }
+        }
+
+        private void MemoryShiftRight(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
+        public void ShiftRight(
+            in byte* end,
+            long bytesShift
+            )
+        {{
+            if (_disposed)
+            {{
+                throw new ObjectDisposedException(nameof(StackMemory));
+            }}
+
+            var byteEnd = end - 1;
+            var newEnd = (byte*)end + (bytesShift - 1);
+            for(int i = 0; i > -bytesShift; i--)
+            {{
+                byteEnd[i] = newEnd[i];
+            }}
+        }}
+");
+        }
+
+        private void MemoryShiftLeft(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
+        public void ShiftLeft(
+            in byte* start,
+            long bytesShift
+            )
+        {{
+            if (_disposed)
+            {{
+                throw new ObjectDisposedException(nameof(StackMemory));
+            }}
+
+            var newStart = start - (bytesShift - 1);
+            for(int i = 0; i > bytesShift; i++)
+            {{
+                newStart[i] = start[i];
+            }}
+        }}
+");
         }
 
         private void MemoryEnd(

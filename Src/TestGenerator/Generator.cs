@@ -21,6 +21,11 @@ namespace TestGenerator
                 in context,
                 in builder
                 );
+
+            GenerateQueuePrimitiveTest(
+                in context,
+                in builder
+                );
         }
 
         public void Initialize(GeneratorInitializationContext context)

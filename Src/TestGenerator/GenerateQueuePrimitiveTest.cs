@@ -1,19 +1,20 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace TestGenerator
 {
     public partial class Generator
     {
-        private void GenerateStackPrimitiveTest(
+        private void GenerateQueuePrimitiveTest(
             in GeneratorExecutionContext context,
             in StringBuilder builder
             )
         {
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     Int32Values,
                     in builder,
@@ -21,7 +22,7 @@ namespace TestGenerator
                     Int32Convert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     Int32Values,
                     in builder,
@@ -31,7 +32,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     UInt32Values,
                     in builder,
@@ -39,7 +40,7 @@ namespace TestGenerator
                     UInt32Convert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     UInt32Values,
                     in builder,
@@ -49,7 +50,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     Int64Values,
                     in builder,
@@ -57,7 +58,7 @@ namespace TestGenerator
                     Int64Convert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     Int64Values,
                     in builder,
@@ -67,7 +68,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     UInt64Values,
                     in builder,
@@ -75,7 +76,7 @@ namespace TestGenerator
                     UInt64Convert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     UInt64Values,
                     in builder,
@@ -85,7 +86,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     SByteValues,
                     in builder,
@@ -93,7 +94,7 @@ namespace TestGenerator
                     SByteConvert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     SByteValues,
                     in builder,
@@ -103,7 +104,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     ByteValues,
                     in builder,
@@ -111,7 +112,7 @@ namespace TestGenerator
                     ByteConvert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     ByteValues,
                     in builder,
@@ -121,7 +122,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     Int16Values,
                     in builder,
@@ -129,7 +130,7 @@ namespace TestGenerator
                     Int16Convert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     Int16Values,
                     in builder,
@@ -139,7 +140,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     UInt16Values,
                     in builder,
@@ -147,7 +148,7 @@ namespace TestGenerator
                     UInt16Convert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     UInt16Values,
                     in builder,
@@ -157,7 +158,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     CharValues,
                     in builder,
@@ -165,7 +166,7 @@ namespace TestGenerator
                     CharConvert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     CharValues,
                     in builder,
@@ -175,7 +176,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     DecimalValues,
                     in builder,
@@ -183,7 +184,7 @@ namespace TestGenerator
                     DecimalConvert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     DecimalValues,
                     in builder,
@@ -193,7 +194,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     DoubleValues,
                     in builder,
@@ -201,7 +202,7 @@ namespace TestGenerator
                     DoubleConvert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     DoubleValues,
                     in builder,
@@ -211,7 +212,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     BooleanValues,
                     in builder,
@@ -219,7 +220,7 @@ namespace TestGenerator
                     BooleanConvert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     BooleanValues,
                     in builder,
@@ -229,7 +230,7 @@ namespace TestGenerator
             }
 
             {
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     SingleValues,
                     in builder,
@@ -237,7 +238,7 @@ namespace TestGenerator
                     SingleConvert
                     );
 
-                StackPrimitiveTest(
+                QueuePrimitiveTest(
                     in context,
                     SingleValues,
                     in builder,
@@ -247,11 +248,11 @@ namespace TestGenerator
             }
         }
 
-        private void StackPrimitiveTest<T>(
+        private void QueuePrimitiveTest<T>(
             in GeneratorExecutionContext context,
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -261,41 +262,52 @@ namespace TestGenerator
             }
 
             builder.Clear();
-            StackPrimitiveStart<T>(in builder, in stackNamespace);
+            QueuePrimitiveStart<T>(in builder, in queueNamespace);
 
-            StackPrimitiveDispose(in values, in builder, in stackNamespace);
-            StackPrimitiveNotDispose(in values, in builder, in stackNamespace);
-            StackPrimitiveReseize(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitivePush(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitivePushFuture(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitivePushPtr(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveTryPush(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveTryPushPtr(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveClear(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveClearOwn(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveCopy(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveTrimExcess(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveTrimExcessOwn(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveExpandCapacity(in values, in builder, in stackNamespace);
-            StackPrimitiveReducingCapacity(in values, in builder, in stackNamespace);
-            StackPrimitiveSize(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveCapacity(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveIndex(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitivePop(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveTop(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveTopOut(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveTopRefPtr(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveTopRefValue(in values, in builder, in stackNamespace, in toStr);
-            StackPrimitiveTopPtr(in values, in builder, in stackNamespace, in toStr);
+            QueuePrimitiveDispose(in values, in builder, in queueNamespace);
+            QueuePrimitiveNotDispose(in values, in builder);
+            QueuePrimitiveReseize(in values, in builder, in queueNamespace, in toStr);
 
-            StackPrimitiveEnd(in builder);
+            QueuePrimitivePush(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitivePushFuture(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitivePushPtr(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveTryPush(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveTryPushPtr(in values, in builder, in queueNamespace, in toStr);
+
+            QueuePrimitiveClear(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveClearOwn(in values, in builder, in queueNamespace, in toStr);
+
+            QueuePrimitiveCopy(in values, in builder, in queueNamespace, in toStr);
+
+            QueuePrimitiveTrimExcess(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveTrimExcessOwn(in values, in builder, in queueNamespace, in toStr);
+
+            QueuePrimitiveExpandCapacity(in values, in builder, in queueNamespace);
+            QueuePrimitiveExpandCapacityHeadAfterTail(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveReducingCapacity(in values, in builder, in queueNamespace);
+
+            QueuePrimitiveSize(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveCapacity(in values, in builder, in queueNamespace, in toStr);
+
+            QueuePrimitiveIndex(in values, in builder, in queueNamespace, in toStr);
+
+            QueuePrimitivePop(in values, in builder, in queueNamespace, in toStr);
+
+            QueuePrimitiveFrontBack(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveFrontBackOut(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveFrontBackPtr(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveFrontBackRefValue(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveGetFrontBackPtr(in values, in builder, in queueNamespace, in toStr);
+
+            QueuePrimitiveEnd(in builder);
             
-            context.AddSource($"StackOf{typeof(T).Name}{stackNamespace}Fixture.g.cs", builder.ToString());
+            context.AddSource($"QueueOf{typeof(T).Name}{queueNamespace}Fixture.g.cs", builder.ToString());
+            File.WriteAllText($"E:\\Work\\OutTrash\\QueueOf{typeof(T).Name}{queueNamespace}Fixture.g.cs", builder.ToString());
         }
 
-        private void StackPrimitiveStart<T>(
+        private void QueuePrimitiveStart<T>(
             in StringBuilder builder,
-            in string stackNamespace
+            in string queueNamespace
             ) where T : unmanaged
         {
             builder.Append($@"
@@ -306,16 +318,16 @@ using System.Runtime.CompilerServices;
 namespace Tests
 {{
     [TestFixture]
-    public class StackOf{typeof(T).Name}{stackNamespace}Fixture
+    public class QueueOf{typeof(T).Name}{queueNamespace}Fixture
     {{
                     
 ");
         }
 
-        private void StackPrimitiveDispose<T>(
+        private void QueuePrimitiveDispose<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace
+            in string queueNamespace
             ) where T : unmanaged
         {
             if (values.Count < 5)
@@ -332,7 +344,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     {{
-                        using var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                        using var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
                     }}
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
@@ -343,10 +355,9 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitiveNotDispose<T>(
+        private void QueuePrimitiveNotDispose<T>(
             in List<T> values,
-            in StringBuilder builder,
-            in string stackNamespace
+            in StringBuilder builder
             ) where T : unmanaged
         {
             if (values.Count < 5)
@@ -363,7 +374,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     {{
-                        var stack = new StackMemoryCollections.Struct.StackOf{typeof(T).Name}({values.Count}, &memory);
+                        var queue = new StackMemoryCollections.Struct.QueueOf{typeof(T).Name}({values.Count}, &memory);
                     }}
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
@@ -374,10 +385,10 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitiveReseize<T>(
+        private void QueuePrimitiveReseize<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -392,33 +403,43 @@ namespace Tests
         {{
             unsafe
             {{
-                var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}();
+                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
                 builder.Append($@"
 
-                stack.Push({toStr(values[i])});
+                queue.Push({toStr(values[i])});
 ");
             }
 
             builder.Append($@"
-                Assert.That(stack.Size, Is.EqualTo((nuint)4));
-                Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
+                Assert.That(queue.Size, Is.EqualTo((nuint)4));
+                Assert.That(queue.Capacity, Is.EqualTo((nuint)4));
 
-                stack.Push({toStr(values[0])});
-                Assert.That(stack.Size, Is.EqualTo((nuint)5));
-                Assert.That(stack.Capacity, Is.EqualTo((nuint)8));
+                queue.Push({toStr(values[4])});
+                Assert.That(queue.Size, Is.EqualTo((nuint)5));
+                Assert.That(queue.Capacity, Is.EqualTo((nuint)8));
+");
+            for (int i = 0; i < 5; i++)
+            {
+                builder.Append($@"
+                Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                Assert.That(queue.Back(), Is.EqualTo({toStr(values[4])}));
+                queue.Pop();
+");
+            }
+
+            builder.Append($@"
             }}
         }}
-
 ");
         }
 
-        private void StackPrimitivePush<T>(
+        private void QueuePrimitivePush<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -436,24 +457,24 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
-                    Assert.That(stack.IsEmpty, Is.EqualTo(true));
+                    Assert.That(queue.IsEmpty, Is.EqualTo(true));
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
 
-                    stack.Push({toStr(values[i])});
-                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
-                    Assert.That(stack.Size, Is.EqualTo((nuint){i + 1}));
+                    queue.Push({toStr(values[i])});
+                    Assert.That(queue.IsEmpty, Is.EqualTo(false));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(queue.Size, Is.EqualTo((nuint){i + 1}));
 ");
             }
 
             builder.Append($@"
 
-                    Assert.That(() => stack.Push({toStr(values[0])}),
+                    Assert.That(() => queue.Push({toStr(values[0])}),
                         Throws.Exception.TypeOf(typeof(ArgumentException))
                         .And.Message.EqualTo(""Can't allocate memory"")
                         );
@@ -463,10 +484,10 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitivePushFuture<T>(
+        private void QueuePrimitivePushFuture<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -484,32 +505,33 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
-                    Assert.That(stack.IsEmpty, Is.EqualTo(true));
+                    Assert.That(queue.IsEmpty, Is.EqualTo(true));
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
 
-                    *stack.TopFuture() = {toStr(values[i])};
-                    stack.PushFuture();
-                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
-                    Assert.That(stack.Size, Is.EqualTo((nuint){i + 1}));
-                    Assert.That(stack.Top(), Is.EqualTo({toStr(values[i])}));
+                    *queue.BackFuture() = {toStr(values[i])};
+                    queue.PushFuture();
+                    Assert.That(queue.IsEmpty, Is.EqualTo(false));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(queue.Size, Is.EqualTo((nuint){i + 1}));
+                    Assert.That(queue.Front(), Is.EqualTo({toStr(values[0])}));
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[i])}));
 ");
             }
 
             builder.Append($@"
-                    Assert.That(() => stack.TopFuture(),
+                    Assert.That(() => queue.BackFuture(),
                         Throws.Exception.TypeOf(typeof(Exception))
                         .And.Message.EqualTo(""Future element not available"")
                         );
 
-                    Assert.That(() => stack.PushFuture(),
+                    Assert.That(() => queue.PushFuture(),
                         Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""Not enough memory to allocate stack element"")
+                        .And.Message.EqualTo(""Not enough memory to allocate queue element"")
                         );
                 }}
             }}
@@ -517,10 +539,10 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitivePushPtr<T>(
+        private void QueuePrimitivePushPtr<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -539,20 +561,22 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(memory.Start)));
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
-                    Assert.That(stack.IsEmpty, Is.EqualTo(true));
+                    Assert.That(queue.IsEmpty, Is.EqualTo(true));
 
                     {typeof(T).Name} item;
-                    Unsafe.SkipInit(out item);
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    stack.Push(&item);
-                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
-                    Assert.That(stack.Size, Is.EqualTo((nuint){i + 1}));
+                    item = {toStr(values[i])};
+                    queue.Push(&item);
+                    Assert.That(queue.IsEmpty, Is.EqualTo(false));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(queue.Size, Is.EqualTo((nuint){i + 1}));
+                    Assert.That(queue.Front(), Is.EqualTo({toStr(values[0])}));
+                    Assert.That(queue.Back(), Is.EqualTo({toStr(values[i])}));
 ");
             }
 
@@ -562,7 +586,7 @@ namespace Tests
                         () => 
                         {{
                             {typeof(T).Name} temp = {toStr(values[0])};
-                            stack.Push(&temp);
+                            queue.Push(&temp);
                         }},
                         Throws.Exception.TypeOf(typeof(ArgumentException))
                         .And.Message.EqualTo(""Can't allocate memory"")
@@ -573,10 +597,10 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitiveTryPush<T>(
+        private void QueuePrimitiveTryPush<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -593,20 +617,20 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
 
-                    Assert.That(stack.TryPush({toStr(values[i])}),Is.EqualTo(true));
+                    Assert.That(queue.TryPush({toStr(values[i])}),Is.EqualTo(true));
 ");
             }
 
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    Assert.That(stack.TryPush({toStr(values[i])}), Is.EqualTo(false));
+                    Assert.That(queue.TryPush({toStr(values[i])}), Is.EqualTo(false));
 ");
             }
 
@@ -617,10 +641,10 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitiveTryPushPtr<T>(
+        private void QueuePrimitiveTryPushPtr<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -638,14 +662,14 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
                     {typeof(T).Name} item;
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
                     item = {toStr(values[i])};
-                    Assert.That(stack.TryPush(&item),Is.EqualTo(true));
+                    Assert.That(queue.TryPush(&item),Is.EqualTo(true));
 ");
             }
 
@@ -653,7 +677,7 @@ namespace Tests
             {
                 builder.Append($@"
                     item = {toStr(values[i])};
-                    Assert.That(stack.TryPush(&item), Is.EqualTo(false));
+                    Assert.That(queue.TryPush(&item), Is.EqualTo(false));
 ");
             }
 
@@ -664,10 +688,10 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitiveClear<T>(
+        private void QueuePrimitiveClear<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -684,32 +708,32 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    stack.Push({toStr(values[i])});
+                    queue.Push({toStr(values[i])});
 ");
             }
 
             builder.Append($@"
 
-                    Assert.That(stack.Size, Is.EqualTo((nuint){values.Count}));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
-                    stack.Clear();
-                    Assert.That(stack.Size, Is.EqualTo((nuint)0));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(queue.Size, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
+                    queue.Clear();
+                    Assert.That(queue.Size, Is.EqualTo((nuint)0));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
                 }}
             }}
         }}
 ");
         }
 
-        private void StackPrimitiveClearOwn<T>(
+        private void QueuePrimitiveClearOwn<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -724,31 +748,31 @@ namespace Tests
         {{
             unsafe
             {{
-                var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}();
+                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
                 builder.Append($@"
-                stack.Push({toStr(values[i])});
+                queue.Push({toStr(values[i])});
 ");
             }
 
             builder.Append($@"
 
-                Assert.That(stack.Size, Is.EqualTo((nuint)4));
-                Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
-                stack.Clear();
-                Assert.That(stack.Size, Is.EqualTo((nuint)0));
-                Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
+                Assert.That(queue.Size, Is.EqualTo((nuint)4));
+                Assert.That(queue.Capacity, Is.EqualTo((nuint)4));
+                queue.Clear();
+                Assert.That(queue.Size, Is.EqualTo((nuint)0));
+                Assert.That(queue.Capacity, Is.EqualTo((nuint)4));
             }}
         }}
 ");
         }
 
-        private void StackPrimitiveCopy<T>(
+        private void QueuePrimitiveCopy<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -757,7 +781,7 @@ namespace Tests
                 throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
             }
 
-            if(stackNamespace == "Class")
+            if(queueNamespace == "Class")
             {
                 builder.Append($@"
         [Test]
@@ -768,25 +792,25 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 using (var memory2 = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
 ");
                 for (int i = 0; i < values.Count; i++)
                 {
                     builder.Append($@"
-                    stack.Push({toStr(values[i])});
+                    queue.Push({toStr(values[i])});
 ");
                 }
 
                 builder.Append($@"
-                    var stack2 = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory2);
-                    stack.Copy(in stack2);
+                    var queue2 = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory2);
+                    queue.Copy(in queue2);
 
-                    Assert.That(stack.Size, Is.EqualTo(stack2.Size));
+                    Assert.That(queue.Size, Is.EqualTo(queue2.Size));
 ");
                 for (int i = 0; i < values.Count; i++)
                 {
                     builder.Append($@"
-                    Assert.That(*stack[{i}], Is.EqualTo(*stack2[{i}]));
+                    Assert.That(*queue[{i}], Is.EqualTo(*queue2[{i}]));
 ");
                 }
                 
@@ -796,7 +820,7 @@ namespace Tests
         }}
 ");
             }
-            else if (stackNamespace == "Struct")
+            else if (queueNamespace == "Struct")
             {
                 builder.Append($@"
         [Test]
@@ -807,27 +831,28 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 using (var memory2 = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
 ");
                 for (int i = 0; i < values.Count; i++)
                 {
                     builder.Append($@"
-                    stack.Push({toStr(values[i])});
+                    queue.Push({toStr(values[i])});
 ");
                 }
 
                 builder.Append($@"
-                    var stack2 = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory2);
-                    stack.Copy(stack2.Start);
+                    var queue2 = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory2);
+                    queue.Copy(queue2.Start);
 
-                    Assert.That(stack2.Size, Is.EqualTo((nuint)0));
-                    stack2.Size = stack.Size;
-                    Assert.That(stack.Size, Is.EqualTo(stack2.Size));
+                    Assert.That(queue2.Size, Is.EqualTo((nuint)0));
+                    queue.GetPositions(out var head, out var tail, out var size);
+                    queue2.SetPositions(head, tail, size);
+                    Assert.That(queue.Size, Is.EqualTo(queue2.Size));
 ");
                 for (int i = 0; i < values.Count; i++)
                 {
                     builder.Append($@"
-                    Assert.That(*stack[{i}], Is.EqualTo(*stack[{i}]));
+                    Assert.That(*queue[{i}], Is.EqualTo(*queue[{i}]));
 ");
                 }
 
@@ -839,10 +864,10 @@ namespace Tests
             }
         }
 
-        private void StackPrimitiveTrimExcess<T>(
+        private void QueuePrimitiveTrimExcess<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -859,25 +884,25 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count - 2}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count - 2}, &memory);
 ");
             for (int i = 0; i < values.Count - 2; i++)
             {
                 builder.Append($@"
-                    stack.Push({toStr(values[i])});
+                    queue.Push({toStr(values[i])});
 ");
             }
 
             builder.Append($@"
-                    stack.ExpandCapacity(2);
-                    stack.Push({toStr(values[0])});
+                    queue.ExpandCapacity(2);
+                    queue.Push({toStr(values[0])});
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
-                    Assert.That(stack.Size, Is.EqualTo((nuint){values.Count - 1}));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
-                    stack.TrimExcess();
-                    Assert.That(stack.Size, Is.EqualTo((nuint){values.Count - 1}));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count - 1}));
+                    Assert.That(queue.Size, Is.EqualTo((nuint){values.Count - 1}));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
+                    queue.TrimExcess();
+                    Assert.That(queue.Size, Is.EqualTo((nuint){values.Count - 1}));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count - 1}));
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count - 1})));
                 }}
             }}
@@ -885,10 +910,10 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitiveTrimExcessOwn<T>(
+        private void QueuePrimitiveTrimExcessOwn<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -903,33 +928,33 @@ namespace Tests
         {{
             unsafe
             {{
-                var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}();
+                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
                 builder.Append($@"
-                stack.Push({toStr(values[i])});
+                queue.Push({toStr(values[i])});
 ");
             }
 
             builder.Append($@"
-                stack.ExpandCapacity(6);
-                stack.Push({toStr(values[0])});
+                queue.ExpandCapacity(6);
+                queue.Push({toStr(values[0])});
 
-                Assert.That(stack.Size, Is.EqualTo((nuint)5));
-                Assert.That(stack.Capacity, Is.EqualTo((nuint)10));
-                stack.TrimExcess();
-                Assert.That(stack.Size, Is.EqualTo((nuint)5));
-                Assert.That(stack.Capacity, Is.EqualTo((nuint)5));
+                Assert.That(queue.Size, Is.EqualTo((nuint)5));
+                Assert.That(queue.Capacity, Is.EqualTo((nuint)10));
+                queue.TrimExcess();
+                Assert.That(queue.Size, Is.EqualTo((nuint)5));
+                Assert.That(queue.Capacity, Is.EqualTo((nuint)5));
             }}
         }}
 ");
         }
 
-        private void StackPrimitiveExpandCapacity<T>(
+        private void QueuePrimitiveExpandCapacity<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace
+            in string queueNamespace
             ) where T : unmanaged
         {
             if (values.Count < 5)
@@ -945,31 +970,99 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count + 3}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
-                    stack.ExpandCapacity(3);
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count + 3}));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
+                    queue.ExpandCapacity(3);
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count + 3}));
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count + 3})));
                 }}
             }}
 
             unsafe
             {{
-                var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}();
-                Assert.That(stack.Capacity, Is.EqualTo((nuint)4));
-                stack.ExpandCapacity(6);
-                Assert.That(stack.Capacity, Is.EqualTo((nuint)10));
+                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                Assert.That(queue.Capacity, Is.EqualTo((nuint)4));
+                queue.ExpandCapacity(6);
+                Assert.That(queue.Capacity, Is.EqualTo((nuint)10));
             }}
         }}
 ");
         }
 
-        private void StackPrimitiveReducingCapacity<T>(
+        private void QueuePrimitiveExpandCapacityHeadAfterTail<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace
+            in string queueNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void ExpandCapacityHeadAfterTailTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count + 3}))
+                {{
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    queue.Push({toStr(values[i])});
+");
+            }
+            builder.Append($@"
+                    queue.Pop();
+                    queue.Pop();
+                    queue.Pop();
+");
+            for (int i = 0; i < 3; i++)
+            {
+                builder.Append($@"
+                    queue.Push({toStr(values[i])});
+");
+            }
+            builder.Append($@"
+                    queue.ExpandCapacity(3);
+                    queue.Push({toStr(values[values.Count - 1])});
+");
+            for (int i = 3; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                    queue.Pop();
+");
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                builder.Append($@"
+                    Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                    queue.Pop();
+");
+            }
+
+            builder.Append($@"
+                    Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
+                    queue.Pop();
+
+                }}
+            }}
+        }}
+");
+        }
+
+        private void QueuePrimitiveReducingCapacity<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string queueNamespace
             ) where T : unmanaged
         {
             if (values.Count < 5)
@@ -985,33 +1078,33 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
-                    stack.ReducingCapacity(1);
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count - 1}));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
+                    queue.ReducingCapacity(1);
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count - 1}));
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count - 1})));
                 }}
             }}
 
             unsafe
             {{
-                var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}();
-                stack.ExpandCapacity(6);
+                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                queue.ExpandCapacity(6);
 
-                Assert.That(stack.Capacity, Is.EqualTo((nuint)10));
-                stack.ReducingCapacity(1);
-                Assert.That(stack.Capacity, Is.EqualTo((nuint)9));
+                Assert.That(queue.Capacity, Is.EqualTo((nuint)10));
+                queue.ReducingCapacity(1);
+                Assert.That(queue.Capacity, Is.EqualTo((nuint)9));
             }}
         }}
 ");
         }
 
-        private void StackPrimitiveSize<T>(
+        private void QueuePrimitiveSize<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -1028,13 +1121,13 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    stack.Push({toStr(values[i])});
-                    Assert.That(stack.Size, Is.EqualTo((nuint){i + 1}));
+                    queue.Push({toStr(values[i])});
+                    Assert.That(queue.Size, Is.EqualTo((nuint){i + 1}));
 ");
             }
 
@@ -1045,10 +1138,10 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitiveCapacity<T>(
+        private void QueuePrimitiveCapacity<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -1065,16 +1158,16 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    stack.Push({toStr(values[i])});
-                    stack.Pop();
-                    stack.Push({toStr(values[i])});
-                    stack.Pop();
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
+                    queue.Push({toStr(values[i])});
+                    queue.Pop();
+                    queue.Push({toStr(values[i])});
+                    queue.Pop();
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
 ");
             }
 
@@ -1085,10 +1178,10 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitiveIndex<T>(
+        private void QueuePrimitiveIndex<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -1105,27 +1198,27 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    stack.Push({toStr(values[i])});
+                    queue.Push({toStr(values[i])});
 ");
             }
 
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    Assert.That(new IntPtr(stack[{i}]), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count - 1 - i})));
-                    Assert.That(*stack[{i}], Is.EqualTo({toStr(values[values.Count - 1 - i])}));
+                    Assert.That(new IntPtr(queue[{i}]), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {i})));
+                    Assert.That(*queue[{i}], Is.EqualTo({toStr(values[i])}));
 ");
             }
 
             builder.Append($@"
-                    Assert.That(() => stack[{values.Count}],
+                    Assert.That(() => queue[{values.Count}],
                         Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""Element outside the stack"")
+                        .And.Message.EqualTo(""Element outside the queue"")
                         );
                 }}
             }}
@@ -1133,10 +1226,10 @@ namespace Tests
 ");
         }
 
-        private void StackPrimitivePop<T>(
+        private void QueuePrimitivePop<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -1153,34 +1246,34 @@ namespace Tests
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    stack.Push({toStr(values[i])});
+                    queue.Push({toStr(values[i])});
 ");
             }
 
             for (int i = 0; i < values.Count - 1; i++)
             {
                 builder.Append($@"
-                    stack.Pop();
-                    Assert.That(stack.IsEmpty, Is.EqualTo(false));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
-                    Assert.That(stack.Size, Is.EqualTo((nuint){values.Count - 1 - i }));
+                    queue.Pop();
+                    Assert.That(queue.IsEmpty, Is.EqualTo(false));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(queue.Size, Is.EqualTo((nuint){values.Count - 1 - i }));
 ");
             }
 
             builder.Append($@"
-                    stack.Pop();
-                    Assert.That(stack.IsEmpty, Is.EqualTo(true));
-                    Assert.That(stack.Capacity, Is.EqualTo((nuint){values.Count}));
-                    Assert.That(stack.Size, Is.EqualTo((nuint)0));
+                    queue.Pop();
+                    Assert.That(queue.IsEmpty, Is.EqualTo(true));
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint){values.Count}));
+                    Assert.That(queue.Size, Is.EqualTo((nuint)0));
                     
-                    Assert.That(() => stack.Pop(),
+                    Assert.That(() => queue.Pop(),
                         Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the stack"")
+                        .And.Message.EqualTo(""There are no elements on the queue"")
                         );
                 }}
             }}
@@ -1189,10 +1282,10 @@ namespace Tests
 
         }
 
-        private void StackPrimitiveTop<T>(
+        private void QueuePrimitiveFrontBack<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -1203,24 +1296,26 @@ namespace Tests
 
             builder.Append($@"
         [Test]
-        public void TopTest()
+        public void FrontBackTest()
         {{
             unsafe
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
-                    Assert.That(() => stack.Top(),
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
+                    Assert.That(() => queue.Front(),
                         Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the stack"")
+                        .And.Message.EqualTo(""There are no elements on the queue"")
                         );
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    stack.Push({toStr(values[i])});
-                    var item{i} = stack.Top();
-                    Assert.That(item{i}, Is.EqualTo({toStr(values[i])}));
+                    queue.Push({toStr(values[i])});
+                    var item{i}Front = queue.Front();
+                    var item{i}Back = queue.Back();
+                    Assert.That(item{i}Front, Is.EqualTo({toStr(values[0])}));
+                    Assert.That(item{i}Back, Is.EqualTo({toStr(values[i])}));
 ");
             }
 
@@ -1232,10 +1327,10 @@ namespace Tests
 
         }
 
-        private void StackPrimitiveTopOut<T>(
+        private void QueuePrimitiveFrontBackOut<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -1247,25 +1342,28 @@ namespace Tests
             builder.Append($@"
         [Test]
         [SkipLocalsInit]
-        public void TopOutTest()
+        public void FrontBackOutTest()
         {{
             unsafe
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
-                    Assert.That(() => stack.TopOut(out _),
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
+                    Assert.That(() => queue.FrontOut(out _),
                         Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the stack"")
+                        .And.Message.EqualTo(""There are no elements on the queue"")
                         );
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    stack.Push({toStr(values[i])});
-                    {typeof(T).Name} item{i};
-                    stack.TopOut(out item{i});
-                    Assert.That(item{i}, Is.EqualTo({toStr(values[i])}));
+                    queue.Push({toStr(values[i])});
+                    {typeof(T).Name} item{i}Front;
+                    queue.FrontOut(out item{i}Front);
+                    {typeof(T).Name} item{i}Back;
+                    queue.BackOut(out item{i}Back);
+                    Assert.That(item{i}Front, Is.EqualTo({toStr(values[0])}));
+                    Assert.That(item{i}Back, Is.EqualTo({toStr(values[i])}));
 ");
             }
 
@@ -1277,10 +1375,10 @@ namespace Tests
 
         }
 
-        private void StackPrimitiveTopRefPtr<T>(
+        private void QueuePrimitiveFrontBackPtr<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -1292,22 +1390,22 @@ namespace Tests
             builder.Append($@"
         [Test]
         [SkipLocalsInit]
-        public void TopRefPtrTest()
+        public void FrontBackPtrTest()
         {{
             unsafe
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(
                         () => 
                         {{
                             {typeof(T).Name} temp = {toStr(values[0])};
                             {typeof(T).Name}* tempPtr = &temp;
-                            stack.Top(in tempPtr);
+                            queue.Front(in tempPtr);
                         }},
                         Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the stack"")
+                        .And.Message.EqualTo(""There are no elements on the queue"")
                         );
                     {typeof(T).Name} item;
 ");
@@ -1315,11 +1413,15 @@ namespace Tests
             {
                 builder.Append($@"
                     item = {toStr(values[i])};
-                    stack.Push(in item);
-                    {typeof(T).Name} item{i};
-                    {typeof(T).Name}* itemPtr{i} = &item{i};
-                    stack.Top(in itemPtr{i});
-                    Assert.That(item{i}, Is.EqualTo({toStr(values[i])}));
+                    queue.Push(in item);
+                    {typeof(T).Name} item{i}Front;
+                    {typeof(T).Name}* itemPtr{i}Front = &item{i}Front;
+                    {typeof(T).Name} item{i}Back;
+                    {typeof(T).Name}* itemPtr{i}Back = &item{i}Back;
+                    queue.Front(in itemPtr{i}Front);
+                    queue.Back(in itemPtr{i}Back);
+                    Assert.That(item{i}Front, Is.EqualTo({toStr(values[0])}));
+                    Assert.That(item{i}Back, Is.EqualTo({toStr(values[i])}));
 ");
             }
 
@@ -1331,10 +1433,10 @@ namespace Tests
 
         }
 
-        private void StackPrimitiveTopRefValue<T>(
+        private void QueuePrimitiveFrontBackRefValue<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -1346,21 +1448,21 @@ namespace Tests
             builder.Append($@"
         [Test]
         [SkipLocalsInit]
-        public void TopRefValueTest()
+        public void FrontBackRefValueTest()
         {{
             unsafe
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(
                         () => 
                         {{
                             {typeof(T).Name} temp = {toStr(values[0])};
-                            stack.Top(ref temp);
+                            queue.Front(ref temp);
                         }},
                         Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the stack"")
+                        .And.Message.EqualTo(""There are no elements on the queue"")
                         );
                     {typeof(T).Name} item;
 ");
@@ -1368,10 +1470,13 @@ namespace Tests
             {
                 builder.Append($@"
                     item = {toStr(values[i])};
-                    stack.Push(in item);
-                    {typeof(T).Name} item{i} = {toStr(values[0])};
-                    stack.Top(ref item{i});
-                    Assert.That(item{i}, Is.EqualTo({toStr(values[i])}));
+                    queue.Push(in item);
+                    {typeof(T).Name} item{i}Front = {toStr(values[0])};
+                    queue.Front(ref item{i}Front);
+                    {typeof(T).Name} item{i}Back = {toStr(values[0])};
+                    queue.Back(ref item{i}Back);
+                    Assert.That(item{i}Front, Is.EqualTo({toStr(values[0])}));
+                    Assert.That(item{i}Back, Is.EqualTo({toStr(values[i])}));
 ");
             }
 
@@ -1383,10 +1488,10 @@ namespace Tests
 
         }
 
-        private void StackPrimitiveTopPtr<T>(
+        private void QueuePrimitiveGetFrontBackPtr<T>(
             in List<T> values,
             in StringBuilder builder,
-            in string stackNamespace,
+            in string queueNamespace,
             in Func<T, string> toStr
             ) where T : unmanaged
         {
@@ -1397,24 +1502,26 @@ namespace Tests
 
             builder.Append($@"
         [Test]
-        public void TopPtrTest()
+        public void GetFrontBackPtrTest()
         {{
             unsafe
             {{
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
-                    var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
-                    Assert.That(() => stack.TopPtr(),
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
+                    Assert.That(() => queue.FrontPtr(),
                         Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the stack"")
+                        .And.Message.EqualTo(""There are no elements on the queue"")
                         );
 ");
             for (int i = 0; i < values.Count; i++)
             {
                 builder.Append($@"
-                    stack.Push({toStr(values[i])});
-                    var itemPtr{i} = stack.TopPtr();
-                    Assert.That(new IntPtr(itemPtr{i}), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {i})));
+                    queue.Push({toStr(values[i])});
+                    var itemPtr{i}Front = queue.FrontPtr();
+                    var itemPtr{i}Back = queue.BackPtr();
+                    Assert.That(new IntPtr(itemPtr{i}Back), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {i})));
+                    Assert.That(new IntPtr(itemPtr{i}Front), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start)));
 ");
             }
 
@@ -1426,7 +1533,7 @@ namespace Tests
 
         }
 
-        private void StackPrimitiveEnd(
+        private void QueuePrimitiveEnd(
             in StringBuilder builder
             )
         {

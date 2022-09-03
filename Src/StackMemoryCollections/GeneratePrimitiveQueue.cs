@@ -101,7 +101,7 @@ namespace StackMemoryCollections
             QueuePrimitiveFrontPtr<T>(in builder);
             QueuePrimitiveBackPtr<T>(in builder);
 
-            QueuePrimitiveFrontFuture<T>(in builder);
+            QueuePrimitiveBackFuture<T>(in builder);
 
             QueuePrimitiveFrontOutValue<T>(in builder);
             QueuePrimitiveBackOutValue<T>(in builder);
@@ -113,6 +113,7 @@ namespace StackMemoryCollections
             QueuePrimitiveCopyInQueue<T>(in builder, in sizeOfStr);
 
             QueuePrimitiveSetPositions(in builder);
+            QueuePrimitiveGetPositions(in builder);
 
             if (queueNamespace == "Class")
             {
@@ -467,7 +468,8 @@ namespace StackMemoryCollections.{queueNamespace}
                     _stackMemoryS->AllocateMemory(expandCount * {sizeOf});
                     if(Size != 0 && _head != 0 && _head > _tail)
                     {{
-                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * {sizeOf}), (long)(Capacity * {sizeOf}));{incrementVersion}
+                        _stackMemoryS->ShiftRight((byte*)_start + _head, (byte*)_start + ((_head + (Capacity - _head)) * {sizeOf}), (long)(expandCount * {sizeOf}));{incrementVersion}
+                        _head += expandCount;
                     }}
                 }}
                 else if (_stackMemoryC != null)
@@ -480,7 +482,8 @@ namespace StackMemoryCollections.{queueNamespace}
                     _stackMemoryC.AllocateMemory(expandCount * {sizeOf});
                     if (Size != 0 && _head != 0 && _head > _tail)
                     {{
-                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * {sizeOf}), (long)(Capacity * {sizeOf}));{incrementVersion}
+                        _stackMemoryC.ShiftRight((byte*)_start + _head, (byte*)_start + ((_head + (Capacity - _head)) * {sizeOf}), (long)(expandCount * {sizeOf}));{incrementVersion}
+                        _head += expandCount;
                     }}
                 }}
             }}
@@ -564,7 +567,8 @@ namespace StackMemoryCollections.{queueNamespace}
 
                     if(Size != 0 && _head != 0 && _head > _tail)
                     {{
-                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * {sizeOf}), (long)(Capacity * {sizeOf}));{incrementVersion}
+                        _stackMemoryS->ShiftRight((byte*)_start + _head, (byte*)_start + ((_head + (Capacity - _head)) * {sizeOf}), (long)(expandCount * {sizeOf}));{incrementVersion}
+                        _head += expandCount;
                     }}
                 }}
                 else if (_stackMemoryC != null)
@@ -581,7 +585,8 @@ namespace StackMemoryCollections.{queueNamespace}
                     
                     if (Size != 0 && _head != 0 && _head > _tail)
                     {{
-                        _stackMemoryS->ShiftRight((byte*)_start + _head + 1 + (Capacity * {sizeOf}), (long)(Capacity * {sizeOf}));{incrementVersion}
+                        _stackMemoryC.ShiftRight((byte*)_start + _head, (byte*)_start + ((_head + (Capacity - _head)) * {sizeOf}), (long)(expandCount * {sizeOf}));{incrementVersion}
+                        _head += expandCount;
                     }}
                 }}
             }}
@@ -641,14 +646,13 @@ namespace StackMemoryCollections.{queueNamespace}
             }}
             else
             {{
-                if (_tail == Capacity)
+                if (++_tail == Capacity)
                 {{
                     _tail = 0;
-                    *(_start + _tail) = item;
+                    *(_start) = item;
                 }}
                 else
                 {{
-                    _tail += 1;
                     *(_start + _tail) = item;
                 }}
             }}
@@ -679,13 +683,9 @@ namespace StackMemoryCollections.{queueNamespace}
 
             if(Size != 0)
             {{
-                if (_tail == Capacity)
+                if (++_tail == Capacity)
                 {{
                     _tail = 0;
-                }}
-                else
-                {{
-                    _tail += 1;
                 }}
             }}
 
@@ -719,14 +719,13 @@ namespace StackMemoryCollections.{queueNamespace}
             }}
             else
             {{
-                if (_tail == Capacity)
+                if (++_tail == Capacity)
                 {{
                     _tail = 0;
-                    *(_start + _tail) = *ptr;
+                    *(_start) = *ptr;
                 }}
                 else
                 {{
-                    _tail += 1;
                     *(_start + _tail) = *ptr;
                 }}
             }}
@@ -764,10 +763,10 @@ namespace StackMemoryCollections.{queueNamespace}
             }}
             else
             {{
-                if (_tail == Capacity)
+                if (_tail == Capacity - 1)
                 {{
                     _tail = 0;
-                    *(_start + _tail) = item;
+                    *(_start) = item;
                 }}
                 else
                 {{
@@ -810,10 +809,10 @@ namespace StackMemoryCollections.{queueNamespace}
             }}
             else
             {{
-                if (_tail == Capacity)
+                if (_tail == Capacity - 1)
                 {{
                     _tail = 0;
-                    *(_start + _tail) = *ptr;
+                    *(_start) = *ptr;
                 }}
                 else
                 {{
@@ -852,6 +851,10 @@ namespace StackMemoryCollections.{queueNamespace}
             {{
                 _head = 0;
                 _tail = 0;
+            }}
+            else if(_head == Capacity)
+            {{
+                _head = 0;
             }}{incrementVersion}
         }}
 ");
@@ -881,7 +884,12 @@ namespace StackMemoryCollections.{queueNamespace}
             {{
                 _head = 0;
                 _tail = 0;
+            }}
+            else if(_head == Capacity)
+            {{
+                _head = 0;
             }}{incrementVersion}
+
             return true;
         }}
 ");
@@ -945,33 +953,40 @@ namespace StackMemoryCollections.{queueNamespace}
 ");
         }
 
-        private void QueuePrimitiveFrontFuture<T>(
+        private void QueuePrimitiveBackFuture<T>(
             in StringBuilder builder
             ) where T : unmanaged
         {
             builder.Append($@"
-        public {typeof(T).Name}* FrontFuture()
+        public {typeof(T).Name}* BackFuture()
         {{
             if (Capacity == 0 || Size == Capacity)
             {{
-                throw new Exception(""There are no elements on the queue"");
+                throw new Exception(""Future element not available"");
             }}
 
-            if(_head > _tail)
+            if(_tail > _head)
             {{
-                var tempHead = _head + 1;
-                if(tempHead == Capacity)
+                var tempTail = _tail + 1;
+                if(tempTail == Capacity)
                 {{
                     return _start;
                 }}
                 else
                 {{
-                    return _start + tempHead;
+                    return _start + tempTail;
                 }}
             }}
             else
             {{
-                return _start + _head + 1;
+                if(Size == 0)
+                {{
+                    return _start + _tail;
+                }}
+                else
+                {{
+                    return _start + _tail + 1;
+                }}
             }}
         }}
 ");
@@ -1297,7 +1312,7 @@ namespace StackMemoryCollections.{queueNamespace}
             {{
                 if (Size == 0 || Size <= index)
                 {{
-                    throw new Exception(""Element outside the stack"");
+                    throw new Exception(""Element outside the queue"");
                 }}
                 
                 if(_head > _tail)
@@ -1452,6 +1467,20 @@ namespace StackMemoryCollections.{queueNamespace}
             _head = headIndex;
             _tail = tailIndex;
             Size = size;
+        }}
+");
+        }
+
+        private void QueuePrimitiveGetPositions(
+            in StringBuilder builder
+            )
+        {
+            builder.Append($@"
+        public void GetPositions(out nuint headIndex, out nuint tailIndex, out nuint size)
+        {{
+            headIndex = _head;
+            tailIndex = _tail;
+            size = Size;
         }}
 ");
         }

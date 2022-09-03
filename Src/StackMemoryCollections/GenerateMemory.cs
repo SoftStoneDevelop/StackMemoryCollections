@@ -265,6 +265,7 @@ namespace StackMemoryCollections.{memoryNamespace}
         {
             builder.Append($@"
         public void ShiftRight(
+            in byte* start,
             in byte* end,
             long bytesShift
             )
@@ -273,12 +274,12 @@ namespace StackMemoryCollections.{memoryNamespace}
             {{
                 throw new ObjectDisposedException(nameof(StackMemory));
             }}
-
-            var byteEnd = end - 1;
-            var newEnd = (byte*)end + (bytesShift - 1);
-            for(int i = 0; i > -bytesShift; i--)
+            
+            var current = end - 1;
+            while(current >= start)
             {{
-                byteEnd[i] = newEnd[i];
+                *(current + bytesShift) = *current;
+                current -= 1;
             }}
         }}
 ");

@@ -289,6 +289,7 @@ namespace TestGenerator
             QueuePrimitiveExpandCapacityHeadBeforeTailOwn(in values, in builder, in queueNamespace, in toStr);
 
             QueuePrimitiveReducingCapacity(in values, in builder, in queueNamespace);
+            QueuePrimitiveReducingCapacityHeadAfterTail(in values, in builder, in queueNamespace, in toStr);
 
             QueuePrimitiveSize(in values, in builder, in queueNamespace, in toStr);
             QueuePrimitiveCapacity(in values, in builder, in queueNamespace, in toStr);
@@ -306,7 +307,7 @@ namespace TestGenerator
             QueuePrimitiveEnd(in builder);
             
             context.AddSource($"QueueOf{typeof(T).Name}{queueNamespace}Fixture.g.cs", builder.ToString());
-            File.WriteAllText($"E:\\Work\\OutTrash\\QueueOf{typeof(T).Name}{queueNamespace}Fixture.g.cs", builder.ToString());
+            //File.WriteAllText($"E:\\Work\\OutTrash\\QueueOf{typeof(T).Name}{queueNamespace}Fixture.g.cs", builder.ToString());
         }
 
         private void QueuePrimitiveStart<T>(
@@ -1312,6 +1313,57 @@ namespace Tests
 ");
             }
             builder.Append($@"
+            }}
+        }}
+");
+        }
+
+        private void QueuePrimitiveReducingCapacityHeadAfterTail<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string queueNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void ReducingCapacityHeadAfterTailTest()
+        {{
+            unsafe
+            {{
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
+                {{
+                    var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
+");
+            for (int i = 0; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    queue.Push({toStr(values[i])});
+");
+            }
+
+            builder.Append($@"
+                    queue.Pop();
+                    queue.Pop();
+                    queue.Push({toStr(values[values.Count - 1])});
+                    queue.ReducingCapacity(1);
+");
+            for (int i = 2; i < values.Count; i++)
+            {
+                builder.Append($@"
+                    Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                    queue.Pop();
+");
+            }
+            builder.Append($@"
+                    Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
+                    queue.Pop();
+                }}
             }}
         }}
 ");

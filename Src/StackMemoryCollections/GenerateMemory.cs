@@ -292,6 +292,7 @@ namespace StackMemoryCollections.{memoryNamespace}
             builder.Append($@"
         public void ShiftLeft(
             in byte* start,
+            in byte* end,
             long bytesShift
             )
         {{
@@ -300,10 +301,16 @@ namespace StackMemoryCollections.{memoryNamespace}
                 throw new ObjectDisposedException(nameof(StackMemory));
             }}
 
-            var newStart = start - (bytesShift - 1);
-            for(int i = 0; i > bytesShift; i++)
+            var current = start - bytesShift;
+            var sd = *start;
+            var newEnd = end - bytesShift;
+            while(current != newEnd)
             {{
-                newStart[i] = start[i];
+                var ss = *current;
+                var ss2 = *(current + bytesShift);
+                
+                *current = *(current + bytesShift);
+                current += 1;
             }}
         }}
 ");

@@ -1,12 +1,12 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
-namespace Benchmark.Stack
+namespace Benchmark.Queue
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
     [HideColumns("Error", "StdDev", "Median", "Gen0", "Gen1", "Gen2", "Alloc Ratio", "RatioSD")]
-    public class StructSimpleJob
+    public class PrimitiveSimpleJob
     {
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
@@ -16,17 +16,12 @@ namespace Benchmark.Stack
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)Size))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * (nuint)Size))
                 {
-                    var item = new JobStruct(0, 0);
-                    using var stack = new Benchmark.Struct.StackOfJobStruct((nuint)Size, &memory);
+                    var stack = new StackMemoryCollections.Struct.QueueOfInt32((nuint)Size, &memory);
                     for (int i = 0; i < Size; i++)
                     {
-                        item.Int32 = i;
-                        item.Int64 = i * 2;
-                        item.JobStruct2.Int32 = 15;
-                        item.JobStruct2.Int64 = 36;
-                        stack.Push(in item);
+                        stack.Push(in i);
                     }
 
                     while (stack.TryPop())
@@ -41,18 +36,13 @@ namespace Benchmark.Stack
         {
             unsafe
             {
-                var item = new JobStruct(0, 0);
-                var stack = new System.Collections.Generic.Stack<JobStruct>(Size);
+                var stack = new System.Collections.Generic.Queue<int>(Size);
                 for (int i = 0; i < Size; i++)
                 {
-                    item.Int32 = i;
-                    item.Int64 = i * 2;
-                    item.JobStruct2.Int32 = 15;
-                    item.JobStruct2.Int64 = 36;
-                    stack.Push(item);
+                    stack.Enqueue(i);
                 }
 
-                while (stack.TryPop(out _))
+                while (stack.TryDequeue(out _))
                 {
                 }
             }

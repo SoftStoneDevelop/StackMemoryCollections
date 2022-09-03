@@ -6,13 +6,21 @@ namespace Benchmark
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<PrimitiveSimpleJob>();// 4 byte * Size
-            BenchmarkRunner.Run<StructSimpleJob>();// 24 byte * Size
-            BenchmarkRunner.Run<ClassSimpleJob>();// 24 byte * Size
+            //Queue
+            BenchmarkRunner.Run<Queue.PrimitiveSimpleJob>();// 4 byte * Size
+            BenchmarkRunner.Run<Queue.PrimitiveOptimalJob>();// 4 byte * Size
 
-            BenchmarkRunner.Run<PrimitiveOptimalJob>();// 4 byte * Size
-            BenchmarkRunner.Run<StructOptimalJob>();// 24 byte * Size
-            BenchmarkRunner.Run<ClassOptimalJob>();// 24 byte * Size
+            /*
+            //Stack
+            BenchmarkRunner.Run<Stack.PrimitiveSimpleJob>();// 4 byte * Size
+            BenchmarkRunner.Run<Stack.PrimitiveOptimalJob>();// 4 byte * Size
+
+            BenchmarkRunner.Run<Stack.StructSimpleJob>();// 24 byte * Size
+            BenchmarkRunner.Run<Stack.StructOptimalJob>();// 24 byte * Size
+
+            BenchmarkRunner.Run<Stack.ClassSimpleJob>();// 24 byte * Size
+            BenchmarkRunner.Run<Stack.ClassOptimalJob>();// 24 byte * Size
+            */
         }
     }
 }

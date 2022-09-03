@@ -1,12 +1,12 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
-namespace Benchmark.Stack
+namespace Benchmark.Queue
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
     [HideColumns("Error", "StdDev", "Median", "Gen0", "Gen1", "Gen2", "Alloc Ratio", "RatioSD")]
-    public class ClassOptimalJob
+    public class PrimitiveOptimalJob
     {
         [Params(100, 1000, 10000, 100000, 250000, 500000, 1000000)]
         public int Size;
@@ -16,22 +16,15 @@ namespace Benchmark.Stack
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(JobClassHelper.SizeOf * (nuint)Size))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * (nuint)Size))
                 {
-                    var item = new Benchmark.Struct.JobClassWrapper(memory.Start, false);
-                    var js2W = new Benchmark.Struct.JobClass2Wrapper(memory.Start, false);
                     for (int j = 0; j < 100; j++)
                     {
                         {
-                            using var stack = new Benchmark.Struct.StackOfJobClass((nuint)Size, &memory);
+                            using var stack = new StackMemoryCollections.Struct.QueueOfInt32((nuint)Size, &memory);
                             for (int i = 0; i < Size; i++)
                             {
-                                item.ChangePtr(stack.TopFuture());
-                                item.Int32 = i;
-                                item.Int64 = i * 2;
-                                js2W.ChangePtr(item.JobClass2Ptr);
-                                js2W.Int32 = i + 3;
-                                js2W.Int64 = i * 3;
+                                *stack.BackFuture() = i;
                                 stack.PushFuture();
                             }
 
@@ -47,15 +40,10 @@ namespace Benchmark.Stack
                             }
                         }
 
-                        using var stack2 = new Benchmark.Struct.StackOfJobClass((nuint)Size, &memory);
+                        using var stack2 = new StackMemoryCollections.Struct.QueueOfInt32((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
-                            item.ChangePtr(stack2.TopFuture());
-                            item.Int32 = i;
-                            item.Int64 = i * 2;
-                            js2W.ChangePtr(item.JobClass2Ptr);
-                            js2W.Int32 = i + 3;
-                            js2W.Int64 = i * 3;
+                            *stack2.BackFuture() = i;
                             stack2.PushFuture();
                         }
 
@@ -82,15 +70,10 @@ namespace Benchmark.Stack
                 for (int j = 0; j < 100; j++)
                 {
                     {
-                        var stack = new System.Collections.Generic.Stack<JobClass>(Size);
+                        var stack = new System.Collections.Generic.Queue<int>(Size);
                         for (int i = 0; i < Size; i++)
                         {
-                            stack.Push(
-                                new JobClass(i, i * 2)
-                                {
-                                    JobClass2 = new JobClass2(i + 3, i * 3)
-                                }
-                                );
+                            stack.Enqueue(i);
                         }
 
                         if (j > 50)
@@ -99,21 +82,16 @@ namespace Benchmark.Stack
                         }
                         else
                         {
-                            while (stack.TryPop(out _))
+                            while (stack.TryDequeue(out _))
                             {
                             }
                         }
                     }
 
-                    var stack2 = new System.Collections.Generic.Stack<JobClass>(Size);
+                    var stack2 = new System.Collections.Generic.Queue<int>(Size);
                     for (int i = 0; i < Size; i++)
                     {
-                        stack2.Push(
-                            new JobClass(i, i * 2)
-                            {
-                                JobClass2 = new JobClass2(i + 3, i * 3)
-                            }
-                            );
+                        stack2.Enqueue(i);
                     }
 
                     if (j > 50)
@@ -122,7 +100,7 @@ namespace Benchmark.Stack
                     }
                     else
                     {
-                        while (stack2.TryPop(out _))
+                        while (stack2.TryDequeue(out _))
                         {
                         }
                     }

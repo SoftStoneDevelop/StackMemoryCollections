@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
-namespace Benchmark
+namespace Benchmark.Stack
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]

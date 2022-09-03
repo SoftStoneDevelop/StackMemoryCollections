@@ -292,6 +292,7 @@ namespace TestGenerator
             QueuePrimitiveReducingCapacityHeadAfterTail(in values, in builder, in queueNamespace, in toStr);
             QueuePrimitiveReducingCapacityHeadAfterTailOwn(in values, in builder, in queueNamespace, in toStr);
             QueuePrimitiveReducingCapacityHeadBeforeTail(in values, in builder, in queueNamespace, in toStr);
+            QueuePrimitiveReducingCapacityHeadBeforeTailOwn(in values, in builder, in queueNamespace, in toStr);
 
             QueuePrimitiveSize(in values, in builder, in queueNamespace, in toStr);
             QueuePrimitiveCapacity(in values, in builder, in queueNamespace, in toStr);
@@ -309,7 +310,6 @@ namespace TestGenerator
             QueuePrimitiveEnd(in builder);
             
             context.AddSource($"QueueOf{typeof(T).Name}{queueNamespace}Fixture.g.cs", builder.ToString());
-            //File.WriteAllText($"E:\\Work\\OutTrash\\QueueOf{typeof(T).Name}{queueNamespace}Fixture.g.cs", builder.ToString());
         }
 
         private void QueuePrimitiveStart<T>(
@@ -1480,6 +1480,59 @@ namespace Tests
             builder.Append($@"
                     Assert.That(queue.Size, Is.EqualTo((nuint)0));
                 }}
+            }}
+        }}
+");
+        }
+
+        private void QueuePrimitiveReducingCapacityHeadBeforeTailOwn<T>(
+            in List<T> values,
+            in StringBuilder builder,
+            in string queueNamespace,
+            in Func<T, string> toStr
+            ) where T : unmanaged
+        {
+            if (values.Count < 5)
+            {
+                throw new ArgumentException($"{nameof(values)} Must have minimum 5 values to generate tests");
+            }
+
+            builder.Append($@"
+        [Test]
+        public void ReducingCapacityHeadBeforeTailOwnTest()
+        {{
+            unsafe
+            {{
+                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+");
+            for (int i = 0; i < 3; i++)
+            {
+                builder.Append($@"
+                queue.Push({toStr(values[i])});
+");
+            }
+
+            builder.Append($@"
+                queue.Pop();
+                queue.ReducingCapacity(2);
+");
+            for (int i = 1; i < 3; i++)
+            {
+                builder.Append($@"
+                Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
+                queue.Pop();
+");
+            }
+            builder.Append($@"
+                Assert.That(queue.Size, Is.EqualTo((nuint)0));
+");
+            if (queueNamespace == "Struct")
+            {
+                builder.Append($@"
+                queue.Dispose();
+");
+            }
+            builder.Append($@"
             }}
         }}
 ");

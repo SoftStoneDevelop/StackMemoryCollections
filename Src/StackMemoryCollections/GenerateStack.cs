@@ -48,6 +48,7 @@ namespace StackMemoryCollections
 
             StackReducingCapacity(in builder, in sizeOfStr);
             StackExpandCapacity(in builder, in sizeOfStr);
+            StackTryExpandCapacity(in builder, in sizeOfStr);
             StackTrimExcess(in builder);
             StackPushIn(in builder, in currentType, in stackNamespace, in sizeOfStr);
             StackPushFuture(in builder, in stackNamespace);
@@ -295,7 +296,6 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             builder.Append($@"
         public void ExpandCapacity(in nuint expandCount)
         {{
-
             if (_memoryOwner)
             {{
                 var newMemory = new StackMemoryCollections.Class.StackMemory({sizeOfStr} * (Capacity + expandCount));
@@ -338,6 +338,63 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
 ");
         }
 
+        private void StackTryExpandCapacity(
+            in StringBuilder builder,
+            in string sizeOfStr
+            )
+        {
+            builder.Append($@"
+        public bool TryExpandCapacity(in nuint expandCount)
+        {{
+            if (_memoryOwner)
+            {{
+                var newMemory = new StackMemoryCollections.Class.StackMemory({sizeOfStr} * (Capacity + expandCount));
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                Buffer.MemoryCopy(
+                    _stackMemoryC.Start,
+                    newMemory.Start,
+                    newMemory.ByteCount,
+                    _stackMemoryC.ByteCount
+                    );
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                _stackMemoryC.Dispose();
+                _stackMemoryC = newMemory;
+                _start = _stackMemoryC.Start;
+            }}
+            else
+            {{
+                if(_stackMemoryS != null)
+                {{
+                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
+                    {{
+                        return false;
+                    }}
+
+                    if(!_stackMemoryS->TryAllocateMemory(expandCount * {sizeOfStr}, out _))
+                    {{
+                        return false;
+                    }}
+                }}
+                else if (_stackMemoryC != null)
+                {{
+                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
+                    {{
+                        throw new Exception(""Failed to expand available memory, stack moved further"");
+                    }}
+
+                    if(!_stackMemoryC.TryAllocateMemory(expandCount * {sizeOfStr}, out _))
+                    {{
+                        return false;
+                    }}
+                }}
+            }}
+
+            Capacity += expandCount;
+            return true;
+        }}
+");
+        }
+
         private void StackTrimExcess(
             in StringBuilder builder
             )
@@ -374,37 +431,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
         {{
             if (Size == Capacity)
             {{
-                if (_memoryOwner)
-                {{
-                    ExpandCapacity(Capacity);
-                }}
-                else
-                {{
-                    if(_stackMemoryS != null)
-                    {{
-                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                        {{
-                            throw new Exception(""Failed to expand available memory, stack moved further"");
-                        }}
-
-                        _stackMemoryS->AllocateMemory({sizeOfStr});
-                    }}
-                    else if (_stackMemoryC != null)
-                    {{
-                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                        {{
-                            throw new Exception(""Failed to expand available memory, stack moved further"");
-                        }}
-
-                        _stackMemoryC.AllocateMemory({sizeOfStr});
-                    }}
-                    else
-                    {{
-                        throw new Exception(""Not enough memory to allocate stack element"");
-                    }}
-                    
-                    Capacity += 1;
-                }}
+                ExpandCapacity(_memoryOwner ? Capacity : 1);
             }}
 
             {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (Size * {sizeOfStr}));
@@ -459,37 +486,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
         {{
             if (Size == Capacity)
             {{
-                if (_memoryOwner)
-                {{
-                    ExpandCapacity(Capacity);
-                }}
-                else
-                {{
-                    if(_stackMemoryS != null)
-                    {{
-                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                        {{
-                            throw new Exception(""Failed to expand available memory, stack moved further"");
-                        }}
-
-                        _stackMemoryS->AllocateMemory({sizeOfStr});
-                    }}
-                    else if (_stackMemoryC != null)
-                    {{
-                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                        {{
-                            throw new Exception(""Failed to expand available memory, stack moved further"");
-                        }}
-
-                        _stackMemoryC.AllocateMemory({sizeOfStr});
-                    }}
-                    else
-                    {{
-                        throw new Exception(""Not enough memory to allocate stack element"");
-                    }}
-                    
-                    Capacity += 1;
-                }}
+                ExpandCapacity(_memoryOwner ? Capacity : 1);
             }}
 
             {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (Size * {sizeOfStr}));
@@ -518,42 +515,9 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
         {{
             if (Size == Capacity)
             {{
-                if (_memoryOwner)
+                if(!TryExpandCapacity(_memoryOwner ? Capacity : 1))
                 {{
-                    ExpandCapacity(Capacity);
-                }}
-                else
-                {{
-                    if(_stackMemoryS != null)
-                    {{
-                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                        {{
-                            return false;
-                        }}
-                        
-                        if(!_stackMemoryS->TryAllocateMemory({sizeOfStr}, out _))
-                        {{
-                            return false;
-                        }}
-                    }}
-                    else if (_stackMemoryC != null)
-                    {{
-                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                        {{
-                            return false;
-                        }}
-
-                        if(!_stackMemoryC.TryAllocateMemory({sizeOfStr}, out _))
-                        {{
-                            return false;
-                        }}
-                    }}
-                    else
-                    {{
-                        return false;
-                    }}
-                    
-                    Capacity += 1;
+                    return false;
                 }}
             }}
 
@@ -584,42 +548,9 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
         {{
             if (Size == Capacity)
             {{
-                if (_memoryOwner)
+                if(!TryExpandCapacity(_memoryOwner ? Capacity : 1))
                 {{
-                    ExpandCapacity(Capacity);
-                }}
-                else
-                {{
-                    if(_stackMemoryS != null)
-                    {{
-                        if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                        {{
-                            return false;
-                        }}
-                        
-                        if(!_stackMemoryS->TryAllocateMemory({sizeOfStr}, out _))
-                        {{
-                            return false;
-                        }}
-                    }}
-                    else if (_stackMemoryC != null)
-                    {{
-                        if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                        {{
-                            return false;
-                        }}
-
-                        if(!_stackMemoryC.TryAllocateMemory({sizeOfStr}, out _))
-                        {{
-                            return false;
-                        }}
-                    }}
-                    else
-                    {{
-                        return false;
-                    }}
-                    
-                    Capacity += 1;
+                    return false;
                 }}
             }}
 

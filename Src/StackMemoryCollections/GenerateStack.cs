@@ -63,11 +63,11 @@ namespace StackMemoryCollections
             StackTopRefValue(in builder, in currentType, in sizeOfStr);
             StackTopPtr(in builder, in sizeOfStr);
             StackTopFuture(in builder, in sizeOfStr);
+            StackTopOutValue(in builder, in currentType, in sizeOfStr);
             StackDispose(in builder, in currentType, in stackNamespace, in sizeOfStr);
             StackIndexator(in builder, in sizeOfStr);
             StackCopy(in builder, in sizeOfStr);
             StackCopyCount(in builder, in sizeOfStr);
-            StackTopOutValue(in builder, in currentType, in sizeOfStr);
             StackCopyInStack(in builder, in currentType, in sizeOfStr);
 
             if (stackNamespace == "Class")
@@ -946,7 +946,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                     throw new InvalidOperationException(""The stack was changed during the enumeration"");
                 }}
 
-                if (_stack.Size < 0)
+                if (_stack.Size == 0)
                 {{
                     return false;
                 }}
@@ -1064,6 +1064,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
         {{
             if(Size == 0)
             {{
+                destStack.Size = 0;
                 return;
             }}
 

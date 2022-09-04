@@ -675,7 +675,7 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
             in string sizeOfStr
             )
         {
-            if (typeInfo.IsUnmanagedType)
+            if (typeInfo.IsValueType)
             {
                 builder.Append($@"
         [SkipLocalsInit]

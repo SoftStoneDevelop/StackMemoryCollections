@@ -124,7 +124,7 @@ using System.Collections;
 using {currentType.ContainingNamespace};
 using System.Runtime.CompilerServices;
 
-namespace StackMemoryCollections.{queueNamespace}
+namespace {currentType.ContainingNamespace}.{queueNamespace}
 {{
     public unsafe {queueNamespace.ToLowerInvariant()} QueueOf{currentType.Name} : {implements}
     {{

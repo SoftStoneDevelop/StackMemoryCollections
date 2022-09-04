@@ -165,6 +165,8 @@ ______
 
 # Queue
 
+### Primitive types:
+Stack elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
 |                     Method |    Size |           Mean | Ratio | Allocated |
 |--------------------------- |-------- |---------------:|------:|----------:|
 |     **StackMemoryCollections** |     **100** |       **389.9 ns** |  **0.71** |         **400 B** |

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Threading;
 
 namespace Tests
 {
@@ -151,6 +152,70 @@ namespace Tests
                     Assert.That(memory.ByteCount, Is.EqualTo((nuint)6));
                     Assert.That(memory.FreeByteCount, Is.EqualTo((nuint)6));
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(current0)));
+                }
+            }
+        }
+
+        [Test]
+        public void ShiftLeftTest()
+        {
+            unsafe
+            {
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(long) * 5))
+                {
+                    var long1Ptr = (long*)memory.AllocateMemory(sizeof(long));
+                    *long1Ptr = 111111111;
+
+                    var long2Ptr = (long*)memory.AllocateMemory(sizeof(long));
+                    *long2Ptr = 222222222;
+
+                    var long3Ptr = (long*)memory.AllocateMemory(sizeof(long));
+                    *long3Ptr = 333333333;
+
+                    var long4Ptr = (long*)memory.AllocateMemory(sizeof(long));
+                    *long4Ptr = 444444444;
+
+                    var long5Ptr = (long*)memory.AllocateMemory(sizeof(long));
+                    *long5Ptr = 555555555;
+
+                    memory.ShiftLeft((byte*)long2Ptr, (byte*)memory.Current, sizeof(long));
+
+                    Assert.That(*long1Ptr, Is.EqualTo((long)222222222));
+                    Assert.That(*long2Ptr, Is.EqualTo((long)333333333));
+                    Assert.That(*long3Ptr, Is.EqualTo((long)444444444));
+                    Assert.That(*long4Ptr, Is.EqualTo((long)555555555));
+                }
+            }
+        }
+
+        [Test]
+        public void ShiftRightTest()
+        {
+            unsafe
+            {
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(long) * 5))
+                {
+                    var long1Ptr = (long*)memory.AllocateMemory(sizeof(long));
+                    *long1Ptr = 111111111;
+
+                    var long2Ptr = (long*)memory.AllocateMemory(sizeof(long));
+                    *long2Ptr = 222222222;
+
+                    var long3Ptr = (long*)memory.AllocateMemory(sizeof(long));
+                    *long3Ptr = 333333333;
+
+                    var long4Ptr = (long*)memory.AllocateMemory(sizeof(long));
+                    *long4Ptr = 444444444;
+
+                    var long5Ptr = (long*)memory.AllocateMemory(sizeof(long));
+                    *long5Ptr = 777777777;
+
+                    memory.ShiftRight((byte*)long1Ptr, (byte*)long5Ptr, sizeof(long));
+
+                    Assert.That(*long2Ptr, Is.EqualTo((long)111111111));
+                    Assert.That(*long3Ptr, Is.EqualTo((long)222222222));
+                    Assert.That(*long4Ptr, Is.EqualTo((long)333333333));
+                    Assert.That(*long5Ptr, Is.EqualTo((long)444444444));
                 }
             }
         }

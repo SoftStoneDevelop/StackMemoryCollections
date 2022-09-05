@@ -340,90 +340,87 @@ namespace StackMemoryCollections.{queueNamespace}
                 _stackMemoryC = newMemory;
                 _start = ({typeof(T).Name}*)_stackMemoryC.Start;{incrementVersion}
             }}
-            else
+            else if (_stackMemoryS != null)
             {{
-                if (_stackMemoryS != null)
+                if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
-                    {{
-                        throw new Exception(""Failed to reduce available memory, stack moved further"");
-                    }}
+                    throw new Exception(""Failed to reduce available memory, stack moved further"");
+                }}
 
-                    if(Size == 0)
+                if(Size == 0)
+                {{
+                    _head = 0;
+                    _tail = 0;
+                }}
+                else
+                if(_head > _tail)
+                {{
+                    _stackMemoryS->ShiftLeft((byte*)(_start + _head), (byte*)(_start + (Capacity)), (long)(reducingCount * {sizeOf}));
+                    _head -= reducingCount;{incrementVersion}
+                }}
+                else
+                if (_head <= _tail)
+                {{
+                    if(Size == 1)
                     {{
-                        _head = 0;
+                        *(_start) = *(_start + _tail);
                         _tail = 0;
+                        _head = 0;
                     }}
                     else
-                    if(_head > _tail)
                     {{
-                        _stackMemoryS->ShiftLeft((byte*)(_start + _head), (byte*)(_start + (Capacity)), (long)(reducingCount * {sizeOf}));
-                        _head -= reducingCount;{incrementVersion}
-                    }}
-                    else
-                    if (_head <= _tail)
-                    {{
-                        if(Size == 1)
+                        var freeCountToEnd = Capacity - (_tail + 1);
+                        if(freeCountToEnd == 0 || freeCountToEnd < reducingCount)
                         {{
-                            *(_start) = *(_start + _tail);
-                            _tail = 0;
+                            _stackMemoryS->ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
                             _head = 0;
-                        }}
-                        else
-                        {{
-                            var freeCountToEnd = Capacity - (_tail + 1);
-                            if(freeCountToEnd == 0 || freeCountToEnd < reducingCount)
-                            {{
-                                _stackMemoryS->ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
-                                _head = 0;
-                                _tail = Size - 1;{incrementVersion}
-                            }}
+                            _tail = Size - 1;{incrementVersion}
                         }}
                     }}
+                }}
                     
-                    _stackMemoryS->FreeMemory(reducingCount * {sizeOf});
-                }}
-                else if (_stackMemoryC != null)
+                _stackMemoryS->FreeMemory(reducingCount * {sizeOf});
+            }}
+            else if (_stackMemoryC != null)
+            {{
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
-                    {{
-                        throw new Exception(""Failed to reduce available memory, stack moved further"");
-                    }}
-
-                    if(Size == 0)
-                    {{
-                        _head = 0;
-                        _tail = 0;
-                    }}
-                    else
-                    if(_head > _tail)
-                    {{
-                        _stackMemoryC.ShiftLeft((byte*)(_start + _head), (byte*)(_start + (Capacity * {sizeOf})), (long)(reducingCount * {sizeOf}));
-                        _head -= reducingCount;{incrementVersion}
-                    }}
-                    else
-                    if (_head <= _tail)
-                    {{
-                        if(Size == 1)
-                        {{
-                            *(_start) = *(_start + _tail);
-                            _tail = 0;
-                            _head = 0;
-                        }}
-                        else
-                        {{
-                            var freeCountToEnd = Capacity - (_tail + 1);
-                            if(freeCountToEnd == 0 || freeCountToEnd < reducingCount)
-                            {{
-                                _stackMemoryC.ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
-                                _head = 0;
-                                _tail = Size - 1;{incrementVersion}
-                            }}
-                        }}
-                    }}                    
-
-                    _stackMemoryC.FreeMemory(reducingCount * {sizeOf});
+                    throw new Exception(""Failed to reduce available memory, stack moved further"");
                 }}
+
+                if(Size == 0)
+                {{
+                    _head = 0;
+                    _tail = 0;
+                }}
+                else
+                if(_head > _tail)
+                {{
+                    _stackMemoryC.ShiftLeft((byte*)(_start + _head), (byte*)(_start + (Capacity * {sizeOf})), (long)(reducingCount * {sizeOf}));
+                    _head -= reducingCount;{incrementVersion}
+                }}
+                else
+                if (_head <= _tail)
+                {{
+                    if(Size == 1)
+                    {{
+                        *(_start) = *(_start + _tail);
+                        _tail = 0;
+                        _head = 0;
+                    }}
+                    else
+                    {{
+                        var freeCountToEnd = Capacity - (_tail + 1);
+                        if(freeCountToEnd == 0 || freeCountToEnd < reducingCount)
+                        {{
+                            _stackMemoryC.ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
+                            _head = 0;
+                            _tail = Size - 1;{incrementVersion}
+                        }}
+                    }}
+                }}                    
+
+                _stackMemoryC.FreeMemory(reducingCount * {sizeOf});
             }}
 
             Capacity -= reducingCount;
@@ -489,35 +486,32 @@ namespace StackMemoryCollections.{queueNamespace}
                 _stackMemoryC = newMemory;
                 _start = ({typeof(T).Name}*)_stackMemoryC.Start;{incrementVersion}
             }}
-            else
+            else if (_stackMemoryS != null)
             {{
-                if (_stackMemoryS != null)
+                if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
-                    {{
-                        throw new Exception(""Failed to expand available memory, stack moved further"");
-                    }}
-
-                    _stackMemoryS->AllocateMemory(expandCount * {sizeOf});
-                    if(Size != 0 && _head != 0 && _head > _tail)
-                    {{
-                        _stackMemoryS->ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
-                        _head += expandCount;
-                    }}
+                    throw new Exception(""Failed to expand available memory, stack moved further"");
                 }}
-                else if (_stackMemoryC != null)
-                {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
-                    {{
-                        throw new Exception(""Failed to expand available memory, stack moved further"");
-                    }}
 
-                    _stackMemoryC.AllocateMemory(expandCount * {sizeOf});
-                    if (Size != 0 && _head != 0 && _head > _tail)
-                    {{
-                        _stackMemoryC.ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
-                        _head += expandCount;
-                    }}
+                _stackMemoryS->AllocateMemory(expandCount * {sizeOf});
+                if(Size != 0 && _head != 0 && _head > _tail)
+                {{
+                    _stackMemoryS->ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
+                    _head += expandCount;
+                }}
+            }}
+            else if (_stackMemoryC != null)
+            {{
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
+                {{
+                    throw new Exception(""Failed to expand available memory, stack moved further"");
+                }}
+
+                _stackMemoryC.AllocateMemory(expandCount * {sizeOf});
+                if (Size != 0 && _head != 0 && _head > _tail)
+                {{
+                    _stackMemoryC.ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
+                    _head += expandCount;
                 }}
             }}
 
@@ -584,43 +578,40 @@ namespace StackMemoryCollections.{queueNamespace}
                 _stackMemoryC = newMemory;
                 _start = ({typeof(T).Name}*)_stackMemoryC.Start;{incrementVersion}
             }}
-            else
+            else if (_stackMemoryS != null)
             {{
-                if (_stackMemoryS != null)
+                if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
-                    {{
-                        return false;
-                    }}
-
-                    if(!_stackMemoryS->TryAllocateMemory(expandCount * {sizeOf}, out _))
-                    {{
-                        return false;
-                    }}
-
-                    if(Size != 0 && _head != 0 && _head > _tail)
-                    {{
-                        _stackMemoryS->ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
-                        _head += expandCount;
-                    }}
+                    return false;
                 }}
-                else if (_stackMemoryC != null)
-                {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
-                    {{
-                        return false;
-                    }}
 
-                    if(!_stackMemoryC.TryAllocateMemory(expandCount * {sizeOf}, out _))
-                    {{
-                        return false;
-                    }}
+                if(!_stackMemoryS->TryAllocateMemory(expandCount * {sizeOf}, out _))
+                {{
+                    return false;
+                }}
+
+                if(Size != 0 && _head != 0 && _head > _tail)
+                {{
+                    _stackMemoryS->ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
+                    _head += expandCount;
+                }}
+            }}
+            else if (_stackMemoryC != null)
+            {{
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
+                {{
+                    return false;
+                }}
+
+                if(!_stackMemoryC.TryAllocateMemory(expandCount * {sizeOf}, out _))
+                {{
+                    return false;
+                }}
                     
-                    if (Size != 0 && _head != 0 && _head > _tail)
-                    {{
-                        _stackMemoryC.ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
-                        _head += expandCount;
-                    }}
+                if (Size != 0 && _head != 0 && _head > _tail)
+                {{
+                    _stackMemoryC.ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
+                    _head += expandCount;
                 }}
             }}
 

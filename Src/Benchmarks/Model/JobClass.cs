@@ -4,6 +4,7 @@ namespace Benchmark
 {
     [GenerateHelper]
     [GenerateStack]
+    [GenerateQueue]
     [GenerateWrapper]
     public class JobClass
     {
@@ -29,6 +30,7 @@ namespace Benchmark
 
     [GenerateHelper]
     [GenerateStack]
+    [GenerateQueue]
     [GenerateWrapper]
     public class JobClass2
     {

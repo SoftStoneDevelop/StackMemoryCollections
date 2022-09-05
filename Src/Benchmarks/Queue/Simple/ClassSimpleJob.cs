@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
-namespace Benchmark.Stack
+namespace Benchmark.Queue
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
@@ -19,7 +19,7 @@ namespace Benchmark.Stack
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(JobClassHelper.SizeOf + (JobClassHelper.SizeOf * (nuint)Size)))
                 {
                     var item = new Benchmark.Struct.JobClassWrapper(&memory);
-                    using var stack = new Benchmark.Struct.StackOfJobClass((nuint)Size, &memory);
+                    using var queue = new Benchmark.Struct.QueueOfJobClass((nuint)Size, &memory);
                     for (int i = 0; i < Size; i++)
                     {
                         item.SetInt32(in i);
@@ -27,10 +27,10 @@ namespace Benchmark.Stack
                         var jc2 = Benchmark.JobClassHelper.GetJobClass2Ptr(item.Ptr);
                         Benchmark.JobClass2Helper.SetInt32Value(in jc2, i + 3);
                         Benchmark.JobClass2Helper.SetInt64Value(in jc2, i * 3);
-                        stack.Push(item.Ptr);
+                        queue.Push(item.Ptr);
                     }
 
-                    while (stack.TryPop())
+                    while (queue.TryPop())
                     {
                     }
                 }
@@ -42,10 +42,10 @@ namespace Benchmark.Stack
         {
             unsafe
             {
-                var stack = new System.Collections.Generic.Stack<JobClass>(Size);
+                var queue = new System.Collections.Generic.Queue<JobClass>(Size);
                 for (int i = 0; i < Size; i++)
                 {
-                    stack.Push(
+                    queue.Enqueue(
                         new JobClass(i, i * 2)
                         {
                             JobClass2 = new JobClass2(i + 3, i * 3)
@@ -53,7 +53,7 @@ namespace Benchmark.Stack
                         );
                 }
 
-                while (stack.TryPop(out _))
+                while (queue.TryDequeue(out _))
                 {
                 }
             }

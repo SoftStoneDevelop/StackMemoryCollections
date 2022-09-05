@@ -4,6 +4,7 @@ namespace Benchmark
 {
     [GenerateHelper]
     [GenerateStack]
+    [GenerateQueue]
     [GenerateWrapper]
     public struct JobStruct
     {
@@ -24,6 +25,7 @@ namespace Benchmark
 
     [GenerateHelper]
     [GenerateStack]
+    [GenerateQueue]
     [GenerateWrapper]
     public struct JobStruct2
     {

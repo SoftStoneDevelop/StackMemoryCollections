@@ -27,11 +27,11 @@ namespace Benchmark.Stack
                             for (int i = 0; i < Size; i++)
                             {
                                 item.ChangePtr(stack.TopFuture());
-                                item.Int32 = i;
-                                item.Int64 = i * 2;
+                                item.SetInt32(in i);
+                                item.SetInt64(i * 2);
                                 js2W.ChangePtr(item.JobClass2Ptr);
-                                js2W.Int32 = i + 3;
-                                js2W.Int64 = i * 3;
+                                js2W.SetInt32(i + 3);
+                                js2W.SetInt64(i * 3);
                                 stack.PushFuture();
                             }
 
@@ -51,11 +51,11 @@ namespace Benchmark.Stack
                         for (int i = 0; i < Size; i++)
                         {
                             item.ChangePtr(stack2.TopFuture());
-                            item.Int32 = i;
-                            item.Int64 = i * 2;
+                            item.SetInt32(in i);
+                            item.SetInt64(i * 2);
                             js2W.ChangePtr(item.JobClass2Ptr);
-                            js2W.Int32 = i + 3;
-                            js2W.Int64 = i * 3;
+                            js2W.SetInt32(i + 3);
+                            js2W.SetInt64(i * 3);
                             stack2.PushFuture();
                         }
 

@@ -1299,32 +1299,26 @@ namespace Tests
             }
         }
 
-
-        //TODO rewrite tests lower this line
         [Test]
         public void SizeTest()
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(UInt32) * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
-                    var queue = new StackMemoryCollections.Struct.QueueOfUInt32(5, &memory);
+                    var queue = new Tests.Struct.QueueOfTestStruct(5, &memory);
 
-                    queue.Push(15);
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
                     Assert.That(queue.Size, Is.EqualTo((nuint)1));
-
-                    queue.Push(45);
+                    queue.Push(new TestStruct(2, 2, new TestClass(22, 22)));
                     Assert.That(queue.Size, Is.EqualTo((nuint)2));
-
-                    queue.Push(0);
+                    queue.Push(new TestStruct(3, 3, new TestClass(33, 33)));
                     Assert.That(queue.Size, Is.EqualTo((nuint)3));
-
-                    queue.Push(34);
+                    queue.Push(new TestStruct(4, 4, new TestClass(44, 44)));
                     Assert.That(queue.Size, Is.EqualTo((nuint)4));
 
-                    queue.Push(140);
+                    queue.Push(new TestStruct(5, 5, new TestClass(55, 55)));
                     Assert.That(queue.Size, Is.EqualTo((nuint)5));
-
                 }
             }
         }
@@ -1334,40 +1328,39 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(UInt32) * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
-                    var queue = new StackMemoryCollections.Struct.QueueOfUInt32(5, &memory);
+                    var queue = new Tests.Struct.QueueOfTestStruct(5, &memory);
 
-                    queue.Push(15);
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
                     queue.Pop();
-                    queue.Push(15);
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
                     queue.Pop();
                     Assert.That(queue.Capacity, Is.EqualTo((nuint)5));
 
-                    queue.Push(45);
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
                     queue.Pop();
-                    queue.Push(45);
-                    queue.Pop();
-                    Assert.That(queue.Capacity, Is.EqualTo((nuint)5));
-
-                    queue.Push(0);
-                    queue.Pop();
-                    queue.Push(0);
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
                     queue.Pop();
                     Assert.That(queue.Capacity, Is.EqualTo((nuint)5));
 
-                    queue.Push(34);
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
                     queue.Pop();
-                    queue.Push(34);
-                    queue.Pop();
-                    Assert.That(queue.Capacity, Is.EqualTo((nuint)5));
-
-                    queue.Push(140);
-                    queue.Pop();
-                    queue.Push(140);
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
                     queue.Pop();
                     Assert.That(queue.Capacity, Is.EqualTo((nuint)5));
 
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
+                    queue.Pop();
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
+                    queue.Pop();
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint)5));
+
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
+                    queue.Pop();
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
+                    queue.Pop();
+                    Assert.That(queue.Capacity, Is.EqualTo((nuint)5));
                 }
             }
         }
@@ -1377,34 +1370,21 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(UInt32) * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
-                    var queue = new StackMemoryCollections.Struct.QueueOfUInt32(5, &memory);
+                    var queue = new Tests.Struct.QueueOfTestStruct(5, &memory);
 
-                    queue.Push(15);
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
+                    queue.Push(new TestStruct(2, 2, new TestClass(22, 22)));
+                    queue.Push(new TestStruct(3, 3, new TestClass(33, 33)));
+                    queue.Push(new TestStruct(4, 4, new TestClass(44, 44)));
+                    queue.Push(new TestStruct(5, 5, new TestClass(55, 55)));
 
-                    queue.Push(45);
-
-                    queue.Push(0);
-
-                    queue.Push(34);
-
-                    queue.Push(140);
-
-                    Assert.That(new IntPtr(queue[0]), Is.EqualTo(new IntPtr((UInt32*)memory.Start + 0)));
-                    Assert.That(*queue[0], Is.EqualTo(15));
-
-                    Assert.That(new IntPtr(queue[1]), Is.EqualTo(new IntPtr((UInt32*)memory.Start + 1)));
-                    Assert.That(*queue[1], Is.EqualTo(45));
-
-                    Assert.That(new IntPtr(queue[2]), Is.EqualTo(new IntPtr((UInt32*)memory.Start + 2)));
-                    Assert.That(*queue[2], Is.EqualTo(0));
-
-                    Assert.That(new IntPtr(queue[3]), Is.EqualTo(new IntPtr((UInt32*)memory.Start + 3)));
-                    Assert.That(*queue[3], Is.EqualTo(34));
-
-                    Assert.That(new IntPtr(queue[4]), Is.EqualTo(new IntPtr((UInt32*)memory.Start + 4)));
-                    Assert.That(*queue[4], Is.EqualTo(140));
+                    Assert.That(new IntPtr(queue[0]), Is.EqualTo(new IntPtr((byte*)memory.Start)));
+                    Assert.That(new IntPtr(queue[1]), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.SizeOf)));
+                    Assert.That(new IntPtr(queue[2]), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 2))));
+                    Assert.That(new IntPtr(queue[3]), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 3))));
+                    Assert.That(new IntPtr(queue[4]), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 4))));
 
                     Assert.That(() => queue[5],
                         Throws.Exception.TypeOf(typeof(Exception))
@@ -1419,19 +1399,15 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(UInt32) * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
-                    var queue = new StackMemoryCollections.Struct.QueueOfUInt32(5, &memory);
+                    var queue = new Tests.Struct.QueueOfTestStruct(5, &memory);
 
-                    queue.Push(15);
-
-                    queue.Push(45);
-
-                    queue.Push(0);
-
-                    queue.Push(34);
-
-                    queue.Push(140);
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
+                    queue.Push(new TestStruct(2, 2, new TestClass(22, 22)));
+                    queue.Push(new TestStruct(3, 3, new TestClass(33, 33)));
+                    queue.Push(new TestStruct(4, 4, new TestClass(44, 44)));
+                    queue.Push(new TestStruct(5, 5, new TestClass(55, 55)));
 
                     queue.Pop();
                     Assert.That(queue.IsEmpty, Is.EqualTo(false));
@@ -1467,106 +1443,82 @@ namespace Tests
         }
 
         [Test]
-        public void FrontBackTest()
-        {
-            unsafe
-            {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(UInt32) * 5))
-                {
-                    var queue = new StackMemoryCollections.Struct.QueueOfUInt32(5, &memory);
-                    Assert.That(() => queue.Front(),
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo("There are no elements on the queue")
-                        );
-
-                    queue.Push(15);
-                    var item0Front = queue.Front();
-                    var item0Back = queue.Back();
-                    Assert.That(item0Front, Is.EqualTo(15));
-                    Assert.That(item0Back, Is.EqualTo(15));
-
-                    queue.Push(45);
-                    var item1Front = queue.Front();
-                    var item1Back = queue.Back();
-                    Assert.That(item1Front, Is.EqualTo(15));
-                    Assert.That(item1Back, Is.EqualTo(45));
-
-                    queue.Push(0);
-                    var item2Front = queue.Front();
-                    var item2Back = queue.Back();
-                    Assert.That(item2Front, Is.EqualTo(15));
-                    Assert.That(item2Back, Is.EqualTo(0));
-
-                    queue.Push(34);
-                    var item3Front = queue.Front();
-                    var item3Back = queue.Back();
-                    Assert.That(item3Front, Is.EqualTo(15));
-                    Assert.That(item3Back, Is.EqualTo(34));
-
-                    queue.Push(140);
-                    var item4Front = queue.Front();
-                    var item4Back = queue.Back();
-                    Assert.That(item4Front, Is.EqualTo(15));
-                    Assert.That(item4Back, Is.EqualTo(140));
-
-                }
-            }
-        }
-
-        [Test]
         [SkipLocalsInit]
         public void FrontBackOutTest()
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(UInt32) * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
-                    var queue = new StackMemoryCollections.Struct.QueueOfUInt32(5, &memory);
-                    Assert.That(() => queue.FrontOut(out _),
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo("There are no elements on the queue")
-                        );
+                    var queue = new Tests.Struct.QueueOfTestStruct(5, &memory);
 
-                    queue.Push(15);
-                    UInt32 item0Front;
-                    queue.FrontOut(out item0Front);
-                    UInt32 item0Back;
-                    queue.BackOut(out item0Back);
-                    Assert.That(item0Front, Is.EqualTo(15));
-                    Assert.That(item0Back, Is.EqualTo(15));
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
+                    queue.Push(new TestStruct(2, 2, new TestClass(22, 22)));
+                    queue.Push(new TestStruct(3, 3, new TestClass(33, 33)));
+                    queue.Push(new TestStruct(4, 4, new TestClass(44, 44)));
+                    queue.Push(new TestStruct(5, 5, new TestClass(55, 55)));
 
-                    queue.Push(45);
-                    UInt32 item1Front;
-                    queue.FrontOut(out item1Front);
-                    UInt32 item1Back;
-                    queue.BackOut(out item1Back);
-                    Assert.That(item1Front, Is.EqualTo(15));
-                    Assert.That(item1Back, Is.EqualTo(45));
+                    TestStruct front;
+                    TestStruct back;
+                    queue.FrontOut(out front);
+                    queue.BackOut(out back);
+                    Assert.That(front.Int32, Is.EqualTo(1));
+                    Assert.That(front.Int64, Is.EqualTo(1));
+                    Assert.That(front.TestClass.Int32, Is.EqualTo(11));
+                    Assert.That(front.TestClass.Int64, Is.EqualTo(11));
+                    Assert.That(back.Int32, Is.EqualTo(5));
+                    Assert.That(back.Int64, Is.EqualTo(5));
+                    Assert.That(back.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(back.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
 
-                    queue.Push(0);
-                    UInt32 item2Front;
-                    queue.FrontOut(out item2Front);
-                    UInt32 item2Back;
-                    queue.BackOut(out item2Back);
-                    Assert.That(item2Front, Is.EqualTo(15));
-                    Assert.That(item2Back, Is.EqualTo(0));
+                    queue.FrontOut(out front);
+                    queue.BackOut(out back);
+                    Assert.That(front.Int32, Is.EqualTo(2));
+                    Assert.That(front.Int64, Is.EqualTo(2));
+                    Assert.That(front.TestClass.Int32, Is.EqualTo(22));
+                    Assert.That(front.TestClass.Int64, Is.EqualTo(22));
+                    Assert.That(back.Int32, Is.EqualTo(5));
+                    Assert.That(back.Int64, Is.EqualTo(5));
+                    Assert.That(back.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(back.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
 
-                    queue.Push(34);
-                    UInt32 item3Front;
-                    queue.FrontOut(out item3Front);
-                    UInt32 item3Back;
-                    queue.BackOut(out item3Back);
-                    Assert.That(item3Front, Is.EqualTo(15));
-                    Assert.That(item3Back, Is.EqualTo(34));
+                    queue.FrontOut(out front);
+                    queue.BackOut(out back);
+                    Assert.That(front.Int32, Is.EqualTo(3));
+                    Assert.That(front.Int64, Is.EqualTo(3));
+                    Assert.That(front.TestClass.Int32, Is.EqualTo(33));
+                    Assert.That(front.TestClass.Int64, Is.EqualTo(33));
+                    Assert.That(back.Int32, Is.EqualTo(5));
+                    Assert.That(back.Int64, Is.EqualTo(5));
+                    Assert.That(back.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(back.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
 
-                    queue.Push(140);
-                    UInt32 item4Front;
-                    queue.FrontOut(out item4Front);
-                    UInt32 item4Back;
-                    queue.BackOut(out item4Back);
-                    Assert.That(item4Front, Is.EqualTo(15));
-                    Assert.That(item4Back, Is.EqualTo(140));
+                    queue.FrontOut(out front);
+                    queue.BackOut(out back);
+                    Assert.That(front.Int32, Is.EqualTo(4));
+                    Assert.That(front.Int64, Is.EqualTo(4));
+                    Assert.That(front.TestClass.Int32, Is.EqualTo(44));
+                    Assert.That(front.TestClass.Int64, Is.EqualTo(44));
+                    Assert.That(back.Int32, Is.EqualTo(5));
+                    Assert.That(back.Int64, Is.EqualTo(5));
+                    Assert.That(back.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(back.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
 
+                    queue.FrontOut(out front);
+                    queue.BackOut(out back);
+                    Assert.That(front.Int32, Is.EqualTo(5));
+                    Assert.That(front.Int64, Is.EqualTo(5));
+                    Assert.That(front.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(front.TestClass.Int64, Is.EqualTo(55));
+                    Assert.That(back.Int32, Is.EqualTo(5));
+                    Assert.That(back.Int64, Is.EqualTo(5));
+                    Assert.That(back.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(back.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
                 }
             }
         }
@@ -1577,76 +1529,78 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(UInt32) * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
-                    var queue = new StackMemoryCollections.Struct.QueueOfUInt32(5, &memory);
-                    Assert.That(
-                        () =>
-                        {
-                            UInt32 temp = 15;
-                            UInt32* tempPtr = &temp;
-                            queue.Front(in tempPtr);
-                        },
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo("There are no elements on the queue")
-                        );
-                    UInt32 item;
+                    var queue = new Tests.Struct.QueueOfTestStruct(5, &memory);
 
-                    item = 15;
-                    queue.Push(in item);
-                    UInt32 item0Front;
-                    UInt32* itemPtr0Front = &item0Front;
-                    UInt32 item0Back;
-                    UInt32* itemPtr0Back = &item0Back;
-                    queue.Front(in itemPtr0Front);
-                    queue.Back(in itemPtr0Back);
-                    Assert.That(item0Front, Is.EqualTo(15));
-                    Assert.That(item0Back, Is.EqualTo(15));
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
+                    queue.Push(new TestStruct(2, 2, new TestClass(22, 22)));
+                    queue.Push(new TestStruct(3, 3, new TestClass(33, 33)));
+                    queue.Push(new TestStruct(4, 4, new TestClass(44, 44)));
+                    queue.Push(new TestStruct(5, 5, new TestClass(55, 55)));
 
-                    item = 45;
-                    queue.Push(in item);
-                    UInt32 item1Front;
-                    UInt32* itemPtr1Front = &item1Front;
-                    UInt32 item1Back;
-                    UInt32* itemPtr1Back = &item1Back;
-                    queue.Front(in itemPtr1Front);
-                    queue.Back(in itemPtr1Back);
-                    Assert.That(item1Front, Is.EqualTo(15));
-                    Assert.That(item1Back, Is.EqualTo(45));
+                    using var frontW = new Tests.Struct.TestStructWrapper();
+                    using var backW = new Tests.Struct.TestStructWrapper();
 
-                    item = 0;
-                    queue.Push(in item);
-                    UInt32 item2Front;
-                    UInt32* itemPtr2Front = &item2Front;
-                    UInt32 item2Back;
-                    UInt32* itemPtr2Back = &item2Back;
-                    queue.Front(in itemPtr2Front);
-                    queue.Back(in itemPtr2Back);
-                    Assert.That(item2Front, Is.EqualTo(15));
-                    Assert.That(item2Back, Is.EqualTo(0));
+                    queue.Front(frontW.Ptr);
+                    queue.Back(backW.Ptr);
+                    Assert.That(frontW.Int32, Is.EqualTo(1));
+                    Assert.That(frontW.Int64, Is.EqualTo(1));
+                    Assert.That(frontW.TestClass.Int32, Is.EqualTo(11));
+                    Assert.That(frontW.TestClass.Int64, Is.EqualTo(11));
+                    Assert.That(backW.Int32, Is.EqualTo(5));
+                    Assert.That(backW.Int64, Is.EqualTo(5));
+                    Assert.That(backW.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(backW.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
 
-                    item = 34;
-                    queue.Push(in item);
-                    UInt32 item3Front;
-                    UInt32* itemPtr3Front = &item3Front;
-                    UInt32 item3Back;
-                    UInt32* itemPtr3Back = &item3Back;
-                    queue.Front(in itemPtr3Front);
-                    queue.Back(in itemPtr3Back);
-                    Assert.That(item3Front, Is.EqualTo(15));
-                    Assert.That(item3Back, Is.EqualTo(34));
+                    queue.Front(frontW.Ptr);
+                    queue.Back(backW.Ptr);
+                    Assert.That(frontW.Int32, Is.EqualTo(2));
+                    Assert.That(frontW.Int64, Is.EqualTo(2));
+                    Assert.That(frontW.TestClass.Int32, Is.EqualTo(22));
+                    Assert.That(frontW.TestClass.Int64, Is.EqualTo(22));
+                    Assert.That(backW.Int32, Is.EqualTo(5));
+                    Assert.That(backW.Int64, Is.EqualTo(5));
+                    Assert.That(backW.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(backW.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
 
-                    item = 140;
-                    queue.Push(in item);
-                    UInt32 item4Front;
-                    UInt32* itemPtr4Front = &item4Front;
-                    UInt32 item4Back;
-                    UInt32* itemPtr4Back = &item4Back;
-                    queue.Front(in itemPtr4Front);
-                    queue.Back(in itemPtr4Back);
-                    Assert.That(item4Front, Is.EqualTo(15));
-                    Assert.That(item4Back, Is.EqualTo(140));
+                    queue.Front(frontW.Ptr);
+                    queue.Back(backW.Ptr);
+                    Assert.That(frontW.Int32, Is.EqualTo(3));
+                    Assert.That(frontW.Int64, Is.EqualTo(3));
+                    Assert.That(frontW.TestClass.Int32, Is.EqualTo(33));
+                    Assert.That(frontW.TestClass.Int64, Is.EqualTo(33));
+                    Assert.That(backW.Int32, Is.EqualTo(5));
+                    Assert.That(backW.Int64, Is.EqualTo(5));
+                    Assert.That(backW.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(backW.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
 
+                    queue.Front(frontW.Ptr);
+                    queue.Back(backW.Ptr);
+                    Assert.That(frontW.Int32, Is.EqualTo(4));
+                    Assert.That(frontW.Int64, Is.EqualTo(4));
+                    Assert.That(frontW.TestClass.Int32, Is.EqualTo(44));
+                    Assert.That(frontW.TestClass.Int64, Is.EqualTo(44));
+                    Assert.That(backW.Int32, Is.EqualTo(5));
+                    Assert.That(backW.Int64, Is.EqualTo(5));
+                    Assert.That(backW.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(backW.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
+
+                    queue.Front(frontW.Ptr);
+                    queue.Back(backW.Ptr);
+                    Assert.That(frontW.Int32, Is.EqualTo(5));
+                    Assert.That(frontW.Int64, Is.EqualTo(5));
+                    Assert.That(frontW.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(frontW.TestClass.Int64, Is.EqualTo(55));
+                    Assert.That(backW.Int32, Is.EqualTo(5));
+                    Assert.That(backW.Int64, Is.EqualTo(5));
+                    Assert.That(backW.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(backW.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
                 }
             }
         }
@@ -1657,65 +1611,80 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(UInt32) * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
-                    var queue = new StackMemoryCollections.Struct.QueueOfUInt32(5, &memory);
-                    Assert.That(
-                        () =>
-                        {
-                            UInt32 temp = 15;
-                            queue.Front(ref temp);
-                        },
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo("There are no elements on the queue")
-                        );
-                    UInt32 item;
+                    var queue = new Tests.Struct.QueueOfTestStruct(5, &memory);
 
-                    item = 15;
-                    queue.Push(in item);
-                    UInt32 item0Front = 15;
-                    queue.Front(ref item0Front);
-                    UInt32 item0Back = 15;
-                    queue.Back(ref item0Back);
-                    Assert.That(item0Front, Is.EqualTo(15));
-                    Assert.That(item0Back, Is.EqualTo(15));
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
+                    queue.Push(new TestStruct(2, 2, new TestClass(22, 22)));
+                    queue.Push(new TestStruct(3, 3, new TestClass(33, 33)));
+                    queue.Push(new TestStruct(4, 4, new TestClass(44, 44)));
+                    queue.Push(new TestStruct(5, 5, new TestClass(55, 55)));
 
-                    item = 45;
-                    queue.Push(in item);
-                    UInt32 item1Front = 15;
-                    queue.Front(ref item1Front);
-                    UInt32 item1Back = 15;
-                    queue.Back(ref item1Back);
-                    Assert.That(item1Front, Is.EqualTo(15));
-                    Assert.That(item1Back, Is.EqualTo(45));
+                    TestStruct front;
+                    Unsafe.SkipInit(out front);
+                    TestStruct back;
+                    Unsafe.SkipInit(out back);
 
-                    item = 0;
-                    queue.Push(in item);
-                    UInt32 item2Front = 15;
-                    queue.Front(ref item2Front);
-                    UInt32 item2Back = 15;
-                    queue.Back(ref item2Back);
-                    Assert.That(item2Front, Is.EqualTo(15));
-                    Assert.That(item2Back, Is.EqualTo(0));
+                    queue.Front(ref front);
+                    queue.Back(ref back);
+                    Assert.That(front.Int32, Is.EqualTo(1));
+                    Assert.That(front.Int64, Is.EqualTo(1));
+                    Assert.That(front.TestClass.Int32, Is.EqualTo(11));
+                    Assert.That(front.TestClass.Int64, Is.EqualTo(11));
+                    Assert.That(back.Int32, Is.EqualTo(5));
+                    Assert.That(back.Int64, Is.EqualTo(5));
+                    Assert.That(back.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(back.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
 
-                    item = 34;
-                    queue.Push(in item);
-                    UInt32 item3Front = 15;
-                    queue.Front(ref item3Front);
-                    UInt32 item3Back = 15;
-                    queue.Back(ref item3Back);
-                    Assert.That(item3Front, Is.EqualTo(15));
-                    Assert.That(item3Back, Is.EqualTo(34));
+                    queue.Front(ref front);
+                    queue.Back(ref back);
+                    Assert.That(front.Int32, Is.EqualTo(2));
+                    Assert.That(front.Int64, Is.EqualTo(2));
+                    Assert.That(front.TestClass.Int32, Is.EqualTo(22));
+                    Assert.That(front.TestClass.Int64, Is.EqualTo(22));
+                    Assert.That(back.Int32, Is.EqualTo(5));
+                    Assert.That(back.Int64, Is.EqualTo(5));
+                    Assert.That(back.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(back.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
 
-                    item = 140;
-                    queue.Push(in item);
-                    UInt32 item4Front = 15;
-                    queue.Front(ref item4Front);
-                    UInt32 item4Back = 15;
-                    queue.Back(ref item4Back);
-                    Assert.That(item4Front, Is.EqualTo(15));
-                    Assert.That(item4Back, Is.EqualTo(140));
+                    queue.Front(ref front);
+                    queue.Back(ref back);
+                    Assert.That(front.Int32, Is.EqualTo(3));
+                    Assert.That(front.Int64, Is.EqualTo(3));
+                    Assert.That(front.TestClass.Int32, Is.EqualTo(33));
+                    Assert.That(front.TestClass.Int64, Is.EqualTo(33));
+                    Assert.That(back.Int32, Is.EqualTo(5));
+                    Assert.That(back.Int64, Is.EqualTo(5));
+                    Assert.That(back.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(back.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
 
+                    queue.Front(ref front);
+                    queue.Back(ref back);
+                    Assert.That(front.Int32, Is.EqualTo(4));
+                    Assert.That(front.Int64, Is.EqualTo(4));
+                    Assert.That(front.TestClass.Int32, Is.EqualTo(44));
+                    Assert.That(front.TestClass.Int64, Is.EqualTo(44));
+                    Assert.That(back.Int32, Is.EqualTo(5));
+                    Assert.That(back.Int64, Is.EqualTo(5));
+                    Assert.That(back.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(back.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
+
+                    queue.Front(ref front);
+                    queue.Back(ref back);
+                    Assert.That(front.Int32, Is.EqualTo(5));
+                    Assert.That(front.Int64, Is.EqualTo(5));
+                    Assert.That(front.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(front.TestClass.Int64, Is.EqualTo(55));
+                    Assert.That(back.Int32, Is.EqualTo(5));
+                    Assert.That(back.Int64, Is.EqualTo(5));
+                    Assert.That(back.TestClass.Int32, Is.EqualTo(55));
+                    Assert.That(back.TestClass.Int64, Is.EqualTo(55));
+                    queue.Pop();
                 }
             }
         }
@@ -1725,44 +1694,39 @@ namespace Tests
         {
             unsafe
             {
-                using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(UInt32) * 5))
+                using (var memory = new StackMemoryCollections.Struct.StackMemory(TestStructHelper.SizeOf * 5))
                 {
-                    var queue = new StackMemoryCollections.Struct.QueueOfUInt32(5, &memory);
-                    Assert.That(() => queue.FrontPtr(),
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo("There are no elements on the queue")
-                        );
+                    var queue = new Tests.Struct.QueueOfTestStruct(5, &memory);
 
-                    queue.Push(15);
+                    queue.Push(new TestStruct(1, 1, new TestClass(11, 11)));
                     var itemPtr0Front = queue.FrontPtr();
                     var itemPtr0Back = queue.BackPtr();
-                    Assert.That(new IntPtr(itemPtr0Back), Is.EqualTo(new IntPtr((UInt32*)memory.Start + 0)));
-                    Assert.That(new IntPtr(itemPtr0Front), Is.EqualTo(new IntPtr((UInt32*)memory.Start)));
+                    Assert.That(new IntPtr(itemPtr0Back), Is.EqualTo(new IntPtr((byte*)memory.Start)));
+                    Assert.That(new IntPtr(itemPtr0Front), Is.EqualTo(new IntPtr((byte*)memory.Start)));
 
-                    queue.Push(45);
+                    queue.Push(new TestStruct(2, 2, new TestClass(22, 22)));
                     var itemPtr1Front = queue.FrontPtr();
                     var itemPtr1Back = queue.BackPtr();
-                    Assert.That(new IntPtr(itemPtr1Back), Is.EqualTo(new IntPtr((UInt32*)memory.Start + 1)));
-                    Assert.That(new IntPtr(itemPtr1Front), Is.EqualTo(new IntPtr((UInt32*)memory.Start)));
+                    Assert.That(new IntPtr(itemPtr1Front), Is.EqualTo(new IntPtr((byte*)memory.Start)));
+                    Assert.That(new IntPtr(itemPtr1Back), Is.EqualTo(new IntPtr((byte*)memory.Start + TestStructHelper.SizeOf)));
 
-                    queue.Push(0);
+                    queue.Push(new TestStruct(3, 3, new TestClass(33, 33)));
                     var itemPtr2Front = queue.FrontPtr();
                     var itemPtr2Back = queue.BackPtr();
-                    Assert.That(new IntPtr(itemPtr2Back), Is.EqualTo(new IntPtr((UInt32*)memory.Start + 2)));
-                    Assert.That(new IntPtr(itemPtr2Front), Is.EqualTo(new IntPtr((UInt32*)memory.Start)));
+                    Assert.That(new IntPtr(itemPtr2Front), Is.EqualTo(new IntPtr((byte*)memory.Start)));
+                    Assert.That(new IntPtr(itemPtr2Back), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 2))));
 
-                    queue.Push(34);
+                    queue.Push(new TestStruct(4, 4, new TestClass(44, 44)));
                     var itemPtr3Front = queue.FrontPtr();
                     var itemPtr3Back = queue.BackPtr();
-                    Assert.That(new IntPtr(itemPtr3Back), Is.EqualTo(new IntPtr((UInt32*)memory.Start + 3)));
-                    Assert.That(new IntPtr(itemPtr3Front), Is.EqualTo(new IntPtr((UInt32*)memory.Start)));
+                    Assert.That(new IntPtr(itemPtr3Front), Is.EqualTo(new IntPtr((byte*)memory.Start)));
+                    Assert.That(new IntPtr(itemPtr3Back), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 3))));
 
-                    queue.Push(140);
+                    queue.Push(new TestStruct(5, 5, new TestClass(55, 55)));
                     var itemPtr4Front = queue.FrontPtr();
                     var itemPtr4Back = queue.BackPtr();
-                    Assert.That(new IntPtr(itemPtr4Back), Is.EqualTo(new IntPtr((UInt32*)memory.Start + 4)));
-                    Assert.That(new IntPtr(itemPtr4Front), Is.EqualTo(new IntPtr((UInt32*)memory.Start)));
-
+                    Assert.That(new IntPtr(itemPtr4Front), Is.EqualTo(new IntPtr((byte*)memory.Start)));
+                    Assert.That(new IntPtr(itemPtr4Back), Is.EqualTo(new IntPtr((byte*)memory.Start + (TestStructHelper.SizeOf * 4))));
                 }
             }
         }

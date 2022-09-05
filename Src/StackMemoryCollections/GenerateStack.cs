@@ -268,26 +268,23 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 _stackMemoryC = newMemory;
                 _start = _stackMemoryC.Start;{incrementVersion}
             }}
-            else
+            else if(_stackMemoryS != null)
             {{
-                if(_stackMemoryS != null)
+                if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                    {{
-                        throw new Exception(""Failed to reduce available memory, stack moved further"");
-                    }}
-
-                    _stackMemoryS->FreeMemory(reducingCount * {sizeOfStr});
+                    throw new Exception(""Failed to reduce available memory, stack moved further"");
                 }}
-                else if (_stackMemoryC != null)
+
+                _stackMemoryS->FreeMemory(reducingCount * {sizeOfStr});
+            }}
+            else if (_stackMemoryC != null)
+            {{
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                    {{
-                        throw new Exception(""Failed to reduce available memory, stack moved further"");
-                    }}
-
-                    _stackMemoryC.FreeMemory(reducingCount * {sizeOfStr});
+                    throw new Exception(""Failed to reduce available memory, stack moved further"");
                 }}
+
+                _stackMemoryC.FreeMemory(reducingCount * {sizeOfStr});
             }}
 
             Capacity -= reducingCount;
@@ -325,26 +322,23 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 _stackMemoryC = newMemory;
                 _start = _stackMemoryC.Start;{incrementVersion}
             }}
-            else
+            else if(_stackMemoryS != null)
             {{
-                if(_stackMemoryS != null)
+                if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                    {{
-                        throw new Exception(""Failed to expand available memory, stack moved further"");
-                    }}
-
-                    _stackMemoryS->AllocateMemory(expandCount * {sizeOfStr});
+                    throw new Exception(""Failed to expand available memory, stack moved further"");
                 }}
-                else if (_stackMemoryC != null)
+
+                _stackMemoryS->AllocateMemory(expandCount * {sizeOfStr});
+            }}
+            else if (_stackMemoryC != null)
+            {{
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
                 {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                    {{
-                        throw new Exception(""Failed to expand available memory, stack moved further"");
-                    }}
-
-                    _stackMemoryC.AllocateMemory(expandCount * {sizeOfStr});
+                    throw new Exception(""Failed to expand available memory, stack moved further"");
                 }}
+
+                _stackMemoryC.AllocateMemory(expandCount * {sizeOfStr});
             }}
 
             Capacity += expandCount;
@@ -382,31 +376,28 @@ namespace {currentType.ContainingNamespace}.{stackNamespace}
                 _stackMemoryC = newMemory;
                 _start = _stackMemoryC.Start;{incrementVersion}
             }}
-            else
+            else if(_stackMemoryS != null)
             {{
-                if(_stackMemoryS != null)
+                if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
                 {{
-                    if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                    {{
-                        return false;
-                    }}
-
-                    if(!_stackMemoryS->TryAllocateMemory(expandCount * {sizeOfStr}, out _))
-                    {{
-                        return false;
-                    }}
+                    return false;
                 }}
-                else if (_stackMemoryC != null)
-                {{
-                    if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
-                    {{
-                        throw new Exception(""Failed to expand available memory, stack moved further"");
-                    }}
 
-                    if(!_stackMemoryC.TryAllocateMemory(expandCount * {sizeOfStr}, out _))
-                    {{
-                        return false;
-                    }}
+                if(!_stackMemoryS->TryAllocateMemory(expandCount * {sizeOfStr}, out _))
+                {{
+                    return false;
+                }}
+            }}
+            else if (_stackMemoryC != null)
+            {{
+                if (new IntPtr(_stackMemoryC.Current) != new IntPtr((byte*)_start + (Capacity * {sizeOfStr})))
+                {{
+                    throw new Exception(""Failed to expand available memory, stack moved further"");
+                }}
+
+                if(!_stackMemoryC.TryAllocateMemory(expandCount * {sizeOfStr}, out _))
+                {{
+                    return false;
                 }}
             }}
 

@@ -166,7 +166,7 @@ ______
 # Queue
 
 ### Primitive types:
-Stack elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
+Queue elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
 |                     Method |    Size |           Mean | Ratio | Allocated |
 |--------------------------- |-------- |---------------:|------:|----------:|
 |     **StackMemoryCollections** |     **100** |       **389.9 ns** |  **0.71** |         **400 B** |
@@ -219,7 +219,7 @@ ______
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Queue/Optimal/PrimitiveOptimalJob.cs)
 ______
 ### Class:
-Stack elements are classes.
+Queue elements are classes.
 |                     Method |    Size |             Mean | Ratio |  Allocated |
 |--------------------------- |-------- |-----------------:|------:|-----------:|
 |     **StackMemoryCollections** |     **100** |         **934.8 ns** |  **0.66** |          **2400 B** |
@@ -272,7 +272,7 @@ ______
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Queue/Optimal/ClassOptimalJob.cs)
 ______
 ### Struct:
-Stack elements are structures.
+Queue elements are structures.
 
 |                     Method |    Size |            Mean | Ratio |  Allocated |
 |--------------------------- |-------- |----------------:|------:|-----------:|

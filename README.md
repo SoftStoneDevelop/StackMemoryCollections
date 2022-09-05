@@ -82,8 +82,8 @@ unsafe
         var js2W = new Struct.JobStruct2Wrapper(memory.Start, false);
         
         {
-            using var stack = new Struct.StackOfJobStruct((nuint)Size, &memory);//get memory
-            for (int i = 0; i < Size; i++)
+            using var stack = new Struct.StackOfJobStruct((nuint)100, &memory);//get memory
+            for (int i = 0; i < 100; i++)
             {
                 item.ChangePtr(stack.TopFuture());
                 item.Int32 = i;
@@ -97,7 +97,7 @@ unsafe
             //Do whatever you want with stack
         }//return memory
 
-        var stack2 = new Struct.StackOfJobStruct((nuint)Size, &memory);//get memory
+        var stack2 = new Struct.StackOfJobStruct((nuint)100, &memory);//get memory
         for (int i = 0; i < 100; i++)
         {
             item.ChangePtr(stack2.TopFuture());

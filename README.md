@@ -26,7 +26,7 @@ The generated code uses .Net 6 features. So use only with .Net 6+.
 
 Supported collections:
 - Stack
-- List [TODO](https://github.com/SoftStoneDevelop/StackMemoryCollections/issues/1)
+- List
 - Queue
 
 Usage:

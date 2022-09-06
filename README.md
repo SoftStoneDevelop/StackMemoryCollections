@@ -43,10 +43,6 @@ If we need to increase the capacity, and at the same time, the collection whose 
 
 ![3](https://user-images.githubusercontent.com/43916814/188752910-11f87ccc-2384-4a9a-909c-91d85c2e67fa.png)
 
-If we need to remove the element at index(4), then instead of allocating a new collection and copying the elements into new memory, we simply shift the elements 5,6 to the left by the amount of memory occupied by the element at index 4.
-
-![4](https://user-images.githubusercontent.com/43916814/188753093-b6ff1a46-c05c-4b53-92ed-c88acfc30f37.png)
-
 If we need to allocate a collection of elements of a different type on the same memory (and we do not need the old collection), then we do not have to allocate new memory, we can allocate it on the already allocated one.
 
 If something else is written to memory after the collection, then the collection becomes sealed.

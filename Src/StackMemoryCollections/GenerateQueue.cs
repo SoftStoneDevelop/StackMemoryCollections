@@ -1461,18 +1461,18 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
             
             if(_head > _tail)
             {{
-                if(Capacity - _head <= count)
+                var countToEnd = (Capacity - (nuint)_head);
+                if(countToEnd <= count)
                 {{
                     Buffer.MemoryCopy(
                         (byte*)_start + (_head * {sizeOf}),
                         ptrDest,
                         count * (nuint){sizeOf},
-                        (Capacity - _head) * (nuint){sizeOf}
+                        (countToEnd) * (nuint){sizeOf}
                         );
                 }}
                 else
                 {{
-                    var countToEnd = (Capacity - (nuint)_head);
                     Buffer.MemoryCopy(
                         (byte*)_start + (_head * {sizeOf}),
                         ptrDest,

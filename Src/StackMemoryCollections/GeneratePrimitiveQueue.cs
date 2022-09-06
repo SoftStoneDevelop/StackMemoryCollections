@@ -1367,18 +1367,18 @@ namespace StackMemoryCollections.{queueNamespace}
             
             if(_head > _tail)
             {{
-                if(Capacity - _head <= count)
+                var countToEnd = (Capacity - (nuint)_head);
+                if(countToEnd <= count)
                 {{
                     Buffer.MemoryCopy(
                         _start + _head,
                         ptrDest,
                         count * (nuint){sizeOf},
-                        (Capacity - _head) * (nuint){sizeOf}
+                        (countToEnd) * (nuint){sizeOf}
                         );
                 }}
                 else
                 {{
-                    var countToEnd = (Capacity - (nuint)_head);
                     Buffer.MemoryCopy(
                         _start + _head,
                         ptrDest,

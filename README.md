@@ -30,6 +30,7 @@ Supported collections:
 - Queue
 
 General idea (on the example of a list):
+
 Allocate memory for all your collections.
 
 ![1](https://user-images.githubusercontent.com/43916814/188752538-cff787a0-2c92-4d86-8439-6c9efec3eb57.png)

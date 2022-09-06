@@ -29,6 +29,29 @@ Supported collections:
 - List
 - Queue
 
+General idea (on the example of a list):
+Allocate memory for all your collections.
+
+![1](https://user-images.githubusercontent.com/43916814/188752538-cff787a0-2c92-4d86-8439-6c9efec3eb57.png)
+
+In our example, we will allocate a list of 5 elements on this memory.
+
+![2](https://user-images.githubusercontent.com/43916814/188752689-bbc509e0-05be-4ea2-847f-5ba04ca5b066.png)
+
+If we need to increase the dimension, and at the same time, the collection whose dimension increases is the last element in memory, then to increase the dimension, you just need to indicate that there is more available memory for the collection. No copying or reallocation.
+
+![3](https://user-images.githubusercontent.com/43916814/188752910-11f87ccc-2384-4a9a-909c-91d85c2e67fa.png)
+
+If we need to remove the element at index(4), then instead of allocating a new collection and copying the elements into new memory, we simply shift the elements 5,6 to the left by the amount of memory occupied by the element at index 4.
+
+![4](https://user-images.githubusercontent.com/43916814/188753093-b6ff1a46-c05c-4b53-92ed-c88acfc30f37.png)
+
+If we need to allocate a collection of elements of a different type on the same memory (and we do not need the old collection), then we do not have to allocate new memory, we can allocate it on the already allocated one.
+
+If something else is written to memory after the collection, then the collection becomes sealed.
+In the future, you can compress memory if there are areas that are no longer used, thereby not sealing the collection.
+This can be useful for allocating memory for an entire method if we know approximately how much memory it can consume at the maximum.
+
 Usage:
 
 ```C#

@@ -39,7 +39,7 @@ In our example, we will allocate a list of 5 elements on this memory.
 
 ![2](https://user-images.githubusercontent.com/43916814/188752689-bbc509e0-05be-4ea2-847f-5ba04ca5b066.png)
 
-If we need to increase the dimension, and at the same time, the collection whose dimension increases is the last element in memory, then to increase the dimension, you just need to indicate that there is more available memory for the collection. No copying or reallocation.
+If we need to increase the capacity, and at the same time, the collection whose capacity increases is the last element in memory, then to increase the capacity, you just need to indicate that there is more available memory for the collection. No copying or reallocation.
 
 ![3](https://user-images.githubusercontent.com/43916814/188752910-11f87ccc-2384-4a9a-909c-91d85c2e67fa.png)
 

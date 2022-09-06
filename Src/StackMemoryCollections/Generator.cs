@@ -41,6 +41,7 @@ namespace StackMemoryCollections
                 GeneratePrimitiveWrappers(in context, in builder);
                 GeneratePrimitiveStack(in context, in builder);
                 GeneratePrimitiveQueue(in context, in builder);
+                GeneratePrimitiveList(in context, in builder);
                 GenerateMemory(in context, in builder);
             }
 

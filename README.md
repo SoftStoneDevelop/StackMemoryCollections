@@ -43,7 +43,8 @@ unsafe
               listOfInt32.Add(in i);//+ 4 byte, shift index memory.Current by 4 byte: memory.Current +=4;
             }
             //listOfInt32 is 200 byte
-            list.ExpandCapacity(50);// + 200 byte
+            list.ExpandCapacity(50);// + 200 byte: memory.Current +=200;
+            list.TrimExcess();// - 200 byte: memory.Current -=200;
             //Do whatever you want with list of Int32 items
         }//return memory
 

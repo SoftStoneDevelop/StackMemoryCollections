@@ -29,35 +29,60 @@ Supported collections:
 - List
 - Queue
 
-General idea (on the example of a list):
+Usage:
 
-Allocate memory for all your collections.
+```C#
+unsafe
+{
+    using (var memory = new Struct.StackMemory(sizeof(int) * 100))//Allocate memory for all your collections.
+    {   
+        {
+            using var listOfInt32 = new Struct.ListOfInt32(50, &memory);
+            list.ExpandCapacity(50);
+            //Do whatever you want with list of Int32 items
+        }//return memory
 
-![1](https://user-images.githubusercontent.com/43916814/188752538-cff787a0-2c92-4d86-8439-6c9efec3eb57.png)
+        var listOfInt64 = new Struct.ListOfInt64(50, &memory);//get memory
+        //Do whatever you want with list of Int64 items
+    }//free all memory
+}
 
-In our example, we will allocate a list of 5 elements on this memory.
+```
 
-![2](https://user-images.githubusercontent.com/43916814/188752689-bbc509e0-05be-4ea2-847f-5ba04ca5b066.png)
+In our example, we will allocate a list of 50 elements on this memory.
+Then we increase the capacity to the 100 elements. No copying or reallocation.
+Then we free old collection and allocate new collection of Int64 on the same memory.
 
-If we need to increase the capacity, and at the same time, the collection whose capacity increases is the last element in memory, then to increase the capacity, you just need to indicate that there is more available memory for the collection. No copying or reallocation.
-
-![3](https://user-images.githubusercontent.com/43916814/188752910-11f87ccc-2384-4a9a-909c-91d85c2e67fa.png)
-
-If we need to allocate a collection of elements of a different type on the same memory (and we do not need the old collection), then we do not have to allocate new memory, we can allocate it on the already allocated one.
-
-If something else is written to memory after the collection, then the collection becomes sealed.
-In the future, you can compress memory if there are areas that are no longer used, thereby not sealing the collection.
+In the future(TODO), you can compress memory if there are areas that are no longer used, thereby not sealing the collection.
 This can be useful for allocating memory for an entire method if we know approximately how much memory it can consume at the maximum.
 
-Usage:
+_____
+Stack of composite type example:
 
 ```C#
 //Marking a class/struct with attributes is all that is required of you.
 [GenerateStack]
 [GenerateWrapper]
-public struct JobStruct
+public struct SimpleStruct
 {
-    public JobStruct(
+    public SimpleStruct(
+        int int32,
+        long int64
+        )
+    {
+        Int32 = int32;
+        Int64 = int64;
+    }
+
+    public long Int64;
+    public int Int32;
+}
+
+[GenerateStack]
+[GenerateWrapper]
+public class SimpleClass
+{
+    public SimpleClass(
         int int32,
         long int64
         )
@@ -76,57 +101,49 @@ public struct JobStruct
 //Stack of pointers
 unsafe
 {
-    using (var memory = new Struct.StackMemory(JobStructHelper.SizeOf + (nuint)sizeof(IntPtr)))
+    using (var memory = new Struct.StackMemory(SimpleStructHelper.SizeOf + (nuint)sizeof(IntPtr)))
     {
         using var stack = new Struct.StackOfIntPtr(1, &memory);
         {
-            var item = new Struct.JobStructWrapper(&memory);
+            var item = new Struct.SimpleStructWrapper(&memory);
             item.Int32 = 456;
             *stack.TopFuture() = new IntPtr(item.Ptr);
             stack.PushFuture();
         }
-        var item2 = new Struct.JobStructWrapper(stack.Top().ToPointer());
+        var item2 = new Struct.SimpleStructWrapper(stack.Top().ToPointer());
         //item2 point to same memory as is item
     }
 }
 ```
 
 ```C#
-//Stack of structures
-//All alocate memory = JobStructHelper.SizeOf * 100
+//All alocate memory = SimpleStructHelper.SizeOf * 100 = 12* 100 = 1200 byte
 unsafe
 {
     using (var memory = new Struct.StackMemory(JobStructHelper.SizeOf * (nuint)100))//allocate memory
-    {
-        var item = new Struct.JobStructWrapper(memory.Start, false);
-        var js2W = new Struct.JobStruct2Wrapper(memory.Start, false);
-        
+    {       
         {
-            using var stack = new Struct.StackOfJobStruct((nuint)100, &memory);//get memory
+            var item = new Struct.SimpleStructWrapper(memory.Start, false);
+            using var stackOfSimpleStruct = new Struct.StackOfSimpleStruct((nuint)100, &memory);//get memory
             for (int i = 0; i < 100; i++)
             {
-                item.ChangePtr(stack.TopFuture());
+                item.ChangePtr(stackOfSimpleStruct.TopFuture());
                 item.Int32 = i;
                 item.Int64 = i * 2;
-                js2W.ChangePtr(item.JobStruct2Ptr);
-                js2W.Int32 = 777;
-                js2W.Int64 = 111;
-                stack.PushFuture();
+                stackOfSimpleStruct.PushFuture();
             }
         
             //Do whatever you want with stack
         }//return memory
 
-        var stack2 = new Struct.StackOfJobStruct((nuint)100, &memory);//get memory
+        var item = new Struct.SimpleClassWrapper(memory.Start, false);
+        var stackOfSimpleClass = new Struct.StackOfSimpleClass((nuint)100, &memory);//get memory
         for (int i = 0; i < 100; i++)
         {
-            item.ChangePtr(stack2.TopFuture());
+            item.ChangePtr(stackOfSimpleClass.TopFuture());
             item.Int32 = i;
             item.Int64 = i * 2;
-            js2W.ChangePtr(item.JobStruct2Ptr);
-            js2W.Int32 = 465;
-            js2W.Int64 = 7898721;
-            stack2.PushFuture();
+            stackOfSimpleClass.PushFuture();
         }
     }//free all memory
 }

@@ -302,13 +302,9 @@ namespace StackMemoryCollections.{memoryNamespace}
             }}
 
             var current = start - bytesShift;
-            var sd = *start;
             var newEnd = end - bytesShift;
             while(current != newEnd)
-            {{
-                var ss = *current;
-                var ss2 = *(current + bytesShift);
-                
+            {{               
                 *current = *(current + bytesShift);
                 current += 1;
             }}

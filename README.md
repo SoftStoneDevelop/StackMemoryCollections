@@ -37,7 +37,12 @@ unsafe
     using (var memory = new Struct.StackMemory(sizeof(int) * 100))//Allocate memory for all your collections 400 byte.
     {   
         {
-            using var listOfInt32 = new Struct.ListOfInt32(50, &memory);//50 * 4 = 200 byte
+            using var listOfInt32 = new Struct.ListOfInt32(2, &memory);//2 * 4 = 8 byte
+            for(int i = 0; i< 48; i++)
+            {
+              listOfInt32.Add(in i);//+ 4 byte, shift index memory.Current by 4 byte: memory.Current +=4;
+            }
+            //listOfInt32 is 200 byte
             list.ExpandCapacity(50);// + 200 byte
             //Do whatever you want with list of Int32 items
         }//return memory

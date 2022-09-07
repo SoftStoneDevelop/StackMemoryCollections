@@ -300,7 +300,7 @@ namespace StackMemoryCollections.{listNamespace}
             }}
             else if (_stackMemoryS != null)
             {{
-                if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * 4)))
+                if (new IntPtr(_stackMemoryS->Current) != new IntPtr((byte*)_start + (Capacity * {sizeOf})))
                 {{
                     throw new Exception(""Failed to reduce available memory, stack moved further"");
                 }}
@@ -632,11 +632,11 @@ namespace StackMemoryCollections.{listNamespace}
             }}
             else if (_stackMemoryS != null)
             {{
-                _stackMemoryS->ShiftLeft((byte*)_start, (byte*)(_start + Size), (long){sizeOf});
+                _stackMemoryS->ShiftLeft((byte*)(_start + (index + 1)), (byte*)(_start + Size), (long){sizeOf});
             }}
             else if (_stackMemoryC != null)
             {{
-                _stackMemoryC.ShiftLeft((byte*)_start, (byte*)(_start + Size), (long){sizeOf});
+                _stackMemoryC.ShiftLeft((byte*)(_start + (index + 1)), (byte*)(_start + Size), (long){sizeOf});
             }}
 
             Size -= 1;{incrementVersion}
@@ -659,7 +659,12 @@ namespace StackMemoryCollections.{listNamespace}
             builder.Append($@"
         public void Insert(in {typeof(T).Name} value, nuint index)
         {{
-            if (index == Size - 1)
+            if(index > Size || Size == Capacity)
+            {{
+                throw new IndexOutOfRangeException(""Element outside the list"");
+            }}
+
+            if (index == Size)
             {{
 {incrementVersion}
                 *(_start + Size++) = value;
@@ -709,7 +714,7 @@ namespace StackMemoryCollections.{listNamespace}
                     _stackMemoryS->AllocateMemory({sizeOf});
                 }}
 
-                _stackMemoryS->ShiftRight((byte*)(_start + index), (byte*)(_start + (Size - index)), (long){sizeOf});
+                _stackMemoryS->ShiftRight((byte*)(_start + index), (byte*)(_start + Size), (long){sizeOf});
                 *(_start + index) = value;
             }}
             else if (_stackMemoryC != null)
@@ -719,7 +724,7 @@ namespace StackMemoryCollections.{listNamespace}
                     _stackMemoryC.AllocateMemory({sizeOf});
                 }}
 
-                _stackMemoryC.ShiftRight((byte*)(_start + index), (byte*)(_start + (Size - index)), (long){sizeOf});
+                _stackMemoryC.ShiftRight((byte*)(_start + index), (byte*)(_start + Size), (long){sizeOf});
                 *(_start + index) = value;
             }}
 
@@ -1064,7 +1069,7 @@ namespace StackMemoryCollections.{listNamespace}
                 return;
             }}
 
-            if (destList.Size < Size)
+            if (destList.Capacity < Size)
             {{
                 throw new ArgumentException(""Destination list not enough capacity"");
             }}

@@ -522,7 +522,7 @@ namespace Tests
                     Assert.That(list.IsEmpty, Is.EqualTo(false));
                     Assert.That(list.Capacity, Is.EqualTo((nuint){values.Count}));
                     Assert.That(list.Size, Is.EqualTo((nuint){i + 1}));
-                    Assert.That(*list[{i}], Is.EqualTo({toStr(values[0])}));
+                    Assert.That(*list[{i}], Is.EqualTo({toStr(values[i])}));
 ");
             }
 
@@ -578,7 +578,7 @@ namespace Tests
                     Assert.That(list.IsEmpty, Is.EqualTo(false));
                     Assert.That(list.Capacity, Is.EqualTo((nuint){values.Count}));
                     Assert.That(list.Size, Is.EqualTo((nuint){i + 1}));
-                    Assert.That(*list[{i}], Is.EqualTo({toStr(values[0])}));
+                    Assert.That(*list[{i}], Is.EqualTo({toStr(values[i])}));
 ");
             }
 
@@ -1267,7 +1267,7 @@ namespace Tests
 
             builder.Append($@"
                     Assert.That(() => list[{values.Count}],
-                        Throws.Exception.TypeOf(typeof(Exception))
+                        Throws.Exception.TypeOf(typeof(IndexOutOfRangeException))
                         .And.Message.EqualTo(""Element outside the list"")
                         );
                 }}
@@ -1297,6 +1297,10 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     var list = new StackMemoryCollections.{listNamespace}.ListOf{typeof(T).Name}({values.Count}, &memory);
+                    Assert.That(() => list.Remove(0),
+                        Throws.Exception.TypeOf(typeof(IndexOutOfRangeException))
+                        .And.Message.EqualTo(""Element outside the list"")
+                        );
 ");
             for (int i = 0; i < values.Count; i++)
             {
@@ -1305,32 +1309,25 @@ namespace Tests
 ");
             }
             builder.Append($@"
-                    list.Remove(2);
-                    list.Remove({values.Count - 1});
+                    list.Remove(1);
+                    list.Remove({values.Count - 2});
                     list.Remove(0);
 ");
             int j = 0;
-            for (int i = 0; i < values.Count - 3; i++)
+            for (int i = 0; i < values.Count; i++)
             {
-                if (j == 0 || j == 2 || j == values.Count - 1)
+                if (i == 0 || i == 1 || i == values.Count - 1)
                 {
-                    i -= 1;
-                    j += 1;
                     continue;
                 }
                 builder.Append($@"
-                    Assert.That(*list[{i}], Is.EqualTo({toStr(values[i])}));
+                    Assert.That(*list[{j}], Is.EqualTo({toStr(values[i])}));
 ");
                 j += 1;
             }
 
             builder.Append($@"
                     Assert.That(list.Size, Is.EqualTo((nuint){values.Count - 3}));
-                    
-                    Assert.That(() => list.Remove(0),
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the list"")
-                        );
                 }}
             }}
         }}
@@ -1367,10 +1364,11 @@ namespace Tests
 ");
             }
             builder.Append($@"
-                    list.Insert({toStr(values[values.Count - 3])} , 2);
-                    list.Insert({toStr(values[values.Count - 2])} , {values.Count - 3});
+                    list.Insert({toStr(values[values.Count - 3])} , 1);
+                    list.Insert({toStr(values[values.Count - 2])} , {values.Count - 2});
                     list.Insert({toStr(values[values.Count - 1])} , 0);
 ");
+            int j = 0;
             for (int i = 0; i < values.Count; i++)
             {
                 if (i == 0)
@@ -1378,33 +1376,37 @@ namespace Tests
                     builder.Append($@"
                     Assert.That(*list[{i}], Is.EqualTo({toStr(values[values.Count - 1])}));
 ");
+                    continue;
                 }
                 else if (i == 2)
                 {
                     builder.Append($@"
-                    Assert.That(*list[{i}], Is.EqualTo({toStr(values[values.Count - 2])}));
+                    Assert.That(*list[{i}], Is.EqualTo({toStr(values[values.Count - 3])}));
 ");
+                    continue;
                 }
-                else if (i == 2)
+                else if (i == values.Count - 1)
                 {
                     builder.Append($@"
                     Assert.That(*list[{i}], Is.EqualTo({toStr(values[values.Count - 2])}));
 ");
+                    continue;
                 }
                 else
                 {
                     builder.Append($@"
-                    Assert.That(*list[{i}], Is.EqualTo({toStr(values[i])}));
+                    Assert.That(*list[{i}], Is.EqualTo({toStr(values[j])}));
 ");
                 }
+                j += 1;
             }
 
             builder.Append($@"
-                    Assert.That(list.Size, Is.EqualTo((nuint){values.Count - 3}));
+                    Assert.That(list.Size, Is.EqualTo((nuint){values.Count}));
                     
-                    Assert.That(() => list.Remove(0),
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the list"")
+                    Assert.That(() => list.Insert({toStr(values[values.Count - 1])}, 0),
+                        Throws.Exception.TypeOf(typeof(IndexOutOfRangeException))
+                        .And.Message.EqualTo(""Element outside the list"")
                         );
                 }}
             }}
@@ -1435,8 +1437,8 @@ namespace Tests
                 {{
                     var list = new StackMemoryCollections.{listNamespace}.ListOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(() => list.GetByIndex(0),
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the list"")
+                        Throws.Exception.TypeOf(typeof(IndexOutOfRangeException))
+                        .And.Message.EqualTo(""Element outside the list"")
                         );
 ");
             for (int i = 0; i < values.Count; i++)
@@ -1479,8 +1481,8 @@ namespace Tests
                 {{
                     var list = new StackMemoryCollections.{listNamespace}.ListOf{typeof(T).Name}({values.Count}, &memory);
                     Assert.That(() => list.GetOutByIndex(0, out _),
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the list"")
+                        Throws.Exception.TypeOf(typeof(IndexOutOfRangeException))
+                        .And.Message.EqualTo(""Element outside the list"")
                         );
 ");
             for (int i = 0; i < values.Count; i++)
@@ -1516,7 +1518,7 @@ namespace Tests
             builder.Append($@"
         [Test]
         [SkipLocalsInit]
-        public void FrontBackRefValueTest()
+        public void GetByIndexRefTest()
         {{
             unsafe
             {{
@@ -1529,8 +1531,8 @@ namespace Tests
                             {typeof(T).Name} temp = {toStr(values[0])};
                             list.GetByIndex(0, ref temp);
                         }},
-                        Throws.Exception.TypeOf(typeof(Exception))
-                        .And.Message.EqualTo(""There are no elements on the list"")
+                        Throws.Exception.TypeOf(typeof(IndexOutOfRangeException))
+                        .And.Message.EqualTo(""Element outside the list"")
                         );
                     {typeof(T).Name} item;
 ");

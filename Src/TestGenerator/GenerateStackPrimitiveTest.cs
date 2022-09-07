@@ -363,7 +363,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     {{
-                        var stack = new StackMemoryCollections.Struct.StackOf{typeof(T).Name}({values.Count}, &memory);
+                        var stack = new StackMemoryCollections.{stackNamespace}.StackOf{typeof(T).Name}({values.Count}, &memory);
                     }}
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));

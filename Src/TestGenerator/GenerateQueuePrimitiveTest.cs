@@ -265,7 +265,7 @@ namespace TestGenerator
             QueuePrimitiveStart<T>(in builder, in queueNamespace);
 
             QueuePrimitiveDispose(in values, in builder, in queueNamespace);
-            QueuePrimitiveNotDispose(in values, in builder);
+            QueuePrimitiveNotDispose(in values, in builder, in queueNamespace);
             QueuePrimitiveReseize(in values, in builder, in queueNamespace, in toStr);
 
             QueuePrimitivePush(in values, in builder, in queueNamespace, in toStr);
@@ -364,7 +364,8 @@ namespace Tests
 
         private void QueuePrimitiveNotDispose<T>(
             in List<T> values,
-            in StringBuilder builder
+            in StringBuilder builder,
+            in string queueNamespace
             ) where T : unmanaged
         {
             if (values.Count < 5)
@@ -381,7 +382,7 @@ namespace Tests
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof({typeof(T).Name}) * {values.Count}))
                 {{
                     {{
-                        var queue = new StackMemoryCollections.Struct.QueueOf{typeof(T).Name}({values.Count}, &memory);
+                        var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}({values.Count}, &memory);
                     }}
 
                     Assert.That(new IntPtr(memory.Current), Is.EqualTo(new IntPtr(({typeof(T).Name}*)memory.Start + {values.Count})));
@@ -410,7 +411,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                using var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
@@ -434,13 +435,6 @@ namespace Tests
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[i])}));
                 Assert.That(queue.Back(), Is.EqualTo({toStr(values[4])}));
                 queue.Pop();
-");
-            }
-
-            if(queueNamespace == "Struct")
-            {
-                builder.Append($@"
-            queue.Dispose();
 ");
             }
 
@@ -762,7 +756,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                using var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
@@ -778,14 +772,6 @@ namespace Tests
                 queue.Clear();
                 Assert.That(queue.Size, Is.EqualTo((nuint)0));
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)4));
-");
-            if (queueNamespace == "Struct")
-            {
-                builder.Append($@"
-                queue.Dispose();
-");
-            }
-            builder.Append($@"
             }}
         }}
 ");
@@ -950,7 +936,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                using var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
@@ -968,14 +954,6 @@ namespace Tests
                 queue.TrimExcess();
                 Assert.That(queue.Size, Is.EqualTo((nuint)5));
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)5));
-");
-            if (queueNamespace == "Struct")
-            {
-                builder.Append($@"
-                queue.Dispose();
-");
-            }
-            builder.Append($@"
             }}
         }}
 ");
@@ -1012,18 +990,10 @@ namespace Tests
 
             unsafe
             {{
-                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                using var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)4));
                 queue.ExpandCapacity(6);
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)10));
-");
-            if (queueNamespace == "Struct")
-            {
-                builder.Append($@"
-                queue.Dispose();
-");
-            }
-            builder.Append($@"
             }}
         }}
 ");
@@ -1118,7 +1088,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                using var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
@@ -1161,14 +1131,6 @@ namespace Tests
             builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
                 queue.Pop();
-");
-            if (queueNamespace == "Struct")
-            {
-                builder.Append($@"
-                queue.Dispose();
-");
-            }
-                builder.Append($@"
                 Assert.That(queue.Size, Is.EqualTo((nuint)0));
             }}
         }}
@@ -1244,7 +1206,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                using var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
@@ -1268,14 +1230,6 @@ namespace Tests
             builder.Append($@"
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
                 queue.Pop();
-");
-            if (queueNamespace == "Struct")
-            {
-                builder.Append($@"
-                queue.Dispose();
-");
-            }
-            builder.Append($@"
                 Assert.That(queue.Size, Is.EqualTo((nuint)0));
             }}
         }}
@@ -1313,20 +1267,12 @@ namespace Tests
 
             unsafe
             {{
-                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                using var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
                 queue.ExpandCapacity(6);
 
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)10));
                 queue.ReducingCapacity(1);
                 Assert.That(queue.Capacity, Is.EqualTo((nuint)9));
-");
-            if (queueNamespace == "Struct")
-            {
-                builder.Append($@"
-                queue.Dispose();
-");
-            }
-            builder.Append($@"
             }}
         }}
 ");
@@ -1404,7 +1350,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                using var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 4; i++)
             {
@@ -1438,14 +1384,6 @@ namespace Tests
                 Assert.That(queue.Back(), Is.EqualTo({toStr(values[values.Count - 1])}));
                 Assert.That(queue.Front(), Is.EqualTo({toStr(values[values.Count - 1])}));
                 queue.Pop();
-");
-            if(queueNamespace == "Struct")
-            {
-                builder.Append($@"
-                queue.Dispose();
-");
-            }
-            builder.Append($@"
                 Assert.That(queue.Size, Is.EqualTo((nuint)0));
             }}
         }}
@@ -1520,7 +1458,7 @@ namespace Tests
         {{
             unsafe
             {{
-                var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
+                using var queue = new StackMemoryCollections.{queueNamespace}.QueueOf{typeof(T).Name}();
 ");
             for (int i = 0; i < 3; i++)
             {
@@ -1544,14 +1482,6 @@ namespace Tests
             }
             builder.Append($@"
                 Assert.That(queue.Size, Is.EqualTo((nuint)0));
-");
-            if (queueNamespace == "Struct")
-            {
-                builder.Append($@"
-                queue.Dispose();
-");
-            }
-            builder.Append($@"
             }}
         }}
 ");

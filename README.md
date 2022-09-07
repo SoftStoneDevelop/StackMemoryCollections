@@ -34,15 +34,15 @@ Usage:
 ```C#
 unsafe
 {
-    using (var memory = new Struct.StackMemory(sizeof(int) * 100))//Allocate memory for all your collections.
+    using (var memory = new Struct.StackMemory(sizeof(int) * 100))//Allocate memory for all your collections 400 byte.
     {   
         {
-            using var listOfInt32 = new Struct.ListOfInt32(50, &memory);
-            list.ExpandCapacity(50);
+            using var listOfInt32 = new Struct.ListOfInt32(50, &memory);//50 * 4 = 200 byte
+            list.ExpandCapacity(50);// + 200 byte
             //Do whatever you want with list of Int32 items
         }//return memory
 
-        var listOfInt64 = new Struct.ListOfInt64(50, &memory);//get memory
+        var listOfInt64 = new Struct.ListOfInt64(50, &memory);//get memory 400 byte
         //Do whatever you want with list of Int64 items
     }//free all memory
 }

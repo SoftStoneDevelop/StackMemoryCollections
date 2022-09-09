@@ -165,7 +165,7 @@ namespace StackMemoryCollections.{listNamespace}
             builder.Append($@"
         public ListOf{typeof(T).Name}()
         {{
-            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({(calculateSize ? sizeOfStr : (sizeOf * 4).ToString())});
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({(calculateSize ? $"{sizeOfStr} * 4" : (sizeOf * 4).ToString())});
             _start = ({typeof(T).Name}*)_stackMemoryC.Start;
             Capacity = 4;
             _memoryOwner = true;

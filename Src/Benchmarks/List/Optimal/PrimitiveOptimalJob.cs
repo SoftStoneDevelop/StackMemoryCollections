@@ -50,7 +50,6 @@ namespace Benchmark.List
                         if (j > 50)
                         {
                             list2.Clear();
-                            list2.TrimExcess();
                         }
                         else
                         {

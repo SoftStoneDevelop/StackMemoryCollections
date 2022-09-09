@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 
-namespace Benchmark.Queue
+namespace Benchmark.List
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net60)]
@@ -18,14 +18,15 @@ namespace Benchmark.Queue
             {
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(sizeof(int) * (nuint)Size))
                 {
-                    var queue = new StackMemoryCollections.Struct.QueueOfInt32((nuint)Size, &memory);
+                    var list = new StackMemoryCollections.Struct.ListOfInt32((nuint)Size, &memory);
                     for (int i = 0; i < Size; i++)
                     {
-                        queue.Push(in i);
+                        list.Add(in i);
                     }
 
-                    while (queue.TryPop())
+                    while (list.Size != 0)
                     {
+                        list.Remove(list.Size - 1);
                     }
                 }
             }
@@ -36,14 +37,15 @@ namespace Benchmark.Queue
         {
             unsafe
             {
-                var queue = new System.Collections.Generic.Queue<int>(Size);
+                var list = new System.Collections.Generic.List<int>(Size);
                 for (int i = 0; i < Size; i++)
                 {
-                    queue.Enqueue(i);
+                    list.Add(i);
                 }
 
-                while (queue.TryDequeue(out _))
+                while (list.Count != 0)
                 {
+                    list.RemoveAt(list.Count - 1);
                 }
             }
         }

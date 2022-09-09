@@ -50,6 +50,7 @@ namespace StackMemoryCollections
             GenerateWrappers(in typeWrappers, in context, in infos, in builder);
             GenerateStack(in typeGeneratedStack, in context, in infos, in builder);
             GenerateQueue(in typeGeneratedQueue, in context, in infos, in builder);
+            GenerateList(in typeGeneratedList, in context, in infos, in builder);
         }
 
         public void Initialize(GeneratorInitializationContext context)

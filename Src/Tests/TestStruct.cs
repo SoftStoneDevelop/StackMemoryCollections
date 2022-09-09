@@ -6,6 +6,7 @@ namespace Tests
 {
     [GenerateStack]
     [GenerateQueue]
+    [GenerateList]
     [GenerateWrapper]
     public struct TestStruct
     {

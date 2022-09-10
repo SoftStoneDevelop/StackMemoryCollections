@@ -18,19 +18,21 @@ namespace Benchmark.List
             {
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(JobStructHelper.SizeOf * (nuint)Size))
                 {
-                    using var item = new Benchmark.Struct.JobStructWrapper();
-                    var js2W = new Benchmark.Struct.JobStruct2Wrapper(item.JobStruct2Ptr, false);
+                    var item = new Benchmark.Struct.JobClassWrapper(memory.Start, false);
+                    var js2W = new Benchmark.Struct.JobClass2Wrapper(memory.Start, false);
                     for (int j = 0; j < 100; j++)
                     {
                         {
-                            using var list = new Benchmark.Struct.ListOfJobStruct(5, &memory);
-                            for (int i = 0; i < Size/2; i++)
+                            using var list = new Benchmark.Struct.ListOfJobStruct((nuint)Size, &memory);
+                            for (int i = 0; i < Size; i++)
                             {
-                                item.SetInt32(in i);
-                                item.SetInt64(i * 2);
+                                item.ChangePtr(list.GetFuture());
+                                item.SetInt32(132);
+                                item.SetInt64(248);
+                                js2W.ChangePtr(item.JobClass2Ptr);
                                 js2W.SetInt32(15);
                                 js2W.SetInt64(36);
-                                list.Add(item.Ptr);
+                                list.AddFuture();
                             }
 
                             if(j > 50)
@@ -50,11 +52,13 @@ namespace Benchmark.List
                         using var list2 = new Benchmark.Struct.ListOfJobStruct((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
-                            item.SetInt32(in i);
-                            item.SetInt64(i * 2);
+                            item.ChangePtr(list2.GetFuture());
+                            item.SetInt32(132);
+                            item.SetInt64(248);
+                            js2W.ChangePtr(item.JobClass2Ptr);
                             js2W.SetInt32(15);
                             js2W.SetInt64(36);
-                            list2.Add(item.Ptr);
+                            list2.AddFuture();
                         }
 
                         if (j > 50)
@@ -82,11 +86,11 @@ namespace Benchmark.List
                 for (int j = 0; j < 100; j++)
                 {
                     {
-                        var list = new System.Collections.Generic.List<JobStruct>(5);
-                        for (int i = 0; i < Size/2; i++)
+                        var list = new System.Collections.Generic.List<JobStruct>(Size);
+                        for (int i = 0; i < Size; i++)
                         {
-                            item.Int32 = i;
-                            item.Int64 = i * 2;
+                            item.Int32 = 132;
+                            item.Int64 = 248;
                             item.JobStruct2.Int32 = 15;
                             item.JobStruct2.Int64 = 36;
                             list.Add(item);
@@ -109,8 +113,8 @@ namespace Benchmark.List
                     var list2 = new System.Collections.Generic.List<JobStruct>(Size);
                     for (int i = 0; i < Size; i++)
                     {
-                        item.Int32 = i;
-                        item.Int64 = i * 2;
+                        item.Int32 = 132;
+                        item.Int64 = 248;
                         item.JobStruct2.Int32 = 15;
                         item.JobStruct2.Int64 = 36;
                         list2.Add(item);

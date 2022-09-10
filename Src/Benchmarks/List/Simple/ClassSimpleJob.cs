@@ -19,14 +19,14 @@ namespace Benchmark.List
                 using (var memory = new StackMemoryCollections.Struct.StackMemory(JobClassHelper.SizeOf + (JobClassHelper.SizeOf * (nuint)Size)))
                 {
                     var item = new Benchmark.Struct.JobClassWrapper(&memory);
+                    var item2 = new Benchmark.Struct.JobClassWrapper(item.JobClass2Ptr, false);
                     using var list = new Benchmark.Struct.ListOfJobClass((nuint)Size, &memory);
                     for (int i = 0; i < Size; i++)
                     {
-                        item.SetInt32(in i);
-                        item.SetInt64(i * 2);
-                        var jc2 = Benchmark.JobClassHelper.GetJobClass2Ptr(item.Ptr);
-                        Benchmark.JobClass2Helper.SetInt32Value(in jc2, i + 3);
-                        Benchmark.JobClass2Helper.SetInt64Value(in jc2, i * 3);
+                        item.SetInt32(132);
+                        item.SetInt64(248);
+                        item2.SetInt32(15);
+                        item2.SetInt64(36);
                         list.Add(item.Ptr);
                     }
 
@@ -47,9 +47,9 @@ namespace Benchmark.List
                 for (int i = 0; i < Size; i++)
                 {
                     list.Add(
-                        new JobClass(i, i * 2)
+                        new JobClass(132, 248)
                         {
-                            JobClass2 = new JobClass2(i + 3, i * 3)
+                            JobClass2 = new JobClass2(15, 36)
                         }
                         );
                 }

@@ -21,10 +21,11 @@ namespace Benchmark.List
                     for (int j = 0; j < 100; j++)
                     {
                         {
-                            using var list = new StackMemoryCollections.Struct.ListOfInt32(5, &memory);
-                            for (int i = 0; i < Size/2; i++)
+                            using var list = new StackMemoryCollections.Struct.ListOfInt32((nuint)Size, &memory);
+                            for (int i = 0; i < Size; i++)
                             {
-                                list.Add(in i);
+                                *list.GetFuture() = i;
+                                list.AddFuture();
                             }
 
                             if(j > 50)
@@ -44,7 +45,8 @@ namespace Benchmark.List
                         using var list2 = new StackMemoryCollections.Struct.ListOfInt32((nuint)Size, &memory);
                         for (int i = 0; i < Size; i++)
                         {
-                            list2.Add(in i);
+                            *list2.GetFuture() = i;
+                            list2.AddFuture();
                         }
 
                         if (j > 50)
@@ -71,8 +73,8 @@ namespace Benchmark.List
                 for (int j = 0; j < 100; j++)
                 {
                     {
-                        var list = new System.Collections.Generic.List<int>(5);
-                        for (int i = 0; i < Size / 2; i++)
+                        var list = new System.Collections.Generic.List<int>(Size);
+                        for (int i = 0; i < Size; i++)
                         {
                             list.Add(i);
                         }

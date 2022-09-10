@@ -22,8 +22,8 @@ namespace Benchmark.List
                     using var list = new Benchmark.Struct.ListOfJobStruct((nuint)Size, &memory);
                     for (int i = 0; i < Size; i++)
                     {
-                        item.Int32 = i;
-                        item.Int64 = i * 2;
+                        item.Int32 = 132;
+                        item.Int64 = 248;
                         item.JobStruct2.Int32 = 15;
                         item.JobStruct2.Int64 = 36;
                         list.Add(in item);
@@ -46,8 +46,8 @@ namespace Benchmark.List
                 var list = new System.Collections.Generic.List<JobStruct>(Size);
                 for (int i = 0; i < Size; i++)
                 {
-                    item.Int32 = i;
-                    item.Int64 = i * 2;
+                    item.Int32 = 132;
+                    item.Int64 = 248;
                     item.JobStruct2.Int32 = 15;
                     item.JobStruct2.Int64 = 36;
                     list.Add(item);

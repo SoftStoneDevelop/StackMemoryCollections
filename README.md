@@ -84,7 +84,7 @@ public struct SimpleStruct
     public int Int32;
 }
 
-[GenerateStack]
+[GenerateList]
 [GenerateWrapper]
 public class SimpleClass
 {
@@ -143,13 +143,13 @@ unsafe
         }//return memory
 
         var item = new Struct.SimpleClassWrapper(memory.Start, false);
-        var stackOfSimpleClass = new Struct.StackOfSimpleClass((nuint)100, &memory);//get memory
+        var listOfSimpleClass = new Struct.ListOfSimpleClass((nuint)100, &memory);//get memory
         for (int i = 0; i < 100; i++)
         {
-            item.ChangePtr(stackOfSimpleClass.TopFuture());
+            item.ChangePtr(listOfSimpleClass.GetFuture());
             item.Int32 = i;
             item.Int64 = i * 2;
-            stackOfSimpleClass.PushFuture();
+            listOfSimpleClass.AddFuture();
         }
     }//free all memory
 }

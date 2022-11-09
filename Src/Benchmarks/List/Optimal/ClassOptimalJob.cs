@@ -4,7 +4,7 @@ using BenchmarkDotNet.Jobs;
 namespace Benchmark.List
 {
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net60)]
+    [SimpleJob(RuntimeMoniker.Net70)]
     [HideColumns("Error", "StdDev", "Median", "Gen0", "Gen1", "Gen2", "Alloc Ratio", "RatioSD")]
     public class ClassOptimalJob
     {

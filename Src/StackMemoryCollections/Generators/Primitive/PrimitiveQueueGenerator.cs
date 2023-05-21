@@ -9,7 +9,7 @@ namespace StackMemoryCollections.Generators.Primitive
         private readonly StringBuilder _builder = new StringBuilder();
 
         public void GeneratePrimitiveQueue(
-            in GeneratorExecutionContext context
+            in SourceProductionContext context
             )
         {
             GenerateQueue<IntPtr>(in context, 0, true);
@@ -35,7 +35,7 @@ namespace StackMemoryCollections.Generators.Primitive
         }
 
         private void GenerateQueue<T>(
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in int sizeOf,
             bool calculateSize
             ) where T : unmanaged
@@ -47,7 +47,7 @@ namespace StackMemoryCollections.Generators.Primitive
         }
 
         private void GeneratePrimitiveQueue<T>(
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in string queueNamespace,
             in int sizeOf,
             in string sizeOfStr,

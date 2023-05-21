@@ -12,7 +12,7 @@ namespace StackMemoryCollections
 
         public void GenerateHelpers(
             in List<INamedTypeSymbol> typeHelpers,
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
@@ -26,7 +26,7 @@ namespace StackMemoryCollections
         private void GenerateHelpersForType(
             INamedTypeSymbol currentType,
             Dictionary<string, Model.TypeInfo> typeInfos,
-            GeneratorExecutionContext context
+            SourceProductionContext context
             )
         {
             _builder.Clear();

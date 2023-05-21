@@ -8,7 +8,7 @@ namespace StackMemoryCollections
         private readonly StringBuilder _builder = new StringBuilder();
 
         public void GenerateMemory(
-            in GeneratorExecutionContext context
+            in SourceProductionContext context
             )
         {
             GenerateMemory(in context, "Class");
@@ -16,7 +16,7 @@ namespace StackMemoryCollections
         }
 
         private void GenerateMemory(
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in string memoryNamespace
             )
         {

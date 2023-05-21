@@ -9,7 +9,7 @@ namespace StackMemoryCollections.Generators.Primitive
         private readonly StringBuilder _builder = new StringBuilder();
 
         public void GeneratePrimitiveList(
-            in GeneratorExecutionContext context
+            in SourceProductionContext context
             )
         {
             GenerateList<IntPtr>(context, 0, true);
@@ -34,7 +34,7 @@ namespace StackMemoryCollections.Generators.Primitive
         }
 
         private void GenerateList<T>(
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in int sizeOf,
             bool calculateSize
             ) where T : unmanaged
@@ -46,7 +46,7 @@ namespace StackMemoryCollections.Generators.Primitive
         }
 
         private void GeneratePrimitiveList<T>(
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in string ListNamespace,
             in int sizeOf,
             in string sizeOfStr,

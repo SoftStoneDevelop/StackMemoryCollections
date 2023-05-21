@@ -11,7 +11,7 @@ namespace StackMemoryCollections
 
         public void GenerateList(
             in List<INamedTypeSymbol> typeList,
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
@@ -29,7 +29,7 @@ namespace StackMemoryCollections
         }
 
         private void GenerateList(
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in INamedTypeSymbol currentType,
             in Model.TypeInfo typeInfo,
             in string listNamespace

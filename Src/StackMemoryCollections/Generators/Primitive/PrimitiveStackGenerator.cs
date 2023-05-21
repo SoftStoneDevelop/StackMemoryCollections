@@ -9,7 +9,7 @@ namespace StackMemoryCollections.Generators.Primitive
         private StringBuilder _builder = new StringBuilder();
 
         public void GeneratePrimitiveStack(
-            in GeneratorExecutionContext context
+            in SourceProductionContext context
             )
         {
             GenerateStack<IntPtr>(context, 0, true);
@@ -34,7 +34,7 @@ namespace StackMemoryCollections.Generators.Primitive
         }
 
         private void GenerateStack<T>(
-            GeneratorExecutionContext context,
+            SourceProductionContext context,
             in int sizeOf,
             bool calculateSize
             ) where T : unmanaged
@@ -46,7 +46,7 @@ namespace StackMemoryCollections.Generators.Primitive
         }
 
         private void GeneratePrimitiveStack<T>(
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in string stackNamespace,
             in int sizeOf,
             in string sizeOfStr,

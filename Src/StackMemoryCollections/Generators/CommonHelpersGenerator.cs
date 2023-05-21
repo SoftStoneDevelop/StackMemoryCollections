@@ -7,7 +7,7 @@ namespace StackMemoryCollections
     {
         public void GenerateCommonHelpers(
             in List<INamedTypeSymbol> typeHelpers,
-            in GeneratorExecutionContext context
+            in SourceProductionContext context
             )
         {
             if (typeHelpers.Count == 0)

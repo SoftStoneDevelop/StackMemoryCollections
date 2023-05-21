@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
 using System.Text;
 
 namespace StackMemoryCollections.Generators.Primitive
@@ -9,7 +8,7 @@ namespace StackMemoryCollections.Generators.Primitive
         private readonly StringBuilder _builder = new StringBuilder();
 
         public void GeneratePrimitiveWrappers(
-            in GeneratorExecutionContext context
+            in SourceProductionContext context
             )
         {
             GenerateWrapper<int>(context, 4);
@@ -32,7 +31,7 @@ namespace StackMemoryCollections.Generators.Primitive
         }
 
         private void GenerateWrapper<T>(
-            GeneratorExecutionContext context,
+            SourceProductionContext context,
             int sizeOf
             ) where T : unmanaged
         {
@@ -41,7 +40,7 @@ namespace StackMemoryCollections.Generators.Primitive
         }
 
         private void GeneratePrimitiveWrapper<T>(
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in string wrapperNamespace,
             in int sizeOf
             ) where T : unmanaged

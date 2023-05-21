@@ -1,8 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using StackMemoryCollections.Generators.Primitive;
 using StackMemoryCollections.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace StackMemoryCollections
@@ -34,72 +37,49 @@ namespace StackMemoryCollections
         private readonly Dictionary<string, Model.TypeInfo> _typeInfos = new Dictionary<string, Model.TypeInfo>();
 
         public void FillAllTypes(
-            INamespaceOrTypeSymbol symbol
+            Compilation compilation,
+            ImmutableArray<TypeDeclarationSyntax> types
             )
         {
-            var queue = new Queue<INamespaceOrTypeSymbol>();
-            queue.Enqueue(symbol);
-
-            while (queue.Count != 0)
+            foreach (var typeDeclaration in types )
             {
-                var current = queue.Dequeue();
-                if (current is INamedTypeSymbol type &&
-                    !type.IsAbstract &&
-                    !type.IsGenericType &&
-                    !type.IsStatic &&
-                    (type.IsValueType || type.IsReferenceType))
+                var type = compilation.GetSemanticModel(typeDeclaration.SyntaxTree).GetDeclaredSymbol(typeDeclaration);
+
+                var attributes = type.GetAttributes();
+                var hasHelper = attributes.Any(wh => wh.AttributeClass.Name == "GenerateHelperAttribute");
+                var hasStack = attributes.Any(wh => wh.AttributeClass.Name == "GenerateStackAttribute");
+                var hasQueue = attributes.Any(wh => wh.AttributeClass.Name == "GenerateQueueAttribute");
+                var hasList = attributes.Any(wh => wh.AttributeClass.Name == "GenerateListAttribute");
+                var hasDictionary = attributes.Any(wh => wh.AttributeClass.Name == "GenerateDictionaryAttribute");
+                var hasWrapper = attributes.Any(wh => wh.AttributeClass.Name == "GenerateWrapperAttribute");
+
+                if (hasHelper || hasStack || hasQueue || hasList || hasDictionary || hasWrapper)
                 {
-                    var attributes = type.GetAttributes();
-                    var hasHelper = attributes.Any(wh => wh.AttributeClass.Name == "GenerateHelperAttribute");
-                    var hasStack = attributes.Any(wh => wh.AttributeClass.Name == "GenerateStackAttribute");
-                    var hasQueue = attributes.Any(wh => wh.AttributeClass.Name == "GenerateQueueAttribute");
-                    var hasList = attributes.Any(wh => wh.AttributeClass.Name == "GenerateListAttribute");
-                    var hasDictionary = attributes.Any(wh => wh.AttributeClass.Name == "GenerateDictionaryAttribute");
-                    var hasWrapper = attributes.Any(wh => wh.AttributeClass.Name == "GenerateWrapperAttribute");
+                    _typeHelpers.Add(type);
 
-                    if (hasHelper || hasStack || hasQueue || hasList || hasDictionary || hasWrapper)
+                    if (hasStack)
                     {
-                        _typeHelpers.Add(type);
-
-                        if (hasStack)
-                        {
-                            _typeGeneratedStack.Add(type);
-                        }
-
-                        if (hasList)
-                        {
-                            _typeGeneratedList.Add(type);
-                        }
-
-                        if (hasQueue)
-                        {
-                            _typeGeneratedQueue.Add(type);
-                        }
-
-                        if (hasDictionary)
-                        {
-                            _typeGeneratedDictionary.Add(type);
-                        }
-
-                        if (hasWrapper)
-                        {
-                            _typeWrappers.Add(type);
-                        }
+                        _typeGeneratedStack.Add(type);
                     }
-                }
-                else if (current is INamespaceSymbol namespaceSymbol)
-                {
-                    if (!_containCollections && namespaceSymbol.Name == "StackMemoryCollections")
-                    {
-                        _containCollections = true;
-                    }
-                }
 
-                foreach (var child in current.GetMembers())
-                {
-                    if (child is INamespaceOrTypeSymbol symbolChild)
+                    if (hasList)
                     {
-                        queue.Enqueue(symbolChild);
+                        _typeGeneratedList.Add(type);
+                    }
+
+                    if (hasQueue)
+                    {
+                        _typeGeneratedQueue.Add(type);
+                    }
+
+                    if (hasDictionary)
+                    {
+                        _typeGeneratedDictionary.Add(type);
+                    }
+
+                    if (hasWrapper)
+                    {
+                        _typeWrappers.Add(type);
                     }
                 }
             }
@@ -413,7 +393,7 @@ namespace StackMemoryCollections
                 );
         }
 
-        public void Generate(GeneratorExecutionContext context)
+        public void Generate(SourceProductionContext context)
         {
             if (!_containCollections)
             {

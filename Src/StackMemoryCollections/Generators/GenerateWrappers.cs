@@ -11,7 +11,7 @@ namespace StackMemoryCollections
 
         public void GenerateWrappers(
             in List<INamedTypeSymbol> typeWrappers,
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
@@ -30,7 +30,7 @@ namespace StackMemoryCollections
 
         private void GenerateWrapper(
             in INamedTypeSymbol currentType,
-            in GeneratorExecutionContext context,
+            in SourceProductionContext context,
             in Model.TypeInfo typeInfo,
             in string wrapperNamespace,
             in Dictionary<string, Model.TypeInfo> typeInfos

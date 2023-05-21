@@ -12,7 +12,7 @@ namespace StackMemoryCollections.Generators.Primitive
             in GeneratorExecutionContext context
             )
         {
-            GenerateStack<IntPtr>(context, 4, true);
+            GenerateStack<IntPtr>(context, 0, true);
 
             GenerateStack<int>(context, 4, false);
             GenerateStack<uint>(context, 4, false);
@@ -40,8 +40,9 @@ namespace StackMemoryCollections.Generators.Primitive
             ) where T : unmanaged
         {
             var sizeOfStr = calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : sizeOf.ToString();
-            GeneratePrimitiveStack<T>(in context, "Class", 4, sizeOfStr, false);
-            GeneratePrimitiveStack<T>(in context, "Struct", 4, sizeOfStr, false);
+
+            GeneratePrimitiveStack<T>(in context, "Class", sizeOf, sizeOfStr, false);
+            GeneratePrimitiveStack<T>(in context, "Struct", sizeOf, sizeOfStr, false);
         }
 
         private void GeneratePrimitiveStack<T>(

@@ -1,27 +1,21 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
-using System.Text;
 
 namespace StackMemoryCollections
 {
-    public partial class Generator
+    public class CommonHelpersGenerator
     {
-        private void GenerateCommonHelpers(
+        public void GenerateCommonHelpers(
             in List<INamedTypeSymbol> typeHelpers,
-            in GeneratorExecutionContext context,
-            in StringBuilder builder
+            in GeneratorExecutionContext context
             )
         {
             if (typeHelpers.Count == 0)
             {
                 return;
             }
-            builder.Clear();
-            builder.Append($@"
-/*
-{Resource.License}
-*/
 
+            var code = $@"
 using System;
 using System.Runtime.CompilerServices;
 
@@ -35,9 +29,9 @@ namespace StackMemoryCollections
         }}
     }}
 }}
-");
+";
 
-            context.AddSource($"CommonHelper.g.cs", builder.ToString());
+            context.AddSource($"CommonHelper.g.cs", code);
         }
     }
 }

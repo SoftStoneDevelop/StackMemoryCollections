@@ -1,159 +1,170 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
-namespace StackMemoryCollections
+namespace StackMemoryCollections.Generators.Primitive
 {
-    public partial class Generator
+    internal class PrimitiveQueueGenerator
     {
-        private void GenerateQueue(
-            in List<INamedTypeSymbol> typeQueue,
-            in GeneratorExecutionContext context,
-            in Dictionary<string, TypeInfo> typeInfos,
-            in StringBuilder builder
+        private readonly StringBuilder _builder = new StringBuilder();
+
+        public void GeneratePrimitiveQueue(
+            in GeneratorExecutionContext context
             )
         {
-            for (int i = 0; i < typeQueue.Count; i++)
-            {
-                var currentType = typeQueue[i];
-                if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
-                {
-                    throw new Exception($"{nameof(GenerateQueue)}: Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
-                }
+            GenerateQueue<IntPtr>(in context, 0, true);
 
-                GenerateQueue(in context, in builder, in currentType, in typeInfo, "Class");
-                GenerateQueue(in context, in builder, in currentType, in typeInfo, "Struct");
-            }
+            GenerateQueue<int>(in context, 4, false);
+            GenerateQueue<uint>(in context, 4, false);
+
+            GenerateQueue<long>(in context, 8, false);
+            GenerateQueue<ulong>(in context, 8, false);
+
+            GenerateQueue<sbyte>(in context, 1, false);
+            GenerateQueue<byte>(in context, 1, false);
+
+            GenerateQueue<short>(in context, 2, false);
+            GenerateQueue<ushort>(in context, 2, false);
+
+            GenerateQueue<char>(in context, 2, false);
+
+            GenerateQueue<decimal>(in context, 16, false);
+            GenerateQueue<double>(in context, 8, false);
+            GenerateQueue<bool>(in context, 1, false);//1 byte is not optimal
+            GenerateQueue<float>(in context, 4, false);
         }
 
-        private void GenerateQueue(
+        private void GenerateQueue<T>(
             in GeneratorExecutionContext context,
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in TypeInfo typeInfo,
-            in string queueNamespace
-            )
+            in int sizeOf,
+            bool calculateSize
+            ) where T : unmanaged
         {
-            builder.Clear();
-            var sizeOf = typeInfo.IsRuntimeCalculatedSize ? $"{currentType.Name}Helper.SizeOf" : $"{typeInfo.Size}";
-            QueueStart(in builder, in currentType, in queueNamespace);
+            var sizeOfStr = calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : sizeOf.ToString();
 
-            QueueConstructor1(in builder, in currentType, in sizeOf);
-            QueueConstructor2(in builder, in currentType, in sizeOf);
-            QueueConstructor3(in builder, in currentType, in sizeOf);
-            QueueConstructor4(in builder, in currentType);
+            GeneratePrimitiveQueue<T>(in context, "Class", sizeOf, sizeOfStr, false);
+            GeneratePrimitiveQueue<T>(in context, "Struct", sizeOf, sizeOfStr, false);
+        }
 
-            QueueProperties(in builder);
+        private void GeneratePrimitiveQueue<T>(
+            in GeneratorExecutionContext context,
+            in string queueNamespace,
+            in int sizeOf,
+            in string sizeOfStr,
+            bool calculateSize
+            ) where T : unmanaged
+        {
+            _builder.Clear();
+            QueuePrimitiveStart<T>(in queueNamespace);
 
-            QueueReducingCapacity(in builder, in sizeOf, in currentType, in queueNamespace);
-            QueueExpandCapacity(in builder, in sizeOf, in queueNamespace);
-            QueueTryExpandCapacity(in builder, in sizeOf, in queueNamespace);
-            QueueTrimExcess(in builder);
+            QueuePrimitiveConstructor1<T>(in sizeOf, in sizeOfStr, calculateSize);
+            QueuePrimitiveConstructor2<T>(in sizeOfStr);
+            QueuePrimitiveConstructor3<T>(in sizeOfStr);
+            QueuePrimitiveConstructor4<T>();
 
-            QueuePushIn(in builder, in currentType, in sizeOf, in queueNamespace);
-            QueuePushFuture(in builder, in queueNamespace);
-            QueuePushInPtr(in builder, in currentType, in sizeOf, in queueNamespace);
-            QueueTryPushIn(in builder, in currentType, in sizeOf, in queueNamespace);
-            QueueTryPushInPtr(in builder, in currentType, in sizeOf, in queueNamespace);
+            QueuePrimitiveProperties<T>();
 
-            QueuePop(in builder, in queueNamespace);
-            QueueTryPop(in builder, in queueNamespace);
+            QueuePrimitiveReducingCapacity<T>(in sizeOfStr, in queueNamespace);
+            QueuePrimitiveExpandCapacity<T>(in sizeOfStr, in queueNamespace);
+            QueuePrimitiveTryExpandCapacity<T>(in sizeOfStr, in queueNamespace);
+            QueuePrimitiveTrimExcess();
 
-            QueueClear(in builder, in queueNamespace);
+            QueuePrimitivePushIn<T>(in queueNamespace);
+            QueuePrimitivePushFuture(in queueNamespace);
+            QueuePrimitivePushInPtr<T>(in queueNamespace);
+            QueuePrimitiveTryPushIn<T>(in queueNamespace);
+            QueuePrimitiveTryPushInPtr<T>(in queueNamespace);
 
-            QueueFront(in builder, in typeInfo, in sizeOf);
-            QueueBack(in builder, in typeInfo, in sizeOf);
+            QueuePrimitivePop(in queueNamespace);
+            QueuePrimitiveTryPop(in queueNamespace);
 
-            QueueFrontInPtr(in builder, in currentType, in sizeOf);
-            QueueBackInPtr(in builder, in currentType, in sizeOf);
+            QueuePrimitiveClear(in queueNamespace);
 
-            QueueFrontRefValue(in builder, in currentType, in sizeOf);
-            QueueBackRefValue(in builder, in currentType, in sizeOf);
+            QueuePrimitiveFront<T>();
+            QueuePrimitiveBack<T>();
 
-            QueueFrontPtr(in builder, in sizeOf);
-            QueueBackPtr(in builder, in sizeOf);
+            QueuePrimitiveFrontInPtr<T>();
+            QueuePrimitiveBackInPtr<T>();
 
-            QueueBackFuture(in builder, in sizeOf);
+            QueuePrimitiveFrontRefValue<T>();
+            QueuePrimitiveBackRefValue<T>();
 
-            QueueFrontOutValue(in builder, in currentType, in sizeOf);
-            QueueBackOutValue(in builder, in currentType, in sizeOf);
+            QueuePrimitiveFrontPtr<T>();
+            QueuePrimitiveBackPtr<T>();
 
-            QueueDispose(in builder, in currentType, in queueNamespace, in sizeOf);
-            QueueIndexator(in builder, in sizeOf);
-            QueueCopyCount(in builder, in sizeOf);
-            QueueCopy(in builder, in sizeOf);
-            QueueCopyInQueue(in builder, in currentType, in sizeOf);
+            QueuePrimitiveBackFuture<T>();
 
-            QueueSetPositions(in builder);
-            QueueGetPositions(in builder);
+            QueuePrimitiveFrontOutValue<T>();
+            QueuePrimitiveBackOutValue<T>();
+
+            QueuePrimitiveDispose<T>(in queueNamespace, in sizeOfStr);
+            QueuePrimitiveIndexator<T>();
+            QueuePrimitiveCopyCount<T>(in sizeOfStr);
+            QueuePrimitiveCopy<T>(in sizeOfStr);
+            QueuePrimitiveCopyInQueue<T>(in sizeOfStr);
+
+            QueuePrimitiveSetPositions();
+            QueuePrimitiveGetPositions();
 
             if (queueNamespace == "Class")
             {
-                QueueIEnumerable(in builder, in currentType, in sizeOf);
+                QueuePrimitiveIEnumerable<T>();
             }
 
-            QueueEnd(in builder);
+            QueuePrimitiveEnd();
 
-            context.AddSource($"QueueOf{currentType.Name}{queueNamespace}.g.cs", builder.ToString());
+            context.AddSource($"QueueOf{typeof(T).Name}{queueNamespace}.g.cs", _builder.ToString());
         }
 
-        private void QueueStart(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
+        private void QueuePrimitiveStart<T>(
             in string queueNamespace
-            )
+            ) where T : unmanaged
         {
             string implements;
             if (queueNamespace == "Class")
             {
-                implements = $"IDisposable, System.Collections.Generic.IEnumerable<{currentType.Name}>";
+                implements = $"IDisposable, System.Collections.Generic.IEnumerable<{typeof(T).Name}>";
             }
             else
             {
                 implements = $"IDisposable";
             }
 
-            builder.Append($@"
-/*
-{Resource.License}
-*/
-
+            _builder.Append($@"
 using System;
 using System.Collections;
-using {currentType.ContainingNamespace};
 using System.Runtime.CompilerServices;
 
-namespace {currentType.ContainingNamespace}.{queueNamespace}
+namespace StackMemoryCollections.{queueNamespace}
 {{
-    public unsafe {queueNamespace.ToLowerInvariant()} QueueOf{currentType.Name} : {implements}
+    public unsafe {queueNamespace.ToLowerInvariant()} QueueOf{typeof(T).Name} : {implements}
     {{
         private readonly StackMemoryCollections.Struct.StackMemory* _stackMemoryS;
         private StackMemoryCollections.Class.StackMemory _stackMemoryC = null;
-        private void* _start;
+        private {typeof(T).Name}* _start;
         private readonly bool _memoryOwner = false;
         private nuint _head = 0;
         private nuint _tail = 0;
 ");
             if (queueNamespace == "Class")
             {
-                builder.Append($@"
+                _builder.Append($@"
         private int _version = 0;
 ");
             }
         }
 
-        private void QueueConstructor1(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf
-            )
+        private void QueuePrimitiveConstructor1<T>(
+            in int sizeOf,
+            in string sizeOfStr,
+            in bool calculateSize
+            ) where T : unmanaged
         {
-            builder.Append($@"
-        public QueueOf{currentType.Name}()
+            _builder.Append($@"
+        public QueueOf{typeof(T).Name}()
         {{
-            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({sizeOf} * 4);
-            _start = _stackMemoryC.Start;
+            _stackMemoryC = new StackMemoryCollections.Class.StackMemory({(calculateSize ? $"{sizeOfStr} * 4" : (sizeOf * 4).ToString())});
+            _start = ({typeof(T).Name}*)_stackMemoryC.Start;
             Capacity = 4;
             _memoryOwner = true;
             _stackMemoryS = null;
@@ -161,14 +172,12 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueConstructor2(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
+        private void QueuePrimitiveConstructor2<T>(
             in string sizeOf
-            )
+            ) where T : unmanaged
         {
-            builder.Append($@"
-        public QueueOf{currentType.Name}(
+            _builder.Append($@"
+        public QueueOf{typeof(T).Name}(
             nuint count,
             StackMemoryCollections.Struct.StackMemory* stackMemory
             )
@@ -178,21 +187,19 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory->AllocateMemory({sizeOf} * count);
+            _start = ({typeof(T).Name}*)stackMemory->AllocateMemory({sizeOf} * count);
             _stackMemoryS = stackMemory;
             Capacity = count;
         }}
 ");
         }
 
-        private void QueueConstructor3(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
+        private void QueuePrimitiveConstructor3<T>(
             in string sizeOf
-            )
+            ) where T : unmanaged
         {
-            builder.Append($@"
-        public QueueOf{currentType.Name}(
+            _builder.Append($@"
+        public QueueOf{typeof(T).Name}(
             nuint count,
             StackMemoryCollections.Class.StackMemory stackMemory
             )
@@ -202,7 +209,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 throw new ArgumentNullException(nameof(stackMemory));
             }}
 
-            _start = stackMemory.AllocateMemory({sizeOf} * count);
+            _start = ({typeof(T).Name}*)stackMemory.AllocateMemory({sizeOf} * count);
             _stackMemoryC = stackMemory;
             _stackMemoryS = null;
             Capacity = count;
@@ -210,15 +217,12 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueConstructor4(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType
-            )
+        private void QueuePrimitiveConstructor4<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public QueueOf{currentType.Name}(
+            _builder.Append($@"
+        public QueueOf{typeof(T).Name}(
             nuint count,
-            void* memoryStart
+            {typeof(T).Name}* memoryStart
             )
         {{
             if (memoryStart == null)
@@ -233,35 +237,31 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueProperties(
-            in StringBuilder builder
-            )
+        private void QueuePrimitiveProperties<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public nuint Capacity {{ get; private set; }}
 
         public nuint Size {{ get; private set; }} = 0;
 
         public bool IsEmpty => Size == 0;
 
-        public void* Start => _start;
+        public {typeof(T).Name}* Start => _start;
 ");
         }
 
-        private void QueueReducingCapacity(
-            in StringBuilder builder,
+        private void QueuePrimitiveReducingCapacity<T>(
             in string sizeOf,
-            in INamedTypeSymbol currentType,
             in string queueNamespace
-            )
+            ) where T : unmanaged
         {
             var incrementVersion = queueNamespace == "Class" ?
                 @"
                 _version += 1;
 "
-: 
+:
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void ReducingCapacity(in nuint reducingCount)
         {{
             if (reducingCount <= 0)
@@ -315,7 +315,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
                 _stackMemoryC = newMemory;
-                _start = _stackMemoryC.Start;{incrementVersion}
+                _start = ({typeof(T).Name}*)_stackMemoryC.Start;{incrementVersion}
             }}
             else if (_stackMemoryS != null)
             {{
@@ -332,11 +332,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 else
                 if(_head > _tail)
                 {{
-                    _stackMemoryS->ShiftLeft(
-                        (byte*)_start + (_head * {sizeOf}),
-                        (byte*)_start + (Capacity * {sizeOf}),
-                        (long)(reducingCount * {sizeOf})
-                        );
+                    _stackMemoryS->ShiftLeft((byte*)(_start + _head), (byte*)(_start + (Capacity)), (long)(reducingCount * {sizeOf}));
                     _head -= reducingCount;{incrementVersion}
                 }}
                 else
@@ -344,25 +340,22 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 {{
                     if(Size == 1)
                     {{
-                        {currentType.Name}Helper.Copy((byte*)_start + (_tail * {sizeOf}), (byte*)_start);
+                        *(_start) = *(_start + _tail);
                         _tail = 0;
                         _head = 0;
-                        }}
+                    }}
                     else
                     {{
                         var freeCountToEnd = Capacity - (_tail + 1);
                         if(freeCountToEnd == 0 || freeCountToEnd < reducingCount)
                         {{
-                            _stackMemoryS->ShiftLeft(
-                                (byte*)_start + (_head * {sizeOf}),
-                                (byte*)_start + ((_tail + 1) * {sizeOf}),
-                                (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf})
-                                );
+                            _stackMemoryS->ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
                             _head = 0;
                             _tail = Size - 1;{incrementVersion}
                         }}
                     }}
-                }}    
+                }}
+                    
                 _stackMemoryS->FreeMemory(reducingCount * {sizeOf});
             }}
             else if (_stackMemoryC != null)
@@ -380,11 +373,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 else
                 if(_head > _tail)
                 {{
-                    _stackMemoryC.ShiftLeft(
-                        (byte*)_start + (_head * {sizeOf}),
-                        (byte*)_start + (Capacity * {sizeOf}),
-                        (long)(reducingCount * {sizeOf})
-                        );
+                    _stackMemoryC.ShiftLeft((byte*)(_start + _head), (byte*)(_start + (Capacity * {sizeOf})), (long)(reducingCount * {sizeOf}));
                     _head -= reducingCount;{incrementVersion}
                 }}
                 else
@@ -392,7 +381,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 {{
                     if(Size == 1)
                     {{
-                        {currentType.Name}Helper.Copy((byte*)_start + (_tail * {sizeOf}), (byte*)_start);
+                        *(_start) = *(_start + _tail);
                         _tail = 0;
                         _head = 0;
                     }}
@@ -401,16 +390,13 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                         var freeCountToEnd = Capacity - (_tail + 1);
                         if(freeCountToEnd == 0 || freeCountToEnd < reducingCount)
                         {{
-                            _stackMemoryC.ShiftLeft(
-                                (byte*)_start + (_head * {sizeOf}),
-                                (byte*)_start + ((_tail + 1) * {sizeOf}),
-                                (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf})
-                                );
+                            _stackMemoryC.ShiftLeft((byte*)(_start + _head), (byte*)(_start + (_tail + 1)), (long)((Capacity - freeCountToEnd - ((_tail + 1) - _head)) * {sizeOf}));
                             _head = 0;
                             _tail = Size - 1;{incrementVersion}
                         }}
                     }}
                 }}                    
+
                 _stackMemoryC.FreeMemory(reducingCount * {sizeOf});
             }}
 
@@ -419,11 +405,10 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueExpandCapacity(
-            in StringBuilder builder,
+        private void QueuePrimitiveExpandCapacity<T>(
             in string sizeOf,
             in string queueNamespace
-            )
+            ) where T : unmanaged
         {
             var incrementVersion = queueNamespace == "Class" ?
                 @"
@@ -431,7 +416,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void ExpandCapacity(in nuint expandCount)
         {{
             if (_memoryOwner)
@@ -475,7 +460,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
                 _stackMemoryC = newMemory;
-                _start = _stackMemoryC.Start;{incrementVersion}
+                _start = ({typeof(T).Name}*)_stackMemoryC.Start;{incrementVersion}
             }}
             else if (_stackMemoryS != null)
             {{
@@ -487,11 +472,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 _stackMemoryS->AllocateMemory(expandCount * {sizeOf});
                 if(Size != 0 && _head != 0 && _head > _tail)
                 {{
-                    _stackMemoryS->ShiftRight(
-                        (byte*)_start + (_head * {sizeOf}),
-                        (byte*)_start + ((_head + (Capacity - _head)) * {sizeOf}),
-                        (long)(expandCount * {sizeOf})
-                        );{incrementVersion}
+                    _stackMemoryS->ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
                     _head += expandCount;
                 }}
             }}
@@ -505,11 +486,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 _stackMemoryC.AllocateMemory(expandCount * {sizeOf});
                 if (Size != 0 && _head != 0 && _head > _tail)
                 {{
-                    _stackMemoryC.ShiftRight(
-                        (byte*)_start + (_head * {sizeOf}),
-                        (byte*)_start + ((_head + (Capacity - _head)) * {sizeOf}),
-                        (long)(expandCount * {sizeOf})
-                        );{incrementVersion}
+                    _stackMemoryC.ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
                     _head += expandCount;
                 }}
             }}
@@ -519,11 +496,10 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueTryExpandCapacity(
-            in StringBuilder builder,
+        private void QueuePrimitiveTryExpandCapacity<T>(
             in string sizeOf,
             in string queueNamespace
-            )
+            ) where T : unmanaged
         {
             var incrementVersion = queueNamespace == "Class" ?
                 @"
@@ -531,7 +507,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public bool TryExpandCapacity(in nuint expandCount)
         {{
             if (_memoryOwner)
@@ -575,7 +551,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 _stackMemoryC.Dispose();
                 _stackMemoryC = newMemory;
-                _start = _stackMemoryC.Start;{incrementVersion}
+                _start = ({typeof(T).Name}*)_stackMemoryC.Start;{incrementVersion}
             }}
             else if (_stackMemoryS != null)
             {{
@@ -591,11 +567,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 
                 if(Size != 0 && _head != 0 && _head > _tail)
                 {{
-                    _stackMemoryS->ShiftRight(
-                        (byte*)_start + (_head * {sizeOf}),
-                        (byte*)_start + ((_head + (Capacity - _head)) * {sizeOf}),
-                        (long)(expandCount * {sizeOf})
-                        );{incrementVersion}
+                    _stackMemoryS->ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
                     _head += expandCount;
                 }}
             }}
@@ -613,11 +585,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                     
                 if (Size != 0 && _head != 0 && _head > _tail)
                 {{
-                    _stackMemoryC.ShiftRight(
-                        (byte*)_start + (_head * {sizeOf}),
-                        (byte*)_start + ((_head + (Capacity - _head)) * {sizeOf}),
-                        (long)(expandCount * {sizeOf})
-                        );{incrementVersion}
+                    _stackMemoryC.ShiftRight((byte*)(_start + _head), (byte*)(_start + (_head + (Capacity - _head))), (long)(expandCount * {sizeOf}));{incrementVersion}
                     _head += expandCount;
                 }}
             }}
@@ -628,11 +596,9 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueTrimExcess(
-            in StringBuilder builder
-            )
+        private void QueuePrimitiveTrimExcess()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void TrimExcess()
         {{
             if (_memoryOwner)
@@ -652,12 +618,9 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueuePushIn(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf,
+        private void QueuePrimitivePushIn<T>(
             in string queueNamespace
-            )
+            ) where T : unmanaged
         {
             var incrementVersion = queueNamespace == "Class" ?
                 @"
@@ -665,8 +628,8 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 "
 :
 "";
-            builder.Append($@"
-        public void Push(in {currentType.Name} item)
+            _builder.Append($@"
+        public void Push(in {typeof(T).Name} item)
         {{
             if(Size == Capacity)
             {{
@@ -675,18 +638,18 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 
             if(Size == 0)
             {{
-                {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (_tail * {sizeOf}));
+                *(_start + _tail) = item;
             }}
             else
             {{
                 if (++_tail == Capacity)
                 {{
                     _tail = 0;
-                    {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start);
+                    *(_start) = item;
                 }}
                 else
                 {{
-                    {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (_tail * {sizeOf}));
+                    *(_start + _tail) = item;
                 }}
             }}
 
@@ -695,8 +658,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueuePushFuture(
-            in StringBuilder builder,
+        private void QueuePrimitivePushFuture(
             in string queueNamespace
             )
         {
@@ -706,7 +668,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void PushFuture()
         {{
             if(Size == Capacity)
@@ -727,12 +689,9 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueuePushInPtr(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf,
+        private void QueuePrimitivePushInPtr<T>(
             in string queueNamespace
-            )
+            ) where T : unmanaged
         {
             var incrementVersion = queueNamespace == "Class" ?
     @"
@@ -740,8 +699,8 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 "
 :
 "";
-            builder.Append($@"
-        public void Push(in void* ptr)
+            _builder.Append($@"
+        public void Push(in {typeof(T).Name}* ptr)
         {{
             if(Size == Capacity)
             {{
@@ -750,18 +709,18 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 
             if(Size == 0)
             {{
-                {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (_tail * {sizeOf}));
+                *(_start + _tail) = *ptr;
             }}
             else
             {{
                 if (++_tail == Capacity)
                 {{
                     _tail = 0;
-                    {currentType.Name}Helper.Copy(in ptr, (byte*)_start);
+                    *(_start) = *ptr;
                 }}
                 else
                 {{
-                    {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (_tail * {sizeOf}));
+                    *(_start + _tail) = *ptr;
                 }}
             }}
 
@@ -770,12 +729,9 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueTryPushIn(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf,
+        private void QueuePrimitiveTryPushIn<T>(
             in string queueNamespace
-            )
+            ) where T : unmanaged
         {
             var incrementVersion = queueNamespace == "Class" ?
                 @"
@@ -783,8 +739,8 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 "
 :
 "";
-            builder.Append($@"
-        public bool TryPush(in {currentType.Name} item)
+            _builder.Append($@"
+        public bool TryPush(in {typeof(T).Name} item)
         {{
             if(Size == Capacity)
             {{
@@ -796,19 +752,19 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 
             if(Size == 0)
             {{
-                {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (_tail * {sizeOf}));
+                *(_start + _tail) = item;
             }}
             else
             {{
                 if (_tail == Capacity - 1)
                 {{
                     _tail = 0;
-                    {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start);
+                    *(_start) = item;
                 }}
                 else
                 {{
                     _tail += 1;
-                    {currentType.Name}Helper.CopyToPtr(in item, (byte*)_start + (_tail * {sizeOf}));
+                    *(_start + _tail) = item;
                 }}
             }}
 
@@ -818,12 +774,9 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueTryPushInPtr(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf,
+        private void QueuePrimitiveTryPushInPtr<T>(
             in string queueNamespace
-            )
+            ) where T : unmanaged
         {
             var incrementVersion = queueNamespace == "Class" ?
                 @"
@@ -831,8 +784,8 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 "
 :
 "";
-            builder.Append($@"
-        public bool TryPush(in void* ptr)
+            _builder.Append($@"
+        public bool TryPush(in {typeof(T).Name}* ptr)
         {{
             if(Size == Capacity)
             {{
@@ -844,19 +797,19 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 
             if(Size == 0)
             {{
-                {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (_tail * {sizeOf}));
+                *(_start + _tail) = *ptr;
             }}
             else
             {{
                 if (_tail == Capacity - 1)
                 {{
                     _tail = 0;
-                    {currentType.Name}Helper.Copy(in ptr, (byte*)_start);
+                    *(_start) = *ptr;
                 }}
                 else
                 {{
                     _tail += 1;
-                    {currentType.Name}Helper.Copy(in ptr, (byte*)_start + (_tail * {sizeOf}));
+                    *(_start + _tail) = *ptr;
                 }}
             }}
 
@@ -866,8 +819,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueuePop(
-            in StringBuilder builder,
+        private void QueuePrimitivePop(
             in string queueNamespace
             )
         {
@@ -877,10 +829,10 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Pop()
         {{
-            if (Size == 0)
+            if (Size <= 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
@@ -899,8 +851,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueTryPop(
-            in StringBuilder builder,
+        private void QueuePrimitiveTryPop(
             in string queueNamespace
             )
         {
@@ -910,10 +861,10 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public bool TryPop()
         {{
-            if (Size == 0)
+            if (Size <= 0)
             {{
                 return false;
             }}
@@ -934,8 +885,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueClear(
-            in StringBuilder builder,
+        private void QueuePrimitiveClear(
             in string queueNamespace
             )
         {
@@ -945,7 +895,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Clear()
         {{
             if (Size != 0)
@@ -958,99 +908,41 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueFront(
-            in StringBuilder builder,
-            in TypeInfo typeInfo,
-            in string sizeOf
-            )
+        private void QueuePrimitiveFront<T>(
+            ) where T : unmanaged
         {
-            if(typeInfo.IsValueType)
-            {
-                builder.Append($@"
-        [SkipLocalsInit]
-        public {typeInfo.TypeName} Front()
+            _builder.Append($@"
+        public {typeof(T).Name} Front()
         {{
             if (Size == 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
 
-            {typeInfo.TypeName} result;
-            Unsafe.SkipInit(out result);
-            {typeInfo.TypeName}Helper.CopyToValue((byte*)_start + (_head * {sizeOf}), ref result);
-
-            return result;
+            return *(_start + _head);
         }}
 ");
-            }
-            else
-            {
-                builder.Append($@"
-        public {typeInfo.TypeName} Front()
-        {{
-            if (Size == 0)
-            {{
-                throw new Exception(""There are no elements on the queue"");
-            }}
-
-            {typeInfo.TypeName} result = new {typeInfo.TypeName}();
-            {typeInfo.TypeName}Helper.CopyToValue((byte*)_start + (_head * {sizeOf}), ref result);
-            return result;
-        }}
-");
-            }
         }
 
-        private void QueueBack(
-            in StringBuilder builder,
-            in TypeInfo typeInfo,
-            in string sizeOf
-            )
+        private void QueuePrimitiveBack<T>() where T : unmanaged
         {
-            if (typeInfo.IsValueType)
-            {
-                builder.Append($@"
-        [SkipLocalsInit]
-        public {typeInfo.TypeName} Back()
+            _builder.Append($@"
+        public {typeof(T).Name} Back()
         {{
             if (Size == 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
 
-            {typeInfo.TypeName} result;
-            Unsafe.SkipInit(out result);
-            {typeInfo.TypeName}Helper.CopyToValue((byte*)_start + (_tail * {sizeOf}), ref result);
-
-            return result;
+            return *(_start + _tail);
         }}
 ");
-            }
-            else
-            {
-                builder.Append($@"
-        public {typeInfo.TypeName} Back()
-        {{
-            if (Size == 0)
-            {{
-                throw new Exception(""There are no elements on the queue"");
-            }}
-
-            {typeInfo.TypeName} result = new {typeInfo.TypeName}();
-            {typeInfo.TypeName}Helper.CopyToValue((byte*)_start + (_tail * {sizeOf}), ref result);
-            return result;
-        }}
-");
-            }
         }
 
-        private void QueueBackFuture(
-            in StringBuilder builder,
-            in string sizeOf
-            )
+        private void QueuePrimitiveBackFuture<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public void* BackFuture()
+            _builder.Append($@"
+        public {typeof(T).Name}* BackFuture()
         {{
             if (Capacity == 0 || Size == Capacity)
             {{
@@ -1066,189 +958,157 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 }}
                 else
                 {{
-                    return (byte*)_start + (tempTail * {sizeOf});
+                    return _start + tempTail;
                 }}
             }}
             else
             {{
                 if(Size == 0)
                 {{
-                    return (byte*)_start + (_tail * {sizeOf});
+                    return _start + _tail;
                 }}
                 else
                 {{
-                    return (byte*)_start + ((_tail + 1) * {sizeOf});
+                    return _start + _tail + 1;
                 }}
             }}
         }}
 ");
         }
 
-        private void QueueFrontInPtr(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf
-            )
+        private void QueuePrimitiveFrontInPtr<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public void Front(in void* ptr)
+            _builder.Append($@"
+        public void Front(in {typeof(T).Name}* ptr)
         {{
             if (Size == 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
 
-            {currentType.Name}Helper.Copy((byte*)_start + (_head * {sizeOf}), in ptr);
+            *ptr = *(_start + _head);
         }}
 ");
         }
 
-        private void QueueBackInPtr(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf
-            )
+        private void QueuePrimitiveBackInPtr<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public void Back(in void* ptr)
+            _builder.Append($@"
+        public void Back(in {typeof(T).Name}* ptr)
         {{
             if (Size == 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
 
-            {currentType.Name}Helper.Copy((byte*)_start + (_tail * {sizeOf}), in ptr);
+            *ptr = *(_start + _tail);
         }}
 ");
         }
 
-        private void QueueFrontRefValue(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf
-            )
+        private void QueuePrimitiveFrontRefValue<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public void Front(ref {currentType.Name} item)
+            _builder.Append($@"
+        public void Front(ref {typeof(T).Name} item)
         {{
             if (Size == 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
 
-            {currentType.Name}Helper.CopyToValue((byte*)_start + (_head * {sizeOf}), ref item);
+            item = *(_start + _head);
         }}
 ");
         }
 
-        private void QueueBackRefValue(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf
-            )
+        private void QueuePrimitiveBackRefValue<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public void Back(ref {currentType.Name} item)
+            _builder.Append($@"
+        public void Back(ref {typeof(T).Name} item)
         {{
             if (Size == 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
 
-            {currentType.Name}Helper.CopyToValue((byte*)_start + (_tail * {sizeOf}), ref item);
+            item = *(_start + _tail);
         }}
 ");
         }
 
-        private void QueueFrontOutValue(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf
-            )
+        private void QueuePrimitiveFrontOutValue<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public void FrontOut(out {currentType.Name} item)
+            _builder.Append($@"
+        public void FrontOut(out {typeof(T).Name} item)
         {{
             if (Size == 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
 
-            {currentType.Name}Helper.CopyToValueOut((byte*)_start + (_head * {sizeOf}), out item);
+            item = *(_start + _head);
         }}
 ");
         }
 
-        private void QueueBackOutValue(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf
-            )
+        private void QueuePrimitiveBackOutValue<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public void BackOut(out {currentType.Name} item)
+            _builder.Append($@"
+        public void BackOut(out {typeof(T).Name} item)
         {{
             if (Size == 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
 
-            {currentType.Name}Helper.CopyToValueOut((byte*)_start + (_tail * {sizeOf}), out item);
+            item = *(_start + _tail);
         }}
 ");
         }
 
-        private void QueueFrontPtr(
-            in StringBuilder builder,
-            in string sizeOf
-            )
+        private void QueuePrimitiveFrontPtr<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public void* FrontPtr()
+            _builder.Append($@"
+        public {typeof(T).Name}* FrontPtr()
         {{
             if (Size == 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
 
-            return (byte*)_start + (_head * {sizeOf});
+            return _start + _head;
         }}
 ");
         }
 
-        private void QueueBackPtr(
-            in StringBuilder builder,
-            in string sizeOf
-            )
+        private void QueuePrimitiveBackPtr<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public void* BackPtr()
+            _builder.Append($@"
+        public {typeof(T).Name}* BackPtr()
         {{
             if (Size == 0)
             {{
                 throw new Exception(""There are no elements on the queue"");
             }}
 
-            return (byte*)_start + (_tail * {sizeOf});
+            return _start + _tail;
         }}
 ");
         }
 
-        private void QueueDispose(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
+        private void QueuePrimitiveDispose<T>(
             in string queueNamespace,
             in string sizeOf
-            )
+            ) where T : unmanaged
         {
-            if(queueNamespace == "Class")
+            if (queueNamespace == "Class")
             {
-                builder.Append($@"
+                _builder.Append($@"
         #region IDisposable
 
         private bool _disposed;
 
-        ~QueueOf{currentType.Name}() => Dispose(false);
+        ~QueueOf{typeof(T).Name}() => Dispose(false);
 
         public void Dispose()
         {{
@@ -1290,7 +1150,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
             }
             else
             {
-                builder.Append($@"
+                _builder.Append($@"
         public void Dispose()
         {{
             if(!_memoryOwner)
@@ -1316,16 +1176,12 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
             }
         }
 
-        private void QueueIEnumerable(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
-            in string sizeOf
-            )
+        private void QueuePrimitiveIEnumerable<T>() where T : unmanaged
         {
-            builder.Append($@"
-        #region IEnumerable<{currentType.Name}>
+            _builder.Append($@"
+        #region IEnumerable<{typeof(T).Name}>
 
-        public System.Collections.Generic.IEnumerator<{currentType.Name}> GetEnumerator()
+        public System.Collections.Generic.IEnumerator<{typeof(T).Name}> GetEnumerator()
         {{
             return new Enumerator(this);
         }}
@@ -1335,15 +1191,15 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
             return new Enumerator(this);
         }}
 
-        public struct Enumerator : System.Collections.Generic.IEnumerator<{currentType.Name}>, System.Collections.IEnumerator
+        public struct Enumerator : System.Collections.Generic.IEnumerator<{typeof(T).Name}>, System.Collections.IEnumerator
         {{
-            private readonly Class.QueueOf{currentType.Name} _queue;
-            private void* _current;
+            private readonly Class.QueueOf{typeof(T).Name} _queue;
+            private {typeof(T).Name}* _current;
             private int _currentIndex;
             private int _currentItem = 0;
             private int _version;
 
-            internal Enumerator(Class.QueueOf{currentType.Name} queue)
+            internal Enumerator(Class.QueueOf{typeof(T).Name} queue)
             {{
                 _queue = queue;
                 _currentIndex = -1;
@@ -1351,15 +1207,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 _version = _queue._version;
             }}
 
-            public {currentType.Name} Current 
-            {{
-                get
-                {{
-                    {currentType.Name} result = new {currentType.Name}();
-                    {currentType.Name}Helper.CopyToValue(_current, ref result);
-                    return result;
-                }}
-            }}
+            public {typeof(T).Name} Current => *_current;
 
             object System.Collections.IEnumerator.Current => Current;
 
@@ -1383,7 +1231,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 if (_currentIndex == -2)
                 {{
                     _currentIndex = (int)_queue._head;
-                    _current = (byte*)_queue._start + (_currentIndex * (int){sizeOf});
+                    _current = _queue._start + _currentIndex;
                     _currentItem = 1;
                     return true;
                 }}
@@ -1404,7 +1252,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                     _currentIndex = 0;
                 }}
 
-                _current = (byte*)_queue._start + (_currentIndex * (int){sizeOf});
+                _current = _queue._start + _currentIndex;
                 return true;
             }}
 
@@ -1418,13 +1266,10 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueIndexator(
-            in StringBuilder builder,
-            in string sizeOf
-            )
+        private void QueuePrimitiveIndexator<T>() where T : unmanaged
         {
-            builder.Append($@"
-        public void* this[nuint index]
+            _builder.Append($@"
+        public {typeof(T).Name}* this[nuint index]
         {{
             get
             {{
@@ -1435,23 +1280,20 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 
                 if(_head > _tail)
                 {{
-                    return (byte*)_start + ((index - (Capacity - _head)) * {sizeOf});
+                    return _start + (index - (Capacity - _head));
                 }}
                 else
                 {{
-                    return (byte*)_start + ((_head + index) * {sizeOf});
+                    return _start + _head + index;
                 }}
             }}
         }}
 ");
         }
 
-        private void QueueCopy(
-            in StringBuilder builder,
-            in string sizeOf
-            )
+        private void QueuePrimitiveCopy<T>(in string sizeOf) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Copy(in void* ptrDest, in nuint count)
         {{
             if(Size < (nuint)count)
@@ -1465,7 +1307,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 if(countToEnd <= count)
                 {{
                     Buffer.MemoryCopy(
-                        (byte*)_start + (_head * {sizeOf}),
+                        _start + _head,
                         ptrDest,
                         count * (nuint){sizeOf},
                         (countToEnd) * (nuint){sizeOf}
@@ -1474,7 +1316,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
                 else
                 {{
                     Buffer.MemoryCopy(
-                        (byte*)_start + (_head * {sizeOf}),
+                        _start + _head,
                         ptrDest,
                         count * (nuint){sizeOf},
                         countToEnd * (nuint){sizeOf}
@@ -1491,7 +1333,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
             else
             {{
                 Buffer.MemoryCopy(
-                    (byte*)_start + (_head * {sizeOf}),
+                    _start + _head,
                     ptrDest,
                     count * (nuint){sizeOf},
                     count * (nuint){sizeOf}
@@ -1501,12 +1343,11 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueCopyCount(
-            in StringBuilder builder,
+        private void QueuePrimitiveCopyCount<T>(
             in string sizeOf
-            )
+            ) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Copy(in void* ptrDest)
         {{
             if(Size == 0)
@@ -1518,7 +1359,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
             {{
                 var countToEnd = (Capacity - (nuint)_head);
                 Buffer.MemoryCopy(
-                    (byte*)_start + (_head * {sizeOf}),
+                    _start + _head,
                     ptrDest,
                     Size * (nuint){sizeOf},
                     countToEnd * (nuint){sizeOf}
@@ -1534,7 +1375,7 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
             else
             {{
                 Buffer.MemoryCopy(
-                    (byte*)_start + (_head * {sizeOf}),
+                    _start + _head,
                     ptrDest,
                     Size * (nuint){sizeOf},
                     Size * (nuint){sizeOf}
@@ -1544,14 +1385,12 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueCopyInQueue(
-            in StringBuilder builder,
-            in INamedTypeSymbol currentType,
+        private void QueuePrimitiveCopyInQueue<T>(
             in string sizeOf
-            )
+            ) where T : unmanaged
         {
-            builder.Append($@"
-        public void Copy(in Class.QueueOf{currentType.Name} destQueue)
+            _builder.Append($@"
+        public void Copy(in Class.QueueOf{typeof(T).Name} destQueue)
         {{
             if(Size == 0)
             {{
@@ -1576,11 +1415,9 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueSetPositions(
-            in StringBuilder builder
-            )
+        private void QueuePrimitiveSetPositions()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void SetPositions(in nuint headIndex, in nuint tailIndex, in nuint size)
         {{
             _head = headIndex;
@@ -1590,11 +1427,9 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueGetPositions(
-            in StringBuilder builder
-            )
+        private void QueuePrimitiveGetPositions()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void GetPositions(out nuint headIndex, out nuint tailIndex, out nuint size)
         {{
             headIndex = _head;
@@ -1604,11 +1439,9 @@ namespace {currentType.ContainingNamespace}.{queueNamespace}
 ");
         }
 
-        private void QueueEnd(
-            in StringBuilder builder
-            )
+        private void QueuePrimitiveEnd()
         {
-            builder.Append($@"
+            _builder.Append($@"
     }}
 }}
 ");

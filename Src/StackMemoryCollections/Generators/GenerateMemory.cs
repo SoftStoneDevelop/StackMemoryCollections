@@ -1,50 +1,48 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
 using System.Text;
 
 namespace StackMemoryCollections
 {
-    public partial class Generator
+    internal class MemoryGenerator
     {
-        private void GenerateMemory(
-            in GeneratorExecutionContext context,
-            in StringBuilder builder
+        private readonly StringBuilder _builder = new StringBuilder();
+
+        public void GenerateMemory(
+            in GeneratorExecutionContext context
             )
         {
-            GenerateMemory(in context, in builder, "Class");
-            GenerateMemory(in context, in builder, "Struct");
+            GenerateMemory(in context, "Class");
+            GenerateMemory(in context, "Struct");
         }
 
         private void GenerateMemory(
             in GeneratorExecutionContext context,
-            in StringBuilder builder,
             in string memoryNamespace
             )
         {
-            builder.Clear();
-            MemoryStart(in builder, in memoryNamespace);
+            _builder.Clear();
+            MemoryStart(in memoryNamespace);
 
-            MemoryConstructor1(in builder, in memoryNamespace);
-            MemoryConstructor2(in builder);
-            MemoryProperties(in builder);
-            MemoryAllocateMemory(in builder);
-            MemoryTryAllocateMemory(in builder);
-            MemoryShiftRight(in builder);
-            MemoryShiftLeft(in builder);
-            MemoryFreeMemory(in builder);
-            MemoryTryFreeMemory(in builder);
-            MemoryDispose(in builder, in memoryNamespace);
+            MemoryConstructor1(in memoryNamespace);
+            MemoryConstructor2();
+            MemoryProperties();
+            MemoryAllocateMemory();
+            MemoryTryAllocateMemory();
+            MemoryShiftRight();
+            MemoryShiftLeft();
+            MemoryFreeMemory();
+            MemoryTryFreeMemory();
+            MemoryDispose(in memoryNamespace);
 
-            MemoryEnd(in builder);
-            context.AddSource($"StackMemory{memoryNamespace}.g.cs", builder.ToString());
+            MemoryEnd();
+            context.AddSource($"StackMemory{memoryNamespace}.g.cs", _builder.ToString());
         }
 
         private void MemoryStart(
-            in StringBuilder builder,
             in string memoryNamespace
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
 using System;
 using System.Runtime.InteropServices;
 
@@ -56,7 +54,6 @@ namespace StackMemoryCollections.{memoryNamespace}
         }
 
         private void MemoryConstructor1(
-            in StringBuilder builder,
             in string memoryNamespace
             )
         {
@@ -65,7 +62,7 @@ namespace StackMemoryCollections.{memoryNamespace}
                 return;
             }
 
-            builder.Append($@"
+            _builder.Append($@"
         public StackMemory()
         {{
             throw new Exception(""Constructor without parameters is not supported"");
@@ -73,11 +70,9 @@ namespace StackMemoryCollections.{memoryNamespace}
 ");
         }
 
-        private void MemoryConstructor2(
-            in StringBuilder builder
-            )
+        private void MemoryConstructor2()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public StackMemory(nuint byteCount)
         {{
             if(byteCount == 0)
@@ -94,11 +89,9 @@ namespace StackMemoryCollections.{memoryNamespace}
 ");
         }
 
-        private void MemoryProperties(
-            in StringBuilder builder
-            )
+        private void MemoryProperties()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void* Start {{ get; init; }}
         public void* Current {{ get; private set; }}
         public nuint ByteCount {{ get; init; }}
@@ -106,11 +99,9 @@ namespace StackMemoryCollections.{memoryNamespace}
 ");
         }
 
-        private void MemoryAllocateMemory(
-            in StringBuilder builder
-            )
+        private void MemoryAllocateMemory()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void* AllocateMemory(nuint allocateBytes)
         {{
             if (_disposed)
@@ -131,11 +122,9 @@ namespace StackMemoryCollections.{memoryNamespace}
 ");
         }
 
-        private void MemoryTryAllocateMemory(
-            in StringBuilder builder
-            )
+        private void MemoryTryAllocateMemory()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public bool TryAllocateMemory(nuint allocateBytes, out void* ptr)
         {{
             if (_disposed)
@@ -159,11 +148,9 @@ namespace StackMemoryCollections.{memoryNamespace}
 ");
         }
 
-        private void MemoryFreeMemory(
-            in StringBuilder builder
-            )
+        private void MemoryFreeMemory()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void FreeMemory(nuint reducingBytes)
         {{
             if(_disposed)
@@ -182,11 +169,9 @@ namespace StackMemoryCollections.{memoryNamespace}
 ");
         }
 
-        private void MemoryTryFreeMemory(
-            in StringBuilder builder
-            )
+        private void MemoryTryFreeMemory()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public bool TryFreeMemory(nuint reducingBytes)
         {{
             if (_disposed)
@@ -207,13 +192,12 @@ namespace StackMemoryCollections.{memoryNamespace}
         }
 
         private void MemoryDispose(
-            in StringBuilder builder,
             in string memoryNamespace
             )
         {
             if(memoryNamespace == "Class")
             {
-                builder.Append($@"
+                _builder.Append($@"
         #region IDisposable
 
         private bool _disposed;
@@ -240,7 +224,7 @@ namespace StackMemoryCollections.{memoryNamespace}
             }
             else
             {
-                builder.Append($@"
+                _builder.Append($@"
         #region IDisposable
 
         private bool _disposed;
@@ -259,11 +243,9 @@ namespace StackMemoryCollections.{memoryNamespace}
             }
         }
 
-        private void MemoryShiftRight(
-            in StringBuilder builder
-            )
+        private void MemoryShiftRight()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void ShiftRight(
             in byte* start,
             in byte* end,
@@ -285,11 +267,9 @@ namespace StackMemoryCollections.{memoryNamespace}
 ");
         }
 
-        private void MemoryShiftLeft(
-            in StringBuilder builder
-            )
+        private void MemoryShiftLeft()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void ShiftLeft(
             in byte* start,
             in byte* end,
@@ -312,11 +292,9 @@ namespace StackMemoryCollections.{memoryNamespace}
 ");
         }
 
-        private void MemoryEnd(
-            in StringBuilder builder
-            )
+        private void MemoryEnd()
         {
-            builder.Append($@"
+            _builder.Append($@"
     }}
 }}
 ");

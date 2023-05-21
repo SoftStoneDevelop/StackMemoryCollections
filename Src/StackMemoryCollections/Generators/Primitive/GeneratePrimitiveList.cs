@@ -2,120 +2,109 @@
 using System;
 using System.Text;
 
-namespace StackMemoryCollections
+namespace StackMemoryCollections.Generators.Primitive
 {
-    public partial class Generator
+    internal class PrimitiveListGenerator
     {
-        private void GeneratePrimitiveList(
-            in GeneratorExecutionContext context,
-            in StringBuilder builder
+        private readonly StringBuilder _builder = new StringBuilder();
+
+        public void GeneratePrimitiveList(
+            in GeneratorExecutionContext context
             )
         {
-            GeneratePrimitiveList<IntPtr>(in context, in builder, "Class", 0, true);
-            GeneratePrimitiveList<IntPtr>(in context, in builder, "Struct", 0, true);
+            GenerateList<IntPtr>(context, 0, true);
 
-            GeneratePrimitiveList<Int32>(in context, in builder, "Class", 4, false);
-            GeneratePrimitiveList<Int32>(in context, in builder, "Struct", 4, false);
+            GenerateList<int>(context, 4, false);
+            GenerateList<uint>(context, 4, false);
 
-            GeneratePrimitiveList<UInt32>(in context, in builder, "Class", 4, false);
-            GeneratePrimitiveList<UInt32>(in context, in builder, "Struct", 4, false);
+            GenerateList<long>(context, 8, false);
+            GenerateList<ulong>(context, 8, false);
 
-            GeneratePrimitiveList<Int64>(in context, in builder, "Class", 8, false);
-            GeneratePrimitiveList<Int64>(in context, in builder, "Struct", 8, false);
+            GenerateList<sbyte>(context, 1, false);
+            GenerateList<byte>(context, 1, false);
 
-            GeneratePrimitiveList<UInt64>(in context, in builder, "Class", 8, false);
-            GeneratePrimitiveList<UInt64>(in context, in builder, "Struct", 8, false);
+            GenerateList<short>(context, 2, false);
+            GenerateList<ushort>(context, 2, false);
 
-            GeneratePrimitiveList<SByte>(in context, in builder, "Class", 1, false);
-            GeneratePrimitiveList<SByte>(in context, in builder, "Struct", 1, false);
-
-            GeneratePrimitiveList<Byte>(in context, in builder, "Class", 1, false);
-            GeneratePrimitiveList<Byte>(in context, in builder, "Struct", 1, false);
-
-            GeneratePrimitiveList<Int16>(in context, in builder, "Class", 2, false);
-            GeneratePrimitiveList<Int16>(in context, in builder, "Struct", 2, false);
-
-            GeneratePrimitiveList<UInt16>(in context, in builder, "Class", 2, false);
-            GeneratePrimitiveList<UInt16>(in context, in builder, "Struct", 2, false);
-
-            GeneratePrimitiveList<Char>(in context, in builder, "Class", 2, false);
-            GeneratePrimitiveList<Char>(in context, in builder, "Struct", 2, false);
-
-            GeneratePrimitiveList<Decimal>(in context, in builder, "Class", 16, false);
-            GeneratePrimitiveList<Decimal>(in context, in builder, "Struct", 16, false);
-
-            GeneratePrimitiveList<Double>(in context, in builder, "Class", 8, false);
-            GeneratePrimitiveList<Double>(in context, in builder, "Struct", 8, false);
-
-            GeneratePrimitiveList<Boolean>(in context, in builder, "Class", 1, false);//1 byte is not optimal
-            GeneratePrimitiveList<Boolean>(in context, in builder, "Struct", 1, false);//1 byte is not optimal
-
-            GeneratePrimitiveList<Single>(in context, in builder, "Class", 4, false);
-            GeneratePrimitiveList<Single>(in context, in builder, "Struct", 4, false);
+            GenerateList<char>(context, 2, false);
+            GenerateList<decimal>(context, 16, false);
+            GenerateList<double>(context, 8, false);
+            GenerateList<bool>(context, 1, false);//1 byte is not optimal
+            GenerateList<float>(context, 4, false);
         }
 
-        private void GeneratePrimitiveList<T>(
+        private void GenerateList<T>(
             in GeneratorExecutionContext context,
-            in StringBuilder builder,
-            in string ListNamespace,
             in int sizeOf,
             bool calculateSize
             ) where T : unmanaged
         {
             var sizeOfStr = calculateSize ? $"(nuint)sizeof({typeof(T).Name})" : sizeOf.ToString();
-            builder.Clear();
-            ListPrimitiveStart<T>(in builder, in ListNamespace);
 
-            ListPrimitiveConstructor1<T>(in builder, in sizeOf, in sizeOfStr, calculateSize);
-            ListPrimitiveConstructor2<T>(in builder, in sizeOfStr);
-            ListPrimitiveConstructor3<T>(in builder, in sizeOfStr);
-            ListPrimitiveConstructor4<T>(in builder);
+            GeneratePrimitiveList<T>(in context, "Class", sizeOf, sizeOfStr, false);
+            GeneratePrimitiveList<T>(in context, "Struct", sizeOf, sizeOfStr, false);
+        }
 
-            ListPrimitiveProperties<T>(in builder);
+        private void GeneratePrimitiveList<T>(
+            in GeneratorExecutionContext context,
+            in string ListNamespace,
+            in int sizeOf,
+            in string sizeOfStr,
+            bool calculateSize
+            ) where T : unmanaged
+        {
+            _builder.Clear();
+            ListPrimitiveStart<T>(in ListNamespace);
 
-            ListPrimitiveReducingCapacity<T>(in builder, in sizeOfStr, in ListNamespace);
-            ListPrimitiveExpandCapacity<T>(in builder, in sizeOfStr, in ListNamespace);
-            ListPrimitiveTryExpandCapacity<T>(in builder, in sizeOfStr, in ListNamespace);
-            ListPrimitiveTrimExcess(in builder);
+            ListPrimitiveConstructor1<T>(in sizeOf, in sizeOfStr, calculateSize);
+            ListPrimitiveConstructor2<T>(in sizeOfStr);
+            ListPrimitiveConstructor3<T>(in sizeOfStr);
+            ListPrimitiveConstructor4<T>();
 
-            ListPrimitiveAddIn<T>(in builder, in ListNamespace);
-            ListPrimitiveAddFuture(in builder, in ListNamespace);
-            ListPrimitiveAddInPtr<T>(in builder, in ListNamespace);
-            ListPrimitiveTryAddIn<T>(in builder, in ListNamespace);
-            ListPrimitiveTryAddInPtr<T>(in builder, in ListNamespace);
+            ListPrimitiveProperties<T>();
 
-            ListPrimitiveRemove<T>(in builder, in sizeOfStr, in ListNamespace);
-            ListPrimitiveInsert<T>(in builder, in sizeOfStr, in ListNamespace);
+            ListPrimitiveReducingCapacity<T>(in sizeOfStr, in ListNamespace);
+            ListPrimitiveExpandCapacity<T>(in sizeOfStr, in ListNamespace);
+            ListPrimitiveTryExpandCapacity<T>(in sizeOfStr, in ListNamespace);
+            ListPrimitiveTrimExcess();
 
-            ListPrimitiveClear(in builder, in ListNamespace);
+            ListPrimitiveAddIn<T>(in ListNamespace);
+            ListPrimitiveAddFuture(in ListNamespace);
+            ListPrimitiveAddInPtr<T>(in ListNamespace);
+            ListPrimitiveTryAddIn<T>(in ListNamespace);
+            ListPrimitiveTryAddInPtr<T>(in ListNamespace);
 
-            ListPrimitiveGetByIndex<T>(in builder);
-            ListPrimitiveGetByIndexRef<T>(in builder);
-            ListPrimitiveGetOutByIndex<T>(in builder);
+            ListPrimitiveRemove<T>(in sizeOfStr, in ListNamespace);
+            ListPrimitiveInsert<T>(in sizeOfStr, in ListNamespace);
 
-            ListPrimitiveGetFuture<T>(in builder);
+            ListPrimitiveClear(in ListNamespace);
 
-            ListPrimitiveDispose<T>(in builder, in ListNamespace, in sizeOfStr);
-            ListPrimitiveIndexator<T>(in builder);
+            ListPrimitiveGetByIndex<T>();
+            ListPrimitiveGetByIndexRef<T>();
+            ListPrimitiveGetOutByIndex<T>();
 
-            ListPrimitiveCopyCount<T>(in builder, in sizeOfStr);
-            ListPrimitiveCopy<T>(in builder, in sizeOfStr);
-            ListPrimitiveCopyInList<T>(in builder, in sizeOfStr);
+            ListPrimitiveGetFuture<T>();
 
-            ListPrimitiveSetSize(in builder);
+            ListPrimitiveDispose<T>(in ListNamespace, in sizeOfStr);
+            ListPrimitiveIndexator<T>();
+
+            ListPrimitiveCopyCount<T>(in sizeOfStr);
+            ListPrimitiveCopy<T>(in sizeOfStr);
+            ListPrimitiveCopyInList<T>(in sizeOfStr);
+
+            ListPrimitiveSetSize();
 
             if (ListNamespace == "Class")
             {
-                ListPrimitiveIEnumerable<T>(in builder);
+                ListPrimitiveIEnumerable<T>();
             }
 
-            ListPrimitiveEnd(in builder);
+            ListPrimitiveEnd();
 
-            context.AddSource($"ListOf{typeof(T).Name}{ListNamespace}.g.cs", builder.ToString());
+            context.AddSource($"ListOf{typeof(T).Name}{ListNamespace}.g.cs", _builder.ToString());
         }
 
         private void ListPrimitiveStart<T>(
-            in StringBuilder builder,
             in string listNamespace
             ) where T : unmanaged
         {
@@ -129,11 +118,7 @@ namespace StackMemoryCollections
                 implements = $"IDisposable";
             }
 
-            builder.Append($@"
-/*
-{Resource.License}
-*/
-
+            _builder.Append($@"
 using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
@@ -149,20 +134,19 @@ namespace StackMemoryCollections.{listNamespace}
 ");
             if (listNamespace == "Class")
             {
-                builder.Append($@"
+                _builder.Append($@"
         private int _version = 0;
 ");
             }
         }
 
         private void ListPrimitiveConstructor1<T>(
-            in StringBuilder builder,
             in int sizeOf,
             in string sizeOfStr,
             in bool calculateSize
             ) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public ListOf{typeof(T).Name}()
         {{
             _stackMemoryC = new StackMemoryCollections.Class.StackMemory({(calculateSize ? $"{sizeOfStr} * 4" : (sizeOf * 4).ToString())});
@@ -175,11 +159,10 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveConstructor2<T>(
-            in StringBuilder builder,
             in string sizeOf
             ) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public ListOf{typeof(T).Name}(
             nuint count,
             StackMemoryCollections.Struct.StackMemory* stackMemory
@@ -198,11 +181,10 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveConstructor3<T>(
-            in StringBuilder builder,
             in string sizeOf
-            ) where T: unmanaged
+            ) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public ListOf{typeof(T).Name}(
             nuint count,
             StackMemoryCollections.Class.StackMemory stackMemory
@@ -221,11 +203,9 @@ namespace StackMemoryCollections.{listNamespace}
 ");
         }
 
-        private void ListPrimitiveConstructor4<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void ListPrimitiveConstructor4<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public ListOf{typeof(T).Name}(
             nuint count,
             {typeof(T).Name}* memoryStart
@@ -243,11 +223,9 @@ namespace StackMemoryCollections.{listNamespace}
 ");
         }
 
-        private void ListPrimitiveProperties<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void ListPrimitiveProperties<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public nuint Capacity {{ get; private set; }}
 
         public nuint Size {{ get; private set; }} = 0;
@@ -259,18 +237,17 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveReducingCapacity<T>(
-            in StringBuilder builder,
             in string sizeOf,
             in string listNamespace
-            ) where T :unmanaged
+            ) where T : unmanaged
         {
             var incrementVersion = listNamespace == "Class" ?
                 @"
                 _version += 1;
 "
-: 
+:
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void ReducingCapacity(in nuint reducingCount)
         {{
             if (reducingCount <= 0)
@@ -323,7 +300,6 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveExpandCapacity<T>(
-            in StringBuilder builder,
             in string sizeOf,
             in string listNamespace
             ) where T : unmanaged
@@ -334,7 +310,7 @@ namespace StackMemoryCollections.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void ExpandCapacity(in nuint expandCount)
         {{
             if (_memoryOwner)
@@ -377,7 +353,6 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveTryExpandCapacity<T>(
-            in StringBuilder builder,
             in string sizeOf,
             in string listNamespace
             ) where T : unmanaged
@@ -388,7 +363,7 @@ namespace StackMemoryCollections.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public bool TryExpandCapacity(in nuint expandCount)
         {{
             if (_memoryOwner)
@@ -437,11 +412,9 @@ namespace StackMemoryCollections.{listNamespace}
 ");
         }
 
-        private void ListPrimitiveTrimExcess(
-            in StringBuilder builder
-            )
+        private void ListPrimitiveTrimExcess()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void TrimExcess()
         {{
             if (_memoryOwner)
@@ -462,7 +435,6 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveAddIn<T>(
-            in StringBuilder builder,
             in string listNamespace
             ) where T : unmanaged
         {
@@ -472,7 +444,7 @@ namespace StackMemoryCollections.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Add(in {typeof(T).Name} item)
         {{
             if (Size == Capacity)
@@ -486,7 +458,6 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveAddFuture(
-            in StringBuilder builder,
             in string listNamespace
             )
         {
@@ -496,7 +467,7 @@ namespace StackMemoryCollections.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void AddFuture()
         {{
             if(Size == Capacity)
@@ -510,7 +481,6 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveAddInPtr<T>(
-            in StringBuilder builder,
             in string listNamespace
             ) where T : unmanaged
         {
@@ -520,7 +490,7 @@ namespace StackMemoryCollections.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Add(in {typeof(T).Name}* ptr)
         {{
             if (Size == Capacity)
@@ -534,7 +504,6 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveTryAddIn<T>(
-            in StringBuilder builder,
             in string listNamespace
             ) where T : unmanaged
         {
@@ -544,7 +513,7 @@ namespace StackMemoryCollections.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public bool TryAdd(in {typeof(T).Name} item)
         {{
             if (Size == Capacity)
@@ -562,7 +531,6 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveTryAddInPtr<T>(
-            in StringBuilder builder,
             in string listNamespace
             ) where T : unmanaged
         {
@@ -572,7 +540,7 @@ namespace StackMemoryCollections.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public bool TryAdd(in {typeof(T).Name}* ptr)
         {{
             if (Size == Capacity)
@@ -590,7 +558,6 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveRemove<T>(
-            in StringBuilder builder,
             in string sizeOf,
             in string listNamespace
             ) where T : unmanaged
@@ -601,7 +568,7 @@ namespace StackMemoryCollections.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Remove(nuint index)
         {{
             if(Size == 0 || index >= Size)
@@ -645,7 +612,6 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveInsert<T>(
-            in StringBuilder builder,
             in string sizeOf,
             in string listNamespace
             ) where T : unmanaged
@@ -656,7 +622,7 @@ namespace StackMemoryCollections.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Insert(in {typeof(T).Name} value, nuint index)
         {{
             if(index > Size || Size == Capacity)
@@ -734,7 +700,6 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveClear(
-            in StringBuilder builder,
             in string ListNamespace
             )
         {
@@ -744,7 +709,7 @@ namespace StackMemoryCollections.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Clear()
         {{
             if (Size != 0)
@@ -755,11 +720,9 @@ namespace StackMemoryCollections.{listNamespace}
 ");
         }
 
-        private void ListPrimitiveGetByIndex<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void ListPrimitiveGetByIndex<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {typeof(T).Name} GetByIndex(nuint index)
         {{
             if (Size == 0 || index >= Size)
@@ -772,11 +735,9 @@ namespace StackMemoryCollections.{listNamespace}
 ");
         }
 
-        private void ListPrimitiveGetByIndexRef<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void ListPrimitiveGetByIndexRef<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void GetByIndex(nuint index, ref {typeof(T).Name} value)
         {{
             if (Size == 0 || index >= Size)
@@ -789,11 +750,9 @@ namespace StackMemoryCollections.{listNamespace}
 ");
         }
 
-        private void ListPrimitiveGetOutByIndex<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void ListPrimitiveGetOutByIndex<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void GetOutByIndex(nuint index, out {typeof(T).Name} value)
         {{
             if (Size == 0 || index >= Size)
@@ -806,11 +765,9 @@ namespace StackMemoryCollections.{listNamespace}
 ");
         }
 
-        private void ListPrimitiveGetFuture<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void ListPrimitiveGetFuture<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {typeof(T).Name}* GetFuture()
         {{
             if (Capacity == 0 || Size == Capacity)
@@ -824,14 +781,13 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveDispose<T>(
-            in StringBuilder builder,
             in string listNamespace,
             in string sizeOf
             ) where T : unmanaged
         {
-            if(listNamespace == "Class")
+            if (listNamespace == "Class")
             {
-                builder.Append($@"
+                _builder.Append($@"
         #region IDisposable
 
         private bool _disposed;
@@ -878,7 +834,7 @@ namespace StackMemoryCollections.{listNamespace}
             }
             else
             {
-                builder.Append($@"
+                _builder.Append($@"
         public void Dispose()
         {{
             if(!_memoryOwner)
@@ -904,11 +860,9 @@ namespace StackMemoryCollections.{listNamespace}
             }
         }
 
-        private void ListPrimitiveIndexator<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void ListPrimitiveIndexator<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {typeof(T).Name}* this[nuint index]
         {{
             get
@@ -924,11 +878,9 @@ namespace StackMemoryCollections.{listNamespace}
 ");
         }
 
-        private void ListPrimitiveIEnumerable<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void ListPrimitiveIEnumerable<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         #region IEnumerable<{typeof(T).Name}>
 
         public System.Collections.Generic.IEnumerator<{typeof(T).Name}> GetEnumerator()
@@ -1010,11 +962,10 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveCopy<T>(
-            in StringBuilder builder,
             in string sizeOf
             ) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Copy(in void* ptrDest, in nuint count)
         {{
             if (Size < count)
@@ -1033,11 +984,10 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveCopyCount<T>(
-            in StringBuilder builder,
             in string sizeOf
             ) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Copy(in void* ptrDest)
         {{
             if(Size == 0)
@@ -1056,11 +1006,10 @@ namespace StackMemoryCollections.{listNamespace}
         }
 
         private void ListPrimitiveCopyInList<T>(
-            in StringBuilder builder,
             in string sizeOf
             ) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Copy(in Class.ListOf{typeof(T).Name} destList)
         {{
             if(Size == 0)
@@ -1086,11 +1035,9 @@ namespace StackMemoryCollections.{listNamespace}
 ");
         }
 
-        private void ListPrimitiveSetSize(
-            in StringBuilder builder
-            )
+        private void ListPrimitiveSetSize()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void SetSize(in nuint size)
         {{
             Size = size;
@@ -1098,11 +1045,9 @@ namespace StackMemoryCollections.{listNamespace}
 ");
         }
 
-        private void ListPrimitiveEnd(
-            in StringBuilder builder
-            )
+        private void ListPrimitiveEnd()
         {
-            builder.Append($@"
+            _builder.Append($@"
     }}
 }}
 ");

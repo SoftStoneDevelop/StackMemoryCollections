@@ -1,18 +1,18 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 
 namespace StackMemoryCollections
 {
-    public partial class Generator
+    internal class WrappersGenerator
     {
-        private void GenerateWrappers(
+        private readonly StringBuilder _builder = new StringBuilder();
+
+        public void GenerateWrappers(
             in List<INamedTypeSymbol> typeWrappers,
             in GeneratorExecutionContext context,
-            in Dictionary<string, TypeInfo> typeInfos,
-            in StringBuilder builder
+            in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
             for (int i = 0; i < typeWrappers.Count; i++)
@@ -23,50 +23,45 @@ namespace StackMemoryCollections
                     throw new Exception($"{nameof(GenerateWrappers)}: Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
                 }
 
-                GenerateWrapper(in currentType, in context, in typeInfo, in builder, "Class", in typeInfos);
-                GenerateWrapper(in currentType, in context, in typeInfo, in builder, "Struct", in typeInfos);
+                GenerateWrapper(in currentType, in context, in typeInfo, "Class", in typeInfos);
+                GenerateWrapper(in currentType, in context, in typeInfo, "Struct", in typeInfos);
             }
         }
 
         private void GenerateWrapper(
             in INamedTypeSymbol currentType,
             in GeneratorExecutionContext context,
-            in TypeInfo typeInfo,
-            in StringBuilder builder,
+            in Model.TypeInfo typeInfo,
             in string wrapperNamespace,
-            in Dictionary<string, TypeInfo> typeInfos
+            in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
-            builder.Clear();
+            _builder.Clear();
+
             var sizeOfStr = typeInfo.IsRuntimeCalculatedSize ? $"{currentType.Name}Helper.SizeOf" : $"{typeInfo.Size}";
-            WrapperStart(in currentType, in builder, in wrapperNamespace);
-            WrapperConstructor1(in currentType, in typeInfo, in builder, in sizeOfStr);
-            WrapperConstructor2(in currentType, in typeInfo, in builder, in sizeOfStr);
-            WrapperConstructor3(in currentType, in typeInfo, in builder, in sizeOfStr);
-            WrapperConstructor4(in currentType, in typeInfo, in builder);
-            WrapperCreateInstance(in typeInfo, in builder);
+            WrapperStart(in currentType, in wrapperNamespace);
+            WrapperConstructor1(in currentType, in typeInfo, in sizeOfStr);
+            WrapperConstructor2(in currentType, in typeInfo, in sizeOfStr);
+            WrapperConstructor3(in currentType, in typeInfo, in sizeOfStr);
+            WrapperConstructor4(in currentType, in typeInfo);
+            WrapperCreateInstance(in typeInfo);
 
-            WrapperProperties(in typeInfo, in builder, in typeInfos);
+            WrapperProperties(in typeInfo, in typeInfos);
 
-            WrapperDispose(in currentType, in builder, in wrapperNamespace, in sizeOfStr);
+            WrapperDispose(in currentType, in wrapperNamespace, in sizeOfStr);
 
 
-            WrapperEnd(in builder);
+            WrapperEnd();
 
-            context.AddSource($"{currentType.Name}Wrapper{wrapperNamespace}.g.cs", builder.ToString());
+            context.AddSource($"{currentType.Name}Wrapper{wrapperNamespace}.g.cs", _builder.ToString());
         }
 
         private void WrapperStart(
             in INamedTypeSymbol currentType,
-            in StringBuilder builder,
             in string wrapperNamespace
             )
         {
-            builder.Append($@"
-/*
-{Resource.License}
-*/
-
+            _builder.Append($@"
 using System;
 using {currentType.ContainingNamespace};
 using System.Runtime.CompilerServices;
@@ -84,12 +79,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 
         private void WrapperConstructor1(
             in INamedTypeSymbol currentType,
-            in TypeInfo typeInfo,
-            in StringBuilder builder,
+            in Model.TypeInfo typeInfo,
             in string sizeOfStr
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {currentType.Name}Wrapper()
         {{
             _stackMemoryC = new StackMemoryCollections.Class.StackMemory({sizeOfStr});
@@ -99,26 +93,25 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             if (!currentType.IsValueType)
             {
-                builder.Append($@"
+                _builder.Append($@"
             *((byte*)_start) = 1;
 ");
             }
 
-            ResetPointerAndReference(in typeInfo, in builder, "            ");
+            ResetPointerAndReference(in typeInfo, "            ");
 
-            builder.Append($@"
+            _builder.Append($@"
         }}
 ");
         }
 
         private void WrapperConstructor2(
             in INamedTypeSymbol currentType,
-            in TypeInfo typeInfo,
-            in StringBuilder builder,
+            in Model.TypeInfo typeInfo,
             in string sizeOfStr
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {currentType.Name}Wrapper(
             StackMemoryCollections.Struct.StackMemory* stackMemory
             )
@@ -133,26 +126,25 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             if (!currentType.IsValueType)
             {
-                builder.Append($@"
+                _builder.Append($@"
             *((byte*)_start) = 1;
 ");
             }
 
-            ResetPointerAndReference(in typeInfo, in builder, "            ");
+            ResetPointerAndReference(in typeInfo, "            ");
 
-            builder.Append($@"
+            _builder.Append($@"
         }}
 ");
         }
 
         private void WrapperConstructor3(
             in INamedTypeSymbol currentType,
-            in TypeInfo typeInfo,
-            in StringBuilder builder,
+            in Model.TypeInfo typeInfo,
             in string sizeOfStr
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {currentType.Name}Wrapper(
             StackMemoryCollections.Class.StackMemory stackMemory
             )
@@ -168,25 +160,24 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             if (!currentType.IsValueType)
             {
-                builder.Append($@"
+                _builder.Append($@"
             *((byte*)_start) = 1;
 ");
             }
 
-            ResetPointerAndReference(in typeInfo, in builder, "            ");
+            ResetPointerAndReference(in typeInfo, "            ");
 
-            builder.Append($@"
+            _builder.Append($@"
         }}
 ");
         }
 
         private void WrapperConstructor4(
             in INamedTypeSymbol currentType,
-            in TypeInfo typeInfo,
-            in StringBuilder builder
+            in Model.TypeInfo typeInfo
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {currentType.Name}Wrapper(
             void* start,
             bool createInstance
@@ -201,7 +192,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             _stackMemoryC = null;
             _stackMemoryS = null;
 ");
-            builder.Append($@"
+            _builder.Append($@"
             if(createInstance)
             {{
                 
@@ -209,21 +200,20 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 
             if (!currentType.IsValueType)
             {
-                builder.Append($@"
+                _builder.Append($@"
             *((byte*)_start) = 1;
 ");
             }
 
-            ResetPointerAndReference(in typeInfo, in builder, "                ");
-            builder.Append($@"
+            ResetPointerAndReference(in typeInfo, "                ");
+            _builder.Append($@"
             }}
         }}
 ");
         }
 
         private void ResetPointerAndReference(
-            in TypeInfo typeInfo,
-            in StringBuilder builder,
+            in Model.TypeInfo typeInfo,
             in string paddings
             )
         {
@@ -232,7 +222,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 var currentMember = typeInfo.Members[i];
                 if (!currentMember.IsValueType && !currentMember.AsPointer)
                 {
-                    builder.Append($@"
+                    _builder.Append($@"
 {paddings}//set null marker {currentMember.MemberName}
 {paddings}*((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{typeInfo.TypeName}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = 0;
 ");
@@ -241,7 +231,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 
                 if (currentMember.AsPointer)
                 {
-                    builder.Append($@"
+                    _builder.Append($@"
 {paddings}//IntPtr must be a valid structure, so write it down. Member: {currentMember.MemberName}
 {paddings}*(IntPtr*)((byte*)_start + {(currentMember.IsRuntimeOffsetCalculated ? $"{typeInfo.TypeName}Helper.{currentMember.MemberName}Offset" : $"{currentMember.Offset}")}) = IntPtr.Zero;
 ");
@@ -251,19 +241,18 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperCreateInstance(
-            in TypeInfo typeInfo,
-            in StringBuilder builder
+            in Model.TypeInfo typeInfo
             )
         {
             if (!typeInfo.IsValueType)
             {
-                builder.Append($@"
+                _builder.Append($@"
         public void CreateInstance()
         {{
             *((byte*)_start) = 1;
 ");
-                ResetPointerAndReference(in typeInfo, in builder, "            ");
-                builder.Append($@"
+                ResetPointerAndReference(in typeInfo, "            ");
+                _builder.Append($@"
         }}
 ");
             }
@@ -271,14 +260,13 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 
         private void WrapperDispose(
             in INamedTypeSymbol currentType,
-            in StringBuilder builder,
             in string wrapperNamespace,
             in string sizeOfStr
             )
         {
             if(wrapperNamespace == "Class")
             {
-                builder.Append($@"
+                _builder.Append($@"
         #region IDisposable
 
         private bool _disposed;
@@ -325,7 +313,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             }
             else
             {
-                builder.Append($@"
+                _builder.Append($@"
         public void Dispose()
         {{
             if(!_memoryOwner)
@@ -352,16 +340,15 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperProperties(
-            in TypeInfo typeInfo,
-            in StringBuilder builder,
-            in Dictionary<string, TypeInfo> typeInfos
+            in Model.TypeInfo typeInfo,
+            in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
-            WrapperPtr(in builder);
-            WrapperIsNull(in typeInfo, in builder);
-            PrimitiveWrapperChangePtr(in builder);
-            WrapperGetValue(in typeInfo, in builder);
-            WrapperFillValue(in typeInfo, in builder);
+            WrapperPtr();
+            WrapperIsNull(in typeInfo);
+            PrimitiveWrapperChangePtr();
+            WrapperGetValue(in typeInfo);
+            WrapperFillValue(in typeInfo);
 
             for (int i = 0; i < typeInfo.Members.Count; i++)
             {
@@ -372,17 +359,17 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                     if (currentMember.AsPointer)
                         currentMember.TypeName = typeof(IntPtr).Name;
 
-                    WrapperPrimitiveGetPtr(in builder, in currentMember, in typeInfo);
-                    WrapperPrimitiveGetSet(in builder, in currentMember, in typeInfo);
-                    WrapperPrimitiveSetIn(in builder, in currentMember, in typeInfo);
-                    WrapperPrimitiveSetPtr(in builder, in currentMember, in typeInfo);
+                    WrapperPrimitiveGetPtr(in currentMember, in typeInfo);
+                    WrapperPrimitiveGetSet(in currentMember, in typeInfo);
+                    WrapperPrimitiveSetIn(in currentMember, in typeInfo);
+                    WrapperPrimitiveSetPtr(in currentMember, in typeInfo);
 
-                    WrapperPrimitiveGetOut(in builder, in currentMember, in typeInfo);
+                    WrapperPrimitiveGetOut(in currentMember, in typeInfo);
 
                     currentMember.TypeName = memberType;
                     if(currentMember.AsPointer)
                     {
-                        WrapperGetValueInPtr(in typeInfo, in currentMember, in builder, in typeInfos);
+                        WrapperGetValueInPtr(in typeInfo, in currentMember, in typeInfos);
                     }
                 }
                 else
@@ -392,45 +379,41 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                         throw new Exception($"{nameof(WrapperProperties)}: Type information not found, types filling error. Type name: {currentMember.TypeName}");
                     }
 
-                    WrapperСompositeGetPtr(in builder, in currentMember, in typeInfo);
-                    WrapperСompositeGetSet(in builder, in currentMember, in memberTypeInfo, in typeInfo);
-                    WrapperСompositeSetIn(in builder, in currentMember, in memberTypeInfo, in typeInfo);
-                    WrapperСompositeSetPtr(in builder, in currentMember, in memberTypeInfo, in typeInfo);
-                    WrapperСompositeGetOut(in builder, in currentMember, in memberTypeInfo, in typeInfo);
+                    WrapperСompositeGetPtr(in currentMember, in typeInfo);
+                    WrapperСompositeGetSet(in currentMember, in memberTypeInfo, in typeInfo);
+                    WrapperСompositeSetIn(in currentMember, in memberTypeInfo, in typeInfo);
+                    WrapperСompositeSetPtr(in currentMember, in memberTypeInfo, in typeInfo);
+                    WrapperСompositeGetOut(in currentMember, in memberTypeInfo, in typeInfo);
                 }
             }
         }
 
-        private void WrapperPtr(
-            in StringBuilder builder
-            )
+        private void WrapperPtr()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void* Ptr => _start;
 ");
         }
 
         private void WrapperIsNull(
-            in TypeInfo typeInfo,
-            in StringBuilder builder
+            in Model.TypeInfo typeInfo
             )
         {
             if(!typeInfo.IsValueType)
             {
-                builder.Append($@"
+                _builder.Append($@"
         public bool IsNull => *((byte*)_start) == 0;
 ");
             }
         }
 
         private void WrapperGetValue(
-            in TypeInfo typeInfo,
-            in StringBuilder builder
+            in Model.TypeInfo typeInfo
             )
         {
             if(typeInfo.IsValueType)
             {
-                builder.Append($@"
+                _builder.Append($@"
         [SkipLocalsInit]
         public {typeInfo.TypeName} GetValue()
         {{
@@ -444,7 +427,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
             }
             else
             {
-                builder.Append($@"
+                _builder.Append($@"
         public {typeInfo.TypeName} GetValue()
         {{
             {typeInfo.ContainingNamespace}.{typeInfo.TypeName} result = new {typeInfo.TypeName}();
@@ -456,10 +439,9 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperGetValueInPtr(
-            in TypeInfo containType,
-            in MemberInfo memberInfo,
-            in StringBuilder builder,
-            in Dictionary<string, TypeInfo> typeInfos
+            in Model.TypeInfo containType,
+            in Model.MemberInfo memberInfo,
+            in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
             if (!typeInfos.TryGetValue($"{memberInfo.TypeName}", out var memberTypeInfo))
@@ -467,7 +449,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
                 throw new Exception($"{nameof(WrapperGetValueInPtr)}: Type information not found, types filling error. Type name: {memberInfo.TypeName}");
             }
 
-            builder.Append($@"
+            _builder.Append($@"
         public {memberInfo.TypeName} {memberInfo.MemberName}ValueInPtr
         {{
             get
@@ -475,7 +457,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             if(!containType.IsValueType)
             {
-                builder.Append($@"
+                _builder.Append($@"
                 if (*((byte*)_start) == 0)
                 {{
                     throw new NullReferenceException(""ptr is null value"");
@@ -483,7 +465,7 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
             }
 
-            builder.Append($@"
+            _builder.Append($@"
                 var intPtr = {memberInfo.MemberName};
                 if(intPtr == IntPtr.Zero)
                 {{
@@ -499,11 +481,10 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperFillValue(
-            in TypeInfo typeInfo,
-            in StringBuilder builder
+            in Model.TypeInfo typeInfo
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Fill(in {typeInfo.TypeName} value)
         {{
             {typeInfo.TypeName}Helper.CopyToPtr(in value, in _start);
@@ -513,12 +494,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperPrimitiveGetSet(
-            in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in TypeInfo containingType
+            in Model.MemberInfo memberInfo,
+            in Model.TypeInfo containingType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {memberInfo.TypeName} {memberInfo.MemberName} 
         {{
             get
@@ -535,12 +515,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperPrimitiveGetPtr(
-            in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in TypeInfo containingType
+            in Model.MemberInfo memberInfo,
+            in Model.TypeInfo containingType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {memberInfo.TypeName}* {memberInfo.MemberName}Ptr
         {{
             get
@@ -552,12 +531,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperPrimitiveSetIn(
-            in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in TypeInfo containingType
+            in Model.MemberInfo memberInfo,
+            in Model.TypeInfo containingType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Set{memberInfo.MemberName}(in {memberInfo.TypeName} item)
         {{
             {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Set{memberInfo.MemberName}Value(in _start, in item);
@@ -566,12 +544,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperPrimitiveSetPtr(
-            in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in TypeInfo containingType
+            in Model.MemberInfo memberInfo,
+            in Model.TypeInfo containingType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Set{memberInfo.MemberName}(in {memberInfo.TypeName}* valuePtr)
         {{
             {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Set{memberInfo.MemberName}Value(in _start, in valuePtr);
@@ -580,12 +557,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperPrimitiveGetOut(
-            in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in TypeInfo containingType
+            in Model.MemberInfo memberInfo,
+            in Model.TypeInfo containingType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void GetOut{memberInfo.MemberName}(out {memberInfo.TypeName} item)
         {{
             {containingType.ContainingNamespace}.{containingType.TypeName}Helper.GetOut{memberInfo.MemberName}Value(in _start, out item);
@@ -594,12 +570,11 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperСompositeGetPtr(
-            in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in TypeInfo containingType
+            in Model.MemberInfo memberInfo,
+            in Model.TypeInfo containingType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void* {memberInfo.MemberName}Ptr
         {{
             get
@@ -611,13 +586,12 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperСompositeGetSet(
-            in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in TypeInfo memberTypeInfo,
-            in TypeInfo containingType
+            in Model.MemberInfo memberInfo,
+            in Model.TypeInfo memberTypeInfo,
+            in Model.TypeInfo containingType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {memberInfo.TypeName} {memberInfo.MemberName} 
         {{
             get
@@ -638,13 +612,12 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperСompositeSetPtr(
-            in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in TypeInfo memberTypeInfo,
-            in TypeInfo containingType
+            in Model.MemberInfo memberInfo,
+            in Model.TypeInfo memberTypeInfo,
+            in Model.TypeInfo containingType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Set{memberInfo.MemberName} (in void* valuePtr)
         {{
             var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
@@ -654,13 +627,12 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperСompositeGetOut(
-            in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in TypeInfo memberTypeInfo,
-            in TypeInfo containingType
+            in Model.MemberInfo memberInfo,
+            in Model.TypeInfo memberTypeInfo,
+            in Model.TypeInfo containingType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void GetOut{memberInfo.MemberName}(out {memberInfo.TypeName} item)
         {{
             var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
@@ -670,13 +642,12 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
         }
 
         private void WrapperСompositeSetIn(
-            in StringBuilder builder,
-            in MemberInfo memberInfo,
-            in TypeInfo memberTypeInfo,
-            in TypeInfo containingType
+            in Model.MemberInfo memberInfo,
+            in Model.TypeInfo memberTypeInfo,
+            in Model.TypeInfo containingType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Set{memberInfo.MemberName}(in {memberInfo.TypeName} item) 
         {{
             var ptr = {containingType.ContainingNamespace}.{containingType.TypeName}Helper.Get{memberInfo.MemberName}Ptr(in _start);
@@ -685,11 +656,9 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
         }
 
-        private void PrimitiveWrapperChangePtr(
-            in StringBuilder builder
-            )
+        private void PrimitiveWrapperChangePtr()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void ChangePtr(in void* newPtr)
         {{
             if(_stackMemoryC != null || _stackMemoryS != null)
@@ -702,11 +671,9 @@ namespace {currentType.ContainingNamespace}.{wrapperNamespace}
 ");
         }
 
-        private void WrapperEnd(
-            in StringBuilder builder
-            )
+        private void WrapperEnd()
         {
-            builder.Append($@"
+            _builder.Append($@"
     }}
 }}
 ");

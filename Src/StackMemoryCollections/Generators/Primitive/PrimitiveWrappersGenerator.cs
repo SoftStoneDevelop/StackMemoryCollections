@@ -2,89 +2,72 @@
 using System;
 using System.Text;
 
-namespace StackMemoryCollections
+namespace StackMemoryCollections.Generators.Primitive
 {
-    public partial class Generator
+    internal class PrimitiveWrappersGenerator
     {
-        private void GeneratePrimitiveWrappers(
-            in GeneratorExecutionContext context,
-            in StringBuilder builder
+        private readonly StringBuilder _builder = new StringBuilder();
+
+        public void GeneratePrimitiveWrappers(
+            in GeneratorExecutionContext context
             )
         {
-            GeneratePrimitiveWrapper<Int32>(in context, in builder, "Class", 4);
-            GeneratePrimitiveWrapper<Int32>(in context, in builder, "Struct", 4);
+            GenerateWrapper<int>(context, 4);
+            GenerateWrapper<uint>(context, 4);
 
-            GeneratePrimitiveWrapper<UInt32>(in context, in builder, "Class", 4);
-            GeneratePrimitiveWrapper<UInt32>(in context, in builder, "Struct", 4);
+            GenerateWrapper<long>(context, 8);
+            GenerateWrapper<ulong>(context, 8);
 
-            GeneratePrimitiveWrapper<Int64>(in context, in builder, "Class", 8);
-            GeneratePrimitiveWrapper<Int64>(in context, in builder, "Struct", 8);
+            GenerateWrapper<sbyte>(context, 1);
+            GenerateWrapper<byte>(context, 1);
 
-            GeneratePrimitiveWrapper<UInt64>(in context, in builder, "Class", 8);
-            GeneratePrimitiveWrapper<UInt64>(in context, in builder, "Struct", 8);
+            GenerateWrapper<short>(context, 2);
+            GenerateWrapper<ushort>(context, 2);
 
-            GeneratePrimitiveWrapper<SByte>(in context, in builder, "Class", 1);
-            GeneratePrimitiveWrapper<SByte>(in context, in builder, "Struct", 1);
+            GenerateWrapper<char>(context, 2);
+            GenerateWrapper<decimal>(context, 16);
+            GenerateWrapper<double>(context, 8);
+            GenerateWrapper<bool>(context, 1);//1 byte is not optimal
+            GenerateWrapper<float>(context, 4);
+        }
 
-            GeneratePrimitiveWrapper<Byte>(in context, in builder, "Class", 1);
-            GeneratePrimitiveWrapper<Byte>(in context, in builder, "Struct", 1);
-
-            GeneratePrimitiveWrapper<Int16>(in context, in builder, "Class", 2);
-            GeneratePrimitiveWrapper<Int16>(in context, in builder, "Struct", 2);
-
-            GeneratePrimitiveWrapper<UInt16>(in context, in builder, "Class", 2);
-            GeneratePrimitiveWrapper<UInt16>(in context, in builder, "Struct", 2);
-
-            GeneratePrimitiveWrapper<Char>(in context, in builder, "Class", 2);
-            GeneratePrimitiveWrapper<Char>(in context, in builder, "Struct", 2);
-
-            GeneratePrimitiveWrapper<Decimal>(in context, in builder, "Class", 16);
-            GeneratePrimitiveWrapper<Decimal>(in context, in builder, "Struct", 16);
-
-            GeneratePrimitiveWrapper<Double>(in context, in builder, "Class", 8);
-            GeneratePrimitiveWrapper<Double>(in context, in builder, "Struct", 8);
-
-            GeneratePrimitiveWrapper<Boolean>(in context, in builder, "Class", 1);//1 byte is not optimal
-            GeneratePrimitiveWrapper<Boolean>(in context, in builder, "Struct", 1);//1 byte is not optimal
-
-            GeneratePrimitiveWrapper<Single>(in context, in builder, "Class", 4);
-            GeneratePrimitiveWrapper<Single>(in context, in builder, "Struct", 4);
+        private void GenerateWrapper<T>(
+            GeneratorExecutionContext context,
+            int sizeOf
+            ) where T : unmanaged
+        {
+            GeneratePrimitiveWrapper<T>(in context, "Class", sizeOf);
+            GeneratePrimitiveWrapper<T>(in context, "Struct", sizeOf);
         }
 
         private void GeneratePrimitiveWrapper<T>(
             in GeneratorExecutionContext context,
-            in StringBuilder builder,
             in string wrapperNamespace,
             in int sizeOf
             ) where T : unmanaged
         {
-            builder.Clear();
+            _builder.Clear();
 
-            PrimitiveWrapperStart<T>(in builder, in wrapperNamespace);
-            PrimitiveWrapperConstructor1<T>(in sizeOf, in builder);
-            PrimitiveWrapperConstructor2<T>(in sizeOf, in builder);
-            PrimitiveWrapperConstructor3<T>(in sizeOf, in builder);
-            PrimitiveWrapperConstructor4<T>(in builder);
+            PrimitiveWrapperStart<T>(in wrapperNamespace);
+            PrimitiveWrapperConstructor1<T>(in sizeOf);
+            PrimitiveWrapperConstructor2<T>(in sizeOf);
+            PrimitiveWrapperConstructor3<T>(in sizeOf);
+            PrimitiveWrapperConstructor4<T>();
 
-            PrimitiveWrapperProperties<T>(in builder);
+            PrimitiveWrapperProperties<T>();
 
-            PrimitiveWrapperDispose<T>(in sizeOf, in builder, in wrapperNamespace);
+            PrimitiveWrapperDispose<T>(in sizeOf, in wrapperNamespace);
 
-            PrimitiveWrapperEnd(in builder);
+            PrimitiveWrapperEnd();
 
-            context.AddSource($"{typeof(T).Name}Wrapper{wrapperNamespace}.g.cs", builder.ToString());
+            context.AddSource($"{typeof(T).Name}Wrapper{wrapperNamespace}.g.cs", _builder.ToString());
         }
 
         private void PrimitiveWrapperStart<T>(
-            in StringBuilder builder,
             in string wrapperNamespace
             ) where T : unmanaged
         {
-            builder.Append($@"
-/*
-{Resource.License}
-*/
-
+            _builder.Append($@"
 using System;
 
 namespace StackMemoryCollections.{wrapperNamespace}
@@ -99,11 +82,10 @@ namespace StackMemoryCollections.{wrapperNamespace}
         }
 
         private void PrimitiveWrapperConstructor1<T>(
-            in int sizeOf,
-            in StringBuilder builder
+            in int sizeOf
             ) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {typeof(T).Name}Wrapper()
         {{
             _stackMemoryC = new StackMemoryCollections.Class.StackMemory({sizeOf});
@@ -115,11 +97,10 @@ namespace StackMemoryCollections.{wrapperNamespace}
         }
 
         private void PrimitiveWrapperConstructor2<T>(
-            in int sizeOf,
-            in StringBuilder builder
+            in int sizeOf
             ) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {typeof(T).Name}Wrapper(
             StackMemoryCollections.Struct.StackMemory* stackMemory
             )
@@ -136,11 +117,10 @@ namespace StackMemoryCollections.{wrapperNamespace}
         }
 
         private void PrimitiveWrapperConstructor3<T>(
-            in int sizeOf,
-            in StringBuilder builder
+            in int sizeOf
             ) where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {typeof(T).Name}Wrapper(
             StackMemoryCollections.Class.StackMemory stackMemory
             )
@@ -157,11 +137,9 @@ namespace StackMemoryCollections.{wrapperNamespace}
 ");
         }
 
-        private void PrimitiveWrapperConstructor4<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void PrimitiveWrapperConstructor4<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {typeof(T).Name}Wrapper(
             void* start
             )
@@ -180,13 +158,12 @@ namespace StackMemoryCollections.{wrapperNamespace}
 
         private void PrimitiveWrapperDispose<T>(
             in int sizeOf,
-            in StringBuilder builder,
             in string wrapperNamespace
             ) where T : unmanaged
         {
-            if(wrapperNamespace == "Class")
+            if (wrapperNamespace == "Class")
             {
-                builder.Append($@"
+                _builder.Append($@"
         #region IDisposable
 
         private bool _disposed;
@@ -233,7 +210,7 @@ namespace StackMemoryCollections.{wrapperNamespace}
             }
             else
             {
-                builder.Append($@"
+                _builder.Append($@"
         public void Dispose()
         {{
             if(!_memoryOwner)
@@ -259,32 +236,26 @@ namespace StackMemoryCollections.{wrapperNamespace}
             }
         }
 
-        private void PrimitiveWrapperProperties<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void PrimitiveWrapperProperties<T>() where T : unmanaged
         {
-            PrimitiveWrapperPtr<T>(in builder);
-            PrimitiveWrapperGetSet<T>(in builder);
-            PrimitiveWrapperSetIn<T>(in builder);
-            PrimitiveWrapperSetPtr<T>(in builder);
-            PrimitiveWrapperGetOut<T>(in builder);
-            PrimitiveWrapperChangePtr<T>(in builder);
+            PrimitiveWrapperPtr<T>();
+            PrimitiveWrapperGetSet<T>();
+            PrimitiveWrapperSetIn<T>();
+            PrimitiveWrapperSetPtr<T>();
+            PrimitiveWrapperGetOut<T>();
+            PrimitiveWrapperChangePtr<T>();
         }
 
-        private void PrimitiveWrapperPtr<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void PrimitiveWrapperPtr<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {typeof(T).Name}* Ptr => _start;
 ");
         }
 
-        private void PrimitiveWrapperGetSet<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void PrimitiveWrapperGetSet<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public {typeof(T).Name} Value
         {{
             get
@@ -300,11 +271,9 @@ namespace StackMemoryCollections.{wrapperNamespace}
 ");
         }
 
-        private void PrimitiveWrapperSetIn<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void PrimitiveWrapperSetIn<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Set(in {typeof(T).Name} item)
         {{
             *_start = item;
@@ -312,11 +281,9 @@ namespace StackMemoryCollections.{wrapperNamespace}
 ");
         }
 
-        private void PrimitiveWrapperSetPtr<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void PrimitiveWrapperSetPtr<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Set(in {typeof(T).Name}* valuePtr)
         {{
             *_start = *valuePtr;
@@ -324,11 +291,9 @@ namespace StackMemoryCollections.{wrapperNamespace}
 ");
         }
 
-        private void PrimitiveWrapperGetOut<T>(
-            in StringBuilder builder
-            ) where T: unmanaged
+        private void PrimitiveWrapperGetOut<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void GetOut(out {typeof(T).Name} item)
         {{
             item = *_start;
@@ -336,11 +301,9 @@ namespace StackMemoryCollections.{wrapperNamespace}
 ");
         }
 
-        private void PrimitiveWrapperChangePtr<T>(
-            in StringBuilder builder
-            ) where T : unmanaged
+        private void PrimitiveWrapperChangePtr<T>() where T : unmanaged
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void ChangePtr(in {typeof(T).Name}* newPtr)
         {{
             if(_stackMemoryC != null || _stackMemoryS != null)
@@ -353,11 +316,9 @@ namespace StackMemoryCollections.{wrapperNamespace}
 ");
         }
 
-        private void PrimitiveWrapperEnd(
-            in StringBuilder builder
-            )
+        private void PrimitiveWrapperEnd()
         {
-            builder.Append($@"
+            _builder.Append($@"
     }}
 }}
 ");

@@ -1,77 +1,89 @@
 ﻿using Microsoft.CodeAnalysis;
+using StackMemoryCollections.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace StackMemoryCollections
 {
-    public partial class Generator
+    internal class HelpersGenerator
     {
-        private void GenerateHelpers(
+        StringBuilder _builder = new StringBuilder();
+
+        public void GenerateHelpers(
             in List<INamedTypeSymbol> typeHelpers,
             in GeneratorExecutionContext context,
-            in Dictionary<string, TypeInfo> typeInfos,
-            in StringBuilder builder
+            in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
             for (int i = 0; i < typeHelpers.Count; i++)
             {
                 var currentType = typeHelpers[i];
-                builder.Clear();
-
-                if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
-                {
-                    throw new Exception($"{nameof(GenerateHelpers)}: Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
-                }
-
-                GenerateStart(in builder, in currentType);
-                GenerateOffsetsAndSize(in builder, in typeInfo);
-                GenerateIsNullable(in builder, in typeInfo);
-
-                for (int j = 0; j < typeInfo.Members.Count; j++)
-                {
-                    MemberInfo memberInfo = typeInfo.Members[j];
-                    var offsetStr = memberInfo.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{memberInfo.MemberName}Offset" : $"{memberInfo.Offset}";
-                    GenerateGetPtr(in builder, in memberInfo, in offsetStr);
-                    
-                    if (memberInfo.IsPrimitive || memberInfo.AsPointer)
-                    {
-                        var memberType = memberInfo.TypeName;
-                        if(memberInfo.AsPointer)
-                        {
-                            memberInfo.TypeName = nameof(IntPtr);
-                        }
-                        GenerateGetPrimitiveValue(in builder, in memberInfo, in offsetStr);
-                        GenerateGetPrimitiveValueRef(in builder, in memberInfo, in offsetStr);
-                        GenerateGetPrimitiveValueOut(in builder, in memberInfo, in offsetStr);
-
-                        GenerateSetPrimitiveValue(in builder, in memberInfo, in offsetStr);
-                        GenerateSetPrimitiveValueFromPtr(in builder, in memberInfo, in offsetStr);
-
-                        if (!memberInfo.AsPointer)
-                            GenerateSetPrimitiveValueFrom(in builder, in memberInfo, in currentType, in offsetStr);
-
-                        memberInfo.TypeName = memberType;
-                    }
-                    else
-                    {
-                        GenerateGetСompositeValue(in builder, in memberInfo, in currentType, in offsetStr);
-                        GenerateSetСompositeValueFromRoot(in builder, in memberInfo, in currentType, in offsetStr);
-                        GenerateSetСompositeValueFrom(in builder, in memberInfo, in currentType, in offsetStr);
-                    }
-                }
-
-                GenerateCopyToPtr(in builder, in typeInfo, in currentType);
-                GenerateCopyToValue(in builder, in typeInfo, in currentType, in typeInfos);
-                GenerateCopyToValueOut(in builder, in typeInfo, in currentType, in typeInfos);
-
-                var sizeOfStr = typeInfo.IsRuntimeCalculatedSize ? $"{currentType.Name}Helper.SizeOf" : $"{typeInfo.Size}";
-                GenerateCopy(in builder, in typeInfo, in sizeOfStr);
-
-                GenerateEnd(in builder);
-
-                context.AddSource($"{currentType.Name}Helper.g.cs", builder.ToString());
+                GenerateHelpersForType(currentType, typeInfos, context);
             }
+        }
+
+        private void GenerateHelpersForType(
+            INamedTypeSymbol currentType,
+            Dictionary<string, Model.TypeInfo> typeInfos,
+            GeneratorExecutionContext context
+            )
+        {
+            _builder.Clear();
+
+            if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
+            {
+                throw new Exception($"{nameof(GenerateHelpers)}: Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
+            }
+
+            GenerateStart(in _builder, in currentType);
+            GenerateOffsetsAndSize(in _builder, in typeInfo);
+            GenerateIsNullable(in _builder, in typeInfo);
+
+            for (int j = 0; j < typeInfo.Members.Count; j++)
+            {
+                MemberInfo memberInfo = typeInfo.Members[j];
+                var offsetStr = memberInfo.IsRuntimeOffsetCalculated ? $"{currentType.Name}Helper.{memberInfo.MemberName}Offset" : $"{memberInfo.Offset}";
+                GenerateGetPtr(in _builder, in memberInfo, in offsetStr);
+
+                if (memberInfo.IsPrimitive || memberInfo.AsPointer)
+                {
+                    var memberType = memberInfo.TypeName;
+                    if (memberInfo.AsPointer)
+                    {
+                        memberInfo.TypeName = nameof(IntPtr);
+                    }
+
+                    GenerateGetPrimitiveValue(in _builder, in memberInfo, in offsetStr);
+                    GenerateGetPrimitiveValueRef(in _builder, in memberInfo, in offsetStr);
+                    GenerateGetPrimitiveValueOut(in _builder, in memberInfo, in offsetStr);
+
+                    GenerateSetPrimitiveValue(in _builder, in memberInfo, in offsetStr);
+                    GenerateSetPrimitiveValueFromPtr(in _builder, in memberInfo, in offsetStr);
+
+                    if (!memberInfo.AsPointer)
+                        GenerateSetPrimitiveValueFrom(in _builder, in memberInfo, in currentType, in offsetStr);
+
+                    memberInfo.TypeName = memberType;
+                }
+                else
+                {
+                    GenerateGetСompositeValue(in _builder, in memberInfo, in currentType, in offsetStr);
+                    GenerateSetСompositeValueFromRoot(in _builder, in memberInfo, in currentType, in offsetStr);
+                    GenerateSetСompositeValueFrom(in _builder, in memberInfo, in currentType, in offsetStr);
+                }
+            }
+
+            GenerateCopyToPtr(in _builder, in typeInfo, in currentType);
+            GenerateCopyToValue(in _builder, in typeInfo, in currentType, in typeInfos);
+            GenerateCopyToValueOut(in _builder, in typeInfo, in currentType, in typeInfos);
+
+            var sizeOfStr = typeInfo.IsRuntimeCalculatedSize ? $"{currentType.Name}Helper.SizeOf" : $"{typeInfo.Size}";
+            GenerateCopy(in _builder, in typeInfo, in sizeOfStr);
+
+            GenerateEnd(in _builder);
+
+            context.AddSource($"{currentType.Name}Helper.g.cs", _builder.ToString());
         }
 
         private void GenerateStart(
@@ -80,10 +92,6 @@ namespace StackMemoryCollections
             )
         {
             builder.Append($@"
-/*
-{Resource.License}
-*/
-
 using System;
 using System.Runtime.CompilerServices;
 
@@ -97,7 +105,7 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateOffsetsAndSize(
             in StringBuilder builder,
-            in TypeInfo typeInfo
+            in Model.TypeInfo typeInfo
             )
         {
             builder.Append($@"
@@ -117,7 +125,7 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateIsNullable(
             in StringBuilder builder,
-            in TypeInfo typeInfo
+            in Model.TypeInfo typeInfo
             )
         {
             builder.Append($@"
@@ -370,7 +378,7 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateCopyToPtr(
             in StringBuilder builder,
-            in TypeInfo typeInfo,
+            in Model.TypeInfo typeInfo,
             in INamedTypeSymbol currentType
             )
         {
@@ -416,9 +424,9 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateCopyToValue(
             in StringBuilder builder,
-            in TypeInfo typeInfo,
+            in Model.TypeInfo typeInfo,
             in INamedTypeSymbol currentType,
-            in Dictionary<string, TypeInfo> typeInfos
+            in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
             builder.Append($@"
@@ -475,9 +483,9 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateCopyToValueOut(
             in StringBuilder builder,
-            in TypeInfo typeInfo,
+            in Model.TypeInfo typeInfo,
             in INamedTypeSymbol currentType,
-            in Dictionary<string, TypeInfo> typeInfos
+            in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
             if (typeInfo.IsValueType)
@@ -583,7 +591,7 @@ namespace {currentType.ContainingNamespace}
 
         private void GenerateCopy(
             in StringBuilder builder,
-            in TypeInfo typeInfo,
+            in Model.TypeInfo typeInfo,
             in string sizeOfStr
             )
         {

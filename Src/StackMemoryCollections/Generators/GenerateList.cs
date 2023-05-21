@@ -1,18 +1,18 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 namespace StackMemoryCollections
 {
-    public partial class Generator
+    internal class ListGenerator
     {
-        private void GenerateList(
+        private readonly StringBuilder _builder = new StringBuilder();
+
+        public void GenerateList(
             in List<INamedTypeSymbol> typeList,
             in GeneratorExecutionContext context,
-            in Dictionary<string, TypeInfo> typeInfos,
-            in StringBuilder builder
+            in Dictionary<string, Model.TypeInfo> typeInfos
             )
         {
             for (int i = 0; i < typeList.Count; i++)
@@ -23,73 +23,72 @@ namespace StackMemoryCollections
                     throw new Exception($"{nameof(GenerateList)}: Type information not found, types filling error. Type name: {currentType.ContainingNamespace}.{currentType.Name}");
                 }
 
-                GenerateList(in context, in builder, in currentType, in typeInfo, "Class");
-                GenerateList(in context, in builder, in currentType, in typeInfo, "Struct");
+                GenerateList(in context, in currentType, in typeInfo, "Class");
+                GenerateList(in context, in currentType, in typeInfo, "Struct");
             }
         }
 
         private void GenerateList(
             in GeneratorExecutionContext context,
-            in StringBuilder builder,
             in INamedTypeSymbol currentType,
-            in TypeInfo typeInfo,
+            in Model.TypeInfo typeInfo,
             in string listNamespace
             )
         {
-            builder.Clear();
+            _builder.Clear();
+
             var sizeOf = typeInfo.IsRuntimeCalculatedSize ? $"{currentType.Name}Helper.SizeOf" : $"{typeInfo.Size}";
-            ListStart(in builder, in currentType, in listNamespace);
+            ListStart(in currentType, in listNamespace);
 
-            ListConstructor1(in builder, in sizeOf, in currentType);
-            ListConstructor2(in builder, in sizeOf, in currentType);
-            ListConstructor3(in builder, in sizeOf, in currentType);
-            ListConstructor4(in builder, in currentType);
+            ListConstructor1(in sizeOf, in currentType);
+            ListConstructor2(in sizeOf, in currentType);
+            ListConstructor3(in sizeOf, in currentType);
+            ListConstructor4(in currentType);
 
-            ListProperties(in builder);
+            ListProperties();
 
-            ListReducingCapacity(in builder, in sizeOf, in listNamespace);
-            ListExpandCapacity(in builder, in sizeOf, in listNamespace);
-            ListTryExpandCapacity(in builder, in sizeOf, in listNamespace);
-            ListTrimExcess(in builder);
+            ListReducingCapacity(in sizeOf, in listNamespace);
+            ListExpandCapacity(in sizeOf, in listNamespace);
+            ListTryExpandCapacity(in sizeOf, in listNamespace);
+            ListTrimExcess();
 
-            ListAddIn(in builder, in listNamespace, in sizeOf, in currentType);
-            ListAddFuture(in builder, in listNamespace);
-            ListAddInPtr(in builder, in listNamespace, in sizeOf, in currentType);
-            ListTryAddIn(in builder, in listNamespace, in sizeOf, in currentType);
-            ListTryAddInPtr(in builder, in listNamespace, in sizeOf, in currentType);
+            ListAddIn(in listNamespace, in sizeOf, in currentType);
+            ListAddFuture(in listNamespace);
+            ListAddInPtr(in listNamespace, in sizeOf, in currentType);
+            ListTryAddIn(in listNamespace, in sizeOf, in currentType);
+            ListTryAddInPtr(in listNamespace, in sizeOf, in currentType);
 
-            ListRemove(in builder, in sizeOf, in listNamespace);
-            ListInsert(in builder, in sizeOf, in listNamespace, in currentType);
+            ListRemove(in sizeOf, in listNamespace);
+            ListInsert(in sizeOf, in listNamespace, in currentType);
 
-            ListClear(in builder, in listNamespace);
+            ListClear(in listNamespace);
 
-            ListGetByIndex(in builder, in typeInfo, in sizeOf);
-            ListGetByIndexRef(in builder, in currentType, in sizeOf);
-            ListGetOutByIndex(in builder, in currentType, in sizeOf);
+            ListGetByIndex(in typeInfo, in sizeOf);
+            ListGetByIndexRef(in currentType, in sizeOf);
+            ListGetOutByIndex(in currentType, in sizeOf);
 
-            ListGetFuture(in builder, in sizeOf);
+            ListGetFuture(in sizeOf);
 
-            ListDispose(in builder, in listNamespace, in sizeOf, in currentType);
-            ListIndexator(in builder, in sizeOf);
+            ListDispose(in listNamespace, in sizeOf, in currentType);
+            ListIndexator(in sizeOf);
 
-            ListCopyCount(in builder, in sizeOf);
-            ListCopy(in builder, in sizeOf);
-            ListCopyInList(in builder, in sizeOf, in currentType);
+            ListCopyCount(in sizeOf);
+            ListCopy(in sizeOf);
+            ListCopyInList(in sizeOf, in currentType);
 
-            ListSetSize(in builder);
+            ListSetSize();
 
             if (listNamespace == "Class")
             {
-                ListIEnumerable(in builder, in currentType, in sizeOf);
+                ListIEnumerable(in currentType, in sizeOf);
             }
 
-            ListEnd(in builder);
+            ListEnd();
 
-            context.AddSource($"ListOf{currentType.Name}{listNamespace}.g.cs", builder.ToString());
+            context.AddSource($"ListOf{currentType.Name}{listNamespace}.g.cs", _builder.ToString());
         }
 
         private void ListStart(
-            in StringBuilder builder,
             in INamedTypeSymbol currentType,
             in string listNamespace
             )
@@ -104,11 +103,7 @@ namespace StackMemoryCollections
                 implements = $"IDisposable";
             }
 
-            builder.Append($@"
-/*
-{Resource.License}
-*/
-
+            _builder.Append($@"
 using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
@@ -125,19 +120,18 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 ");
             if (listNamespace == "Class")
             {
-                builder.Append($@"
+                _builder.Append($@"
         private int _version = 0;
 ");
             }
         }
 
         private void ListConstructor1(
-            in StringBuilder builder,
             in string sizeOf,
             in INamedTypeSymbol currentType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public ListOf{currentType.Name}()
         {{
             _stackMemoryC = new StackMemoryCollections.Class.StackMemory({sizeOf} * 4);
@@ -150,12 +144,11 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListConstructor2(
-            in StringBuilder builder,
             in string sizeOf,
             in INamedTypeSymbol currentType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public ListOf{currentType.Name}(
             nuint count,
             StackMemoryCollections.Struct.StackMemory* stackMemory
@@ -174,12 +167,11 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListConstructor3(
-            in StringBuilder builder,
             in string sizeOf,
             in INamedTypeSymbol currentType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public ListOf{currentType.Name}(
             nuint count,
             StackMemoryCollections.Class.StackMemory stackMemory
@@ -199,11 +191,10 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListConstructor4(
-            in StringBuilder builder,
             in INamedTypeSymbol currentType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public ListOf{currentType.Name}(
             nuint count,
             void* memoryStart
@@ -221,11 +212,9 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 ");
         }
 
-        private void ListProperties(
-            in StringBuilder builder
-            )
+        private void ListProperties()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public nuint Capacity {{ get; private set; }}
 
         public nuint Size {{ get; private set; }} = 0;
@@ -237,7 +226,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListReducingCapacity(
-            in StringBuilder builder,
             in string sizeOf,
             in string listNamespace
             )
@@ -248,7 +236,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void ReducingCapacity(in nuint reducingCount)
         {{
             if (reducingCount <= 0)
@@ -301,7 +289,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListExpandCapacity(
-            in StringBuilder builder,
             in string sizeOf,
             in string listNamespace
             )
@@ -312,7 +299,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void ExpandCapacity(in nuint expandCount)
         {{
             if (_memoryOwner)
@@ -355,7 +342,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListTryExpandCapacity(
-            in StringBuilder builder,
             in string sizeOf,
             in string listNamespace
             )
@@ -366,7 +352,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public bool TryExpandCapacity(in nuint expandCount)
         {{
             if (_memoryOwner)
@@ -415,11 +401,9 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 ");
         }
 
-        private void ListTrimExcess(
-            in StringBuilder builder
-            )
+        private void ListTrimExcess()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void TrimExcess()
         {{
             if (_memoryOwner)
@@ -440,7 +424,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListAddIn(
-            in StringBuilder builder,
             in string listNamespace,
             in string sizeOf,
             in INamedTypeSymbol currentType
@@ -452,7 +435,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Add(in {currentType.Name} item)
         {{
             if (Size == Capacity)
@@ -467,7 +450,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListAddFuture(
-            in StringBuilder builder,
             in string listNamespace
             )
         {
@@ -477,7 +459,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void AddFuture()
         {{
             if(Size == Capacity)
@@ -491,7 +473,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListAddInPtr(
-            in StringBuilder builder,
             in string listNamespace,
             in string sizeOf,
             in INamedTypeSymbol currentType
@@ -503,7 +484,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Add(in void* ptr)
         {{
             if (Size == Capacity)
@@ -519,7 +500,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListTryAddIn(
-            in StringBuilder builder,
             in string listNamespace,
             in string sizeOf,
             in INamedTypeSymbol currentType
@@ -531,7 +511,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public bool TryAdd(in {currentType.Name} item)
         {{
             if (Size == Capacity)
@@ -550,7 +530,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListTryAddInPtr(
-            in StringBuilder builder,
             in string listNamespace,
             in string sizeOf,
             in INamedTypeSymbol currentType
@@ -562,7 +541,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public bool TryAdd(in void* ptr)
         {{
             if (Size == Capacity)
@@ -581,7 +560,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListRemove(
-            in StringBuilder builder,
             in string sizeOf,
             in string listNamespace
             )
@@ -592,7 +570,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Remove(nuint index)
         {{
             if(Size == 0 || index >= Size)
@@ -636,7 +614,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListInsert(
-            in StringBuilder builder,
             in string sizeOf,
             in string listNamespace,
             in INamedTypeSymbol currentType
@@ -648,7 +625,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Insert(in {currentType.Name} value, nuint index)
         {{
             if(index > Size || Size == Capacity)
@@ -727,7 +704,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListClear(
-            in StringBuilder builder,
             in string ListNamespace
             )
         {
@@ -737,7 +713,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 "
 :
 "";
-            builder.Append($@"
+            _builder.Append($@"
         public void Clear()
         {{
             if (Size != 0)
@@ -749,14 +725,13 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListGetByIndex(
-            in StringBuilder builder,
-            in TypeInfo typeInfo,
+            in Model.TypeInfo typeInfo,
             in string sizeOf
             )
         {
             if(typeInfo.IsValueType)
             {
-                builder.Append($@"
+                _builder.Append($@"
         [SkipLocalsInit]
         public {typeInfo.TypeName} GetByIndex(nuint index)
         {{
@@ -775,7 +750,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
             }
             else
             {
-                builder.Append($@"
+                _builder.Append($@"
         public {typeInfo.TypeName} GetByIndex(nuint index)
         {{
             if (Size == 0 || index >= Size)
@@ -793,12 +768,11 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListGetByIndexRef(
-            in StringBuilder builder,
             in INamedTypeSymbol currentType,
             in string sizeOf
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void GetByIndex(nuint index, ref {currentType.Name} value)
         {{
             if (Size == 0 || index >= Size)
@@ -812,12 +786,11 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListGetOutByIndex(
-            in StringBuilder builder,
             in INamedTypeSymbol currentType,
             in string sizeOf
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void GetOutByIndex(nuint index, out {currentType.Name} value)
         {{
             if (Size == 0 || index >= Size)
@@ -831,11 +804,10 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListGetFuture(
-            in StringBuilder builder,
             in string sizeOf
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void* GetFuture()
         {{
             if (Capacity == 0 || Size == Capacity)
@@ -849,7 +821,6 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListDispose(
-            in StringBuilder builder,
             in string listNamespace,
             in string sizeOf,
             in INamedTypeSymbol currentType
@@ -857,7 +828,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         {
             if (listNamespace == "Class")
             {
-                builder.Append($@"
+                _builder.Append($@"
         #region IDisposable
 
         private bool _disposed;
@@ -904,7 +875,7 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
             }
             else
             {
-                builder.Append($@"
+                _builder.Append($@"
         public void Dispose()
         {{
             if(!_memoryOwner)
@@ -931,11 +902,10 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListIndexator(
-            in StringBuilder builder,
             in string sizeOf
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void* this[nuint index]
         {{
             get
@@ -952,12 +922,11 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListIEnumerable(
-            in StringBuilder builder,
             in INamedTypeSymbol currentType,
             in string sizeOf
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         #region IEnumerable<{currentType.Name}>
 
         public System.Collections.Generic.IEnumerator<{currentType.Name}> GetEnumerator()
@@ -1047,11 +1016,10 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListCopy(
-            in StringBuilder builder,
             in string sizeOf
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Copy(in void* ptrDest, in nuint count)
         {{
             if (Size < count)
@@ -1070,11 +1038,10 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListCopyCount(
-            in StringBuilder builder,
             in string sizeOf
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Copy(in void* ptrDest)
         {{
             if(Size == 0)
@@ -1093,12 +1060,11 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
         }
 
         private void ListCopyInList(
-            in StringBuilder builder,
             in string sizeOf,
             in INamedTypeSymbol currentType
             )
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void Copy(in Class.ListOf{currentType.Name} destList)
         {{
             if(Size == 0)
@@ -1124,11 +1090,9 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 ");
         }
 
-        private void ListSetSize(
-            in StringBuilder builder
-            )
+        private void ListSetSize()
         {
-            builder.Append($@"
+            _builder.Append($@"
         public void SetSize(in nuint size)
         {{
             Size = size;
@@ -1136,11 +1100,9 @@ namespace {currentType.ContainingNamespace}.{listNamespace}
 ");
         }
 
-        private void ListEnd(
-            in StringBuilder builder
-            )
+        private void ListEnd()
         {
-            builder.Append($@"
+            _builder.Append($@"
     }}
 }}
 ");

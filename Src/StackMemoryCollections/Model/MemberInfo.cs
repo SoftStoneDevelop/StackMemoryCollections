@@ -1,4 +1,4 @@
-﻿namespace StackMemoryCollections
+﻿namespace StackMemoryCollections.Model
 {
     internal class MemberInfo
     {

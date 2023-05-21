@@ -8,7 +8,7 @@ namespace TestGenerator
     public partial class Generator
     {
         private void GenerateWrapPrimitiveTest(
-            in GeneratorExecutionContext context,
+            in IncrementalGeneratorPostInitializationContext context,
             in StringBuilder builder
             )
         {
@@ -248,7 +248,7 @@ namespace TestGenerator
         }
 
         private void WrapPrimitiveTest<T>(
-            in GeneratorExecutionContext context,
+            in IncrementalGeneratorPostInitializationContext context,
             in List<T> values,
             in StringBuilder builder,
             in string wrapperNamespace,

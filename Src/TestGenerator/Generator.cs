@@ -7,9 +7,9 @@ using System.Globalization;
 namespace TestGenerator
 {
     [Generator]
-    public partial class Generator : ISourceGenerator
+    public partial class Generator : IIncrementalGenerator
     {
-        public void Execute(GeneratorExecutionContext context)
+        private void Execute(IncrementalGeneratorPostInitializationContext context)
         {
             var builder = new StringBuilder();
             GenerateWrapPrimitiveTest(
@@ -33,7 +33,7 @@ namespace TestGenerator
                 );
         }
 
-        public void Initialize(GeneratorInitializationContext context)
+        private void Initialize()
         {
             Int32Values = new List<Int32> { 15, -45, 0, 34, -140 };
             Int32Convert = (val) => { return val.ToString().ToLowerInvariant(); };
@@ -61,6 +61,12 @@ namespace TestGenerator
             BooleanConvert = (val) => { return val.ToString().ToLowerInvariant(); };
             SingleValues = new List<Single> { 4.5f, 0.44f, -0.5f, 0f, 0.23f };
             SingleConvert = (val) => { return val.ToString("F", CultureInfo.InvariantCulture) + "f"; };
+        }
+
+        public void Initialize(IncrementalGeneratorInitializationContext context)
+        {
+            Initialize();
+            context.RegisterPostInitializationOutput(Execute);
         }
 
         List<Int32> Int32Values;

@@ -9,7 +9,7 @@ namespace TestGenerator
     public partial class Generator
     {
         private void GenerateQueuePrimitiveTest(
-            in GeneratorExecutionContext context,
+            in IncrementalGeneratorPostInitializationContext context,
             in StringBuilder builder
             )
         {
@@ -249,7 +249,7 @@ namespace TestGenerator
         }
 
         private void QueuePrimitiveTest<T>(
-            in GeneratorExecutionContext context,
+            in IncrementalGeneratorPostInitializationContext context,
             in List<T> values,
             in StringBuilder builder,
             in string queueNamespace,

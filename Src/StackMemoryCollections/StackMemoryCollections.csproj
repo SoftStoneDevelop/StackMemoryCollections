@@ -19,7 +19,6 @@
 		<NoPackageAnalysis>true</NoPackageAnalysis>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageReleaseNotes>
-- Added list support where items is composite types.
 </PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>

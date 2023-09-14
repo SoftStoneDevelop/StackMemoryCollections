@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Text;
+using System.Threading;
 
 namespace StackMemoryCollections
 {
@@ -8,9 +9,11 @@ namespace StackMemoryCollections
         private readonly StringBuilder _builder = new StringBuilder();
 
         public void GenerateMemory(
-            in SourceProductionContext context
+            in SourceProductionContext context,
+            CancellationToken cancellationToken
             )
         {
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateMemory(in context, "Class");
             GenerateMemory(in context, "Struct");
         }

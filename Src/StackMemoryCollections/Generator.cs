@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using StackMemoryCollections.Helpers;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -10,6 +11,21 @@ namespace StackMemoryCollections
     [Generator]
     public partial class Generator : IIncrementalGenerator
     {
+        public class ByArrayComparer : IEqualityComparer<(Compilation compilation, ImmutableArray<TypeDeclarationSyntax> Nodes)>
+        {
+            public bool Equals(
+               (Compilation compilation, ImmutableArray<TypeDeclarationSyntax> Nodes) x,
+               (Compilation compilation, ImmutableArray<TypeDeclarationSyntax> Nodes) y)
+            {
+                return x.Nodes.Equals(y.Nodes);
+            }
+
+            public int GetHashCode((Compilation compilation, ImmutableArray<TypeDeclarationSyntax> Nodes) obj)
+            {
+                return obj.Nodes.GetHashCode();
+            }
+        }
+
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
             //System.Diagnostics.Debugger.Launch();
@@ -17,9 +33,15 @@ namespace StackMemoryCollections
                 .CreateSyntaxProvider(
                 predicate: (s, _) => IsSyntaxTargetForGeneration(s),
                 transform: (ctx, _) => GetSemanticTargetForGeneration(ctx))
-                .Where(m => m != null);
+                .Where(m => m != null)
+                .Collect()
+                .Select((sel, _) => sel.Distinct().ToImmutableArray())
+                ;
 
-            var compilationAndClasses = context.CompilationProvider.Combine(classDeclarations.Collect());
+            var compilationAndClasses =
+                context.CompilationProvider.Combine(classDeclarations)
+                .WithComparer(new ByArrayComparer())
+                ;
 
             context.RegisterSourceOutput(compilationAndClasses,
                 (spc, source) => Execute(source.Item1, source.Item2, spc));
@@ -94,9 +116,14 @@ namespace StackMemoryCollections
         private void Execute(Compilation compilation, ImmutableArray<TypeDeclarationSyntax> types, SourceProductionContext context)
         {
             //System.Diagnostics.Debugger.Launch();
+            if (types.IsDefaultOrEmpty)
+            {
+                return;
+            }
+
             var processor = new AttributeProcessor();
-            processor.FillAllTypes(compilation, types);
-            processor.Generate(context);
+            processor.FillAllTypes(compilation, types, context.CancellationToken);
+            processor.Generate(context, context.CancellationToken);
         }
     }
 }

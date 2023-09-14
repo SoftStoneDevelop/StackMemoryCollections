@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Text;
+using System.Threading;
 
 namespace StackMemoryCollections.Generators.Primitive
 {
@@ -9,25 +10,33 @@ namespace StackMemoryCollections.Generators.Primitive
         private readonly StringBuilder _builder = new StringBuilder();
 
         public void GeneratePrimitiveQueue(
-            in SourceProductionContext context
+            in SourceProductionContext context,
+            CancellationToken cancellationToken
             )
         {
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateQueue<IntPtr>(in context, 0, true);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateQueue<int>(in context, 4, false);
             GenerateQueue<uint>(in context, 4, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateQueue<long>(in context, 8, false);
             GenerateQueue<ulong>(in context, 8, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateQueue<sbyte>(in context, 1, false);
             GenerateQueue<byte>(in context, 1, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateQueue<short>(in context, 2, false);
             GenerateQueue<ushort>(in context, 2, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateQueue<char>(in context, 2, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateQueue<decimal>(in context, 16, false);
             GenerateQueue<double>(in context, 8, false);
             GenerateQueue<bool>(in context, 1, false);//1 byte is not optimal

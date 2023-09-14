@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Text;
+using System.Threading;
 
 namespace StackMemoryCollections.Generators.Primitive
 {
@@ -9,23 +10,30 @@ namespace StackMemoryCollections.Generators.Primitive
         private readonly StringBuilder _builder = new StringBuilder();
 
         public void GeneratePrimitiveList(
-            in SourceProductionContext context
+            in SourceProductionContext context,
+            CancellationToken cancellationToken
             )
         {
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateList<IntPtr>(context, 0, true);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateList<int>(context, 4, false);
             GenerateList<uint>(context, 4, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateList<long>(context, 8, false);
             GenerateList<ulong>(context, 8, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateList<sbyte>(context, 1, false);
             GenerateList<byte>(context, 1, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateList<short>(context, 2, false);
             GenerateList<ushort>(context, 2, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateList<char>(context, 2, false);
             GenerateList<decimal>(context, 16, false);
             GenerateList<double>(context, 8, false);

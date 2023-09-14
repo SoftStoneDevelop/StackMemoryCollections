@@ -3,6 +3,7 @@ using StackMemoryCollections.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace StackMemoryCollections
 {
@@ -13,11 +14,13 @@ namespace StackMemoryCollections
         public void GenerateHelpers(
             in List<INamedTypeSymbol> typeHelpers,
             in SourceProductionContext context,
-            in Dictionary<string, Model.TypeInfo> typeInfos
+            in Dictionary<string, Model.TypeInfo> typeInfos,
+            CancellationToken cancellationToken
             )
         {
             for (int i = 0; i < typeHelpers.Count; i++)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var currentType = typeHelpers[i];
                 GenerateHelpersForType(currentType, typeInfos, context);
             }

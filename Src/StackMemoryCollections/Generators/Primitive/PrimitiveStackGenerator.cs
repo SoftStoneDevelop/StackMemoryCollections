@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Text;
+using System.Threading;
 
 namespace StackMemoryCollections.Generators.Primitive
 {
@@ -9,23 +10,30 @@ namespace StackMemoryCollections.Generators.Primitive
         private StringBuilder _builder = new StringBuilder();
 
         public void GeneratePrimitiveStack(
-            in SourceProductionContext context
+            in SourceProductionContext context,
+            CancellationToken cancellationToken
             )
         {
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateStack<IntPtr>(context, 0, true);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateStack<int>(context, 4, false);
             GenerateStack<uint>(context, 4, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateStack<long>(context, 8, false);
             GenerateStack<ulong>(context, 8, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateStack<sbyte>(context, 1, false);
             GenerateStack<byte>(context, 1, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateStack<short>(context, 2, false);
             GenerateStack<ushort>(context, 2, false);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateStack<char>(context, 2, false);
             GenerateStack<decimal>(context, 16, false);
             GenerateStack<double>(context, 8, false);

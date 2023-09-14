@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace StackMemoryCollections
 {
@@ -7,9 +8,11 @@ namespace StackMemoryCollections
     {
         public void GenerateCommonHelpers(
             in List<INamedTypeSymbol> typeHelpers,
-            in SourceProductionContext context
+            in SourceProductionContext context,
+            CancellationToken cancellationToken
             )
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (typeHelpers.Count == 0)
             {
                 return;

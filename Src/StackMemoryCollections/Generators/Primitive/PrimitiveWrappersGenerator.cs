@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Text;
+using System.Threading;
 
 namespace StackMemoryCollections.Generators.Primitive
 {
@@ -8,21 +9,27 @@ namespace StackMemoryCollections.Generators.Primitive
         private readonly StringBuilder _builder = new StringBuilder();
 
         public void GeneratePrimitiveWrappers(
-            in SourceProductionContext context
+            in SourceProductionContext context,
+            CancellationToken cancellationToken
             )
         {
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateWrapper<int>(context, 4);
             GenerateWrapper<uint>(context, 4);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateWrapper<long>(context, 8);
             GenerateWrapper<ulong>(context, 8);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateWrapper<sbyte>(context, 1);
             GenerateWrapper<byte>(context, 1);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateWrapper<short>(context, 2);
             GenerateWrapper<ushort>(context, 2);
 
+            cancellationToken.ThrowIfCancellationRequested();
             GenerateWrapper<char>(context, 2);
             GenerateWrapper<decimal>(context, 16);
             GenerateWrapper<double>(context, 8);

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 
 namespace StackMemoryCollections
 {
@@ -32,17 +33,18 @@ namespace StackMemoryCollections
         private readonly List<INamedTypeSymbol> _typeGeneratedList = new List<INamedTypeSymbol>();
         private readonly List<INamedTypeSymbol> _typeGeneratedQueue = new List<INamedTypeSymbol>();
         private readonly List<INamedTypeSymbol> _typeGeneratedDictionary = new List<INamedTypeSymbol>();
-        private bool _containCollections = false;
 
         private readonly Dictionary<string, Model.TypeInfo> _typeInfos = new Dictionary<string, Model.TypeInfo>();
 
         public void FillAllTypes(
             Compilation compilation,
-            ImmutableArray<TypeDeclarationSyntax> types
+            ImmutableArray<TypeDeclarationSyntax> types,
+            CancellationToken cancellationToken
             )
         {
             foreach (var typeDeclaration in types )
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var type = compilation.GetSemanticModel(typeDeclaration.SyntaxTree).GetDeclaredSymbol(typeDeclaration);
 
                 var attributes = type.GetAttributes();
@@ -84,18 +86,20 @@ namespace StackMemoryCollections
                 }
             }
 
-            FillInfos();
+            FillInfos(cancellationToken);
         }
 
-        private void FillInfos()
+        private void FillInfos(CancellationToken cancellationToken)
         {
             for (int i = 0; i < _typeHelpers.Count; i++)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var stackCurrentTypes = new Stack<INamedTypeSymbol>();
                 stackCurrentTypes.Push(_typeHelpers[i]);
 
                 while (stackCurrentTypes.Count != 0)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     var currentType = stackCurrentTypes.Peek();
                     if (!currentType.Constructors.Any(an => an.Parameters.Length == 0))
                     {
@@ -393,24 +397,21 @@ namespace StackMemoryCollections
                 );
         }
 
-        public void Generate(SourceProductionContext context)
+        public void Generate(SourceProductionContext context, CancellationToken cancellationToken)
         {
-            if (!_containCollections)
-            {
-                _primitiveWrappersGenerator.GeneratePrimitiveWrappers(context);
-                _primitiveStackGenerator.GeneratePrimitiveStack(context);
-                _primitiveQueueGenerator.GeneratePrimitiveQueue(context);
-                _primitiveListGenerator.GeneratePrimitiveList(context);
-                _memoryGenerator.GenerateMemory(context);
-            }
+            _primitiveWrappersGenerator.GeneratePrimitiveWrappers(context, cancellationToken);
+            _primitiveStackGenerator.GeneratePrimitiveStack(context, cancellationToken);
+            _primitiveQueueGenerator.GeneratePrimitiveQueue(context, cancellationToken);
+            _primitiveListGenerator.GeneratePrimitiveList(context, cancellationToken);
+            _memoryGenerator.GenerateMemory(context, cancellationToken);
 
-            _commonHelpersHenerator.GenerateCommonHelpers(_typeHelpers, context);
-            _helpersGenerator.GenerateHelpers(in _typeHelpers, in context, in _typeInfos);
+            _commonHelpersHenerator.GenerateCommonHelpers(_typeHelpers, context, cancellationToken);
+            _helpersGenerator.GenerateHelpers(in _typeHelpers, in context, in _typeInfos, cancellationToken);
 
-            _wrappersGenerator.GenerateWrappers(in _typeWrappers, in context, in _typeInfos);
-            _stackGenerator.GenerateStack(in _typeGeneratedStack, in context, _typeInfos);
-            _queueGenerator.GenerateQueue(in _typeGeneratedQueue, in context, _typeInfos);
-            _listGenerator.GenerateList(in _typeGeneratedList, in context, _typeInfos);
+            _wrappersGenerator.GenerateWrappers(in _typeWrappers, in context, in _typeInfos, cancellationToken);
+            _stackGenerator.GenerateStack(in _typeGeneratedStack, in context, _typeInfos, cancellationToken);
+            _queueGenerator.GenerateQueue(in _typeGeneratedQueue, in context, _typeInfos, cancellationToken);
+            _listGenerator.GenerateList(in _typeGeneratedList, in context, _typeInfos, cancellationToken);
         }
     }
 }

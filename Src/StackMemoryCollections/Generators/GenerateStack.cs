@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace StackMemoryCollections
 {
@@ -12,11 +13,13 @@ namespace StackMemoryCollections
         public void GenerateStack(
             in List<INamedTypeSymbol> typeStack,
             in SourceProductionContext context,
-            in Dictionary<string, Model.TypeInfo> typeInfos
+            in Dictionary<string, Model.TypeInfo> typeInfos,
+            CancellationToken cancellationToken
             )
         {
             for (int i = 0; i < typeStack.Count; i++)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var currentType = typeStack[i];
                 if (!typeInfos.TryGetValue($"{currentType.ContainingNamespace}.{currentType.Name}", out var typeInfo))
                 {

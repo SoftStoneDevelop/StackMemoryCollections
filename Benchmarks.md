@@ -1,5 +1,6 @@
-# Stack
-
+<details>
+  <summary>Stack</summary>
+  
 ### Primitive types:
 Stack elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
   
@@ -143,10 +144,11 @@ ______
 | System.Collections.Generic | NativeAOT 10.0 | NativeAOT 10.0 | 5000 | 19,940.04 μs |  1.00 | 32017920 B | 
 
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Stack/Optimal/StructOptimalJob.cs)
-
+</details>
 ______
 
-# Queue
+<details>
+  <summary>Queue</summary>
 
 ### Primitive types:
 Queue elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
@@ -292,9 +294,11 @@ ______
 
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/Queue/Optimal/StructOptimalJob.cs)
 
+</details>
 ______
 
-# List
+<details>
+  <summary>List</summary>
 
 ### Primitive types:
 List elements are primitives: `byte`, `float`, `int`, `short`, `decimal`... .
@@ -437,4 +441,5 @@ ______
 
 [Code](https://github.com/SoftStoneDevelop/StackMemoryCollections/blob/main/Src/Benchmarks/List/Optimal/StructOptimalJob.cs)
 
+</details>
 ______
